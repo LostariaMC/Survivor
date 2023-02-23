@@ -108,7 +108,7 @@ public class MapConfig
 	}
 	
 	public static File getSaveFile() {
-		return new File(Survivor.getCommonDirectory(), "maps.json");
+		return new File(Survivor.getPluginConfigDir(), "maps.json");
 	}
 	
 	public static boolean doesConfigExists(String name) {

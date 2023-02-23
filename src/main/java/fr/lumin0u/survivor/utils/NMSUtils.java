@@ -1,13 +1,12 @@
 package fr.lumin0u.survivor.utils;
 
 import com.comphenix.protocol.utility.MinecraftReflection;
-import fr.worsewarn.cosmox.game.WrappedPlayer;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.network.PlayerConnection;
 import net.minecraft.world.entity.Entity;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 

@@ -6,30 +6,21 @@ import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.commands.MoneyCommand;
 import fr.lumin0u.survivor.commands.NoGameCommandExecutor;
-import fr.lumin0u.survivor.commands.SurvivorCommand;
 import fr.lumin0u.survivor.commands.VoteSkipCommand;
-import fr.lumin0u.survivor.utils.WorldUtils;
-import fr.lumin0u.survivor.weapons.TurretRunnable;
-import fr.worsewarn.cosmox.API;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.game.Phase;
-import fr.worsewarn.cosmox.game.WrappedPlayer;
-import fr.worsewarn.cosmox.game.ievents.GameStartEvent;
-import fr.worsewarn.cosmox.game.ievents.GameStopEvent;
+import fr.worsewarn.cosmox.game.events.GameStartEvent;
+import fr.worsewarn.cosmox.game.events.GameStopEvent;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.PacketDataSerializer;
 import net.minecraft.network.protocol.game.PacketPlayOutCustomPayload;
 import net.minecraft.resources.MinecraftKey;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 public class CosmoxEvents implements Listener
 {

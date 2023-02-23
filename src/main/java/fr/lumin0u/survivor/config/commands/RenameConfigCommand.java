@@ -1,22 +1,8 @@
 package fr.lumin0u.survivor.config.commands;
 
-import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.commands.SvArgCommand;
 import fr.lumin0u.survivor.config.MapConfig;
-import fr.lumin0u.survivor.config.MapConfigCreation;
-import fr.lumin0u.survivor.config.MapConfigRenderer;
-import fr.lumin0u.survivor.utils.MCUtils;
-import fr.worsewarn.cosmox.game.WrappedPlayer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ClickEvent.Action;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RenameConfigCommand extends SvArgCommand
 {

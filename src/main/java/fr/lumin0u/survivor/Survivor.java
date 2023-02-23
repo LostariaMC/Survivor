@@ -17,16 +17,13 @@ import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TransparentUtils;
 import fr.lumin0u.survivor.utils.Utils;
 import fr.worsewarn.cosmox.API;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer.PlayerWrapper;
 import fr.worsewarn.cosmox.game.Game;
-import fr.worsewarn.cosmox.game.WrappedPlayer;
-import fr.worsewarn.cosmox.game.WrappedPlayer.PlayerWrapper;
-import fr.worsewarn.cosmox.tools.utils.Pair;
-import net.minecraft.network.protocol.Packet;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.material.Cake;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -119,8 +116,8 @@ public class Survivor extends JavaPlugin
 		getCommand("money").setExecutor(NoGameCommandExecutor.INSTANCE);
 		getCommand("voteSkip").setExecutor(NoGameCommandExecutor.INSTANCE);
 		
-		if(!getCommonDirectory().exists())
-			getCommonDirectory().mkdir();
+		if(!getPluginConfigDir().exists())
+			getPluginConfigDir().mkdir();
 		
 		File mapConfigFile = MapConfig.getSaveFile();
 		if(!mapConfigFile.exists())
@@ -255,8 +252,8 @@ public class Survivor extends JavaPlugin
 		return Utils.ifNotNullApply(mapConfigs.get(uid), MapConfigCreation::renderer);
 	}
 	
-	public static File getCommonDirectory()
+	public static File getPluginConfigDir()
 	{
-		return new File(API.instance().getCommonDirectory(), "Survivor");
+		return new File("/srv/MinecraftServer/dev/config/plugins/release/Survivor");
 	}
 }

@@ -13,7 +13,7 @@ import fr.lumin0u.survivor.weapons.knives.BucherKnife;
 import fr.lumin0u.survivor.weapons.knives.Knife;
 import fr.lumin0u.survivor.weapons.knives.LittleKnife;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
-import fr.worsewarn.cosmox.game.WrappedPlayer;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;

@@ -1,6 +1,5 @@
 package fr.lumin0u.survivor;
 
-import com.comphenix.protocol.wrappers.Pair;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.mobs.mob.Wolf;
@@ -17,12 +16,11 @@ import fr.lumin0u.survivor.utils.Surviboard;
 import fr.lumin0u.survivor.utils.Utils;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.worsewarn.cosmox.API;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.game.Phase;
-import fr.worsewarn.cosmox.game.Team;
-import fr.worsewarn.cosmox.game.WrappedPlayer;
-import fr.worsewarn.cosmox.tools.locations.GameMap;
+import fr.worsewarn.cosmox.game.teams.Team;
+import fr.worsewarn.cosmox.tools.map.GameMap;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Cake;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
