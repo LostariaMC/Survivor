@@ -71,11 +71,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>fr.worsewarn</groupId>
+            <groupId>fr.worsewarn.cosmox</groupId>
             <artifactId>Cosmox</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>C:/Messiaen/lancelot/lostaria/CosmoxAPI.jar</systemPath>
+            <version>1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
