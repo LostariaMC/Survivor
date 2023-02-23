@@ -1,0 +1,14 @@
+main: fr.lumin0u.survivor.Survivor
+author: lumin0u
+version: 1.1
+name: Survivor
+depend: [ProtocolLib, Cosmox]
+api-version: 1.18
+
+commands:
+  Sv:
+    description: la commande survivor
+  money:
+    description: la commande pour distribuer de la thune
+  voteSkip:
+    description: la commande pour gagner du temps
