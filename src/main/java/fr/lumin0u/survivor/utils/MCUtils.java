@@ -4,10 +4,8 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.PacketType.Play;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.ChatType;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import fr.lumin0u.survivor.DamageTarget;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.StatsManager;
@@ -23,9 +21,6 @@ import net.kyori.adventure.title.Title.Times;
 import net.kyori.adventure.util.Ticks;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
-import net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity;
-import net.minecraft.resources.MinecraftKey;
-import net.minecraft.world.entity.decoration.EntityArmorStand;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -81,22 +76,7 @@ public class MCUtils
 		if(!p.getWorld().equals(l.getWorld()) || p.getEyeLocation().distance(l) >= maxDistance)
 			return;
 		
-		if(sound.matches("[a-z0-9_.-]+"))
-		{
-			PacketContainer packetSound = new PacketContainer(Play.Server.CUSTOM_SOUND_EFFECT);
-			packetSound.getModifier().write(0, new MinecraftKey(sound));
-			packetSound.getSoundCategories().write(0, EnumWrappers.SoundCategory.MASTER);
-			packetSound.getIntegers()
-					.write(0, (int) (l.getX() * 8))
-					.write(1, (int) (l.getY() * 8))
-					.write(2, (int) (l.getZ() * 8));
-			packetSound.getFloat().write(0, maxDistance / 16);
-			packetSound.getFloat().write(1, pitch);
-			
-			sendPacket(p, packetSound);
-		}
-		else
-			Survivor.getInstance().getLogger().warning("The sound name %s must have a valid format".formatted(sound));
+		p.playSound(l, sound, maxDistance, pitch);
 	}
 	
 	public static String vecToString(Vector loc)
@@ -329,56 +309,7 @@ public class MCUtils
 	
 	public static void oneFlyingText(Location l, String text, long time, double minDistance)
 	{
-		EntityArmorStand armorStand = new EntityArmorStand(NMSUtils.getHandle(l.getWorld()), l.getX(), l.getY(), l.getZ());
-		int eid = armorStand.getBukkitEntity().getEntityId();
-		
-		PacketContainer packetSpawn = new PacketContainer(Play.Server.SPAWN_ENTITY, new PacketPlayOutSpawnEntity(armorStand));
-		
-		WrappedDataWatcher.Serializer optChatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-		WrappedDataWatcher.Serializer byteSerializer = WrappedDataWatcher.Registry.get(Byte.class);
-		WrappedDataWatcher.Serializer booleanSerializer = WrappedDataWatcher.Registry.get(Boolean.class);
-		
-		WrappedDataWatcher dw = new WrappedDataWatcher();
-		dw.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, byteSerializer), (byte) 0x20); // invisible
-		dw.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromText(text).getHandle())); // custom name
-		dw.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(3, booleanSerializer), true); // custom name visible
-		dw.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(15, byteSerializer), (byte) 0x10); // marker
-		
-		PacketContainer packetMetadata = new PacketContainer(Play.Server.ENTITY_METADATA);
-		packetMetadata.getIntegers().write(0, eid);
-		packetMetadata.getWatchableCollectionModifier().write(0, dw.getWatchableObjects());
-		
-		for(Player p : l.getWorld().getPlayers())
-		{
-			if(l.distance(p.getLocation()) >= minDistance)
-			{
-				sendPacket(p, packetSpawn);
-				
-				new BukkitRunnable()
-				{
-					@Override
-					public void run() {
-						sendPacket(p, packetMetadata);
-					}
-				}.runTaskLater(Survivor.getInstance(), 1);
-			}
-		}
-		
-		if(time >= 0)
-		{
-			new BukkitRunnable()
-			{
-				@Override
-				public void run()
-				{
-					PacketContainer packetDestroy = new PacketContainer(Play.Server.ENTITY_DESTROY, new PacketPlayOutEntityDestroy(eid));
-					for(Player p : l.getWorld().getPlayers())
-					{
-						MCUtils.sendPacket(p, packetDestroy);
-					}
-				}
-			}.runTaskLater(Survivor.getInstance(), time);
-		}
+		oneConsistentFlyingText(l, text, time, minDistance);
 	}
 	
 	public static ArmorStand oneConsistentFlyingText(Location l, String text)
@@ -388,6 +319,35 @@ public class MCUtils
 		as.setGravity(false);
 		as.setCustomName(text);
 		as.setCustomNameVisible(true);
+		return as;
+	}
+	
+	public static ArmorStand oneConsistentFlyingText(Location l, String text, long time, double minDistance)
+	{
+		ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.clone().add(0.0D, -2.125D, 0.0D), EntityType.ARMOR_STAND);
+		as.setVisible(false);
+		as.setGravity(false);
+		as.setCustomName(text);
+		as.setCustomNameVisible(true);
+		
+		for(Player player : l.getWorld().getPlayers())
+		{
+			if(player.getEyeLocation().distance(l) < minDistance)
+			{
+				PacketContainer packet = new PacketContainer(Play.Server.ENTITY_DESTROY, new PacketPlayOutEntityDestroy(as.getEntityId()));
+				sendPacket(player, packet);
+			}
+		}
+		
+		new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				as.remove();
+			}
+		}.runTaskLater(Survivor.getInstance(), time);
+		
 		return as;
 	}
 	

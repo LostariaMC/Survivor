@@ -1,6 +1,9 @@
 package fr.lumin0u.survivor.listeners;
 
-import fr.lumin0u.survivor.*;
+import fr.lumin0u.survivor.GameManager;
+import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SurvivorGame;
+import fr.lumin0u.survivor.SvAsset;
 import fr.lumin0u.survivor.objects.UpgradeBoxManager;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -67,6 +70,8 @@ public class InventoryEvents implements Listener
 		{
 			if(e.getCurrentItem().getType().equals(Material.COOKED_RABBIT) || e.getCurrentItem().getType().equals(Material.RABBIT))
 				UpgradeBoxManager.getUpgradeGui(sp).upgradeWeapon();
+			if(e.getCurrentItem().getType().equals(Material.COOKIE) || e.getCurrentItem().getType().equals(Material.COOKIE))
+				UpgradeBoxManager.getUpgradeGui(sp).buyPerk();
 		}
 	}
 	
@@ -98,7 +103,7 @@ public class InventoryEvents implements Listener
 				e.getItemDrop().remove();
 				gm.getSvPlayer(p).getAtouts().remove(asset);
 				
-				p.sendMessage(Survivor.prefix + " §6Vous avez retiré l'atout §a" + asset.getName());
+				p.sendMessage(SurvivorGame.prefix + " §6Vous avez retiré l'atout §a" + asset.getName());
 				gm.getSvPlayer(p).addMoney(asset.getPrice() / 2);
 				
 				if(asset.equals(SvAsset.MASTODONTE))

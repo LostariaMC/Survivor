@@ -38,7 +38,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 					.multiply(new Vector(1, 0.5, 1))
 					.multiply(Math.random() * 7.0D * (Math.random() * 0.6 + 0.4));
 			
-			int explosionDelay = new Random().nextInt(40) + 35;
+			int explosionDelay = new Random().nextInt(10) + 50;
 			
 			new BukkitRunnable()
 			{
@@ -57,7 +57,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 						im.displayName(Component.text(Long.toHexString(System.nanoTime()) + "" + new Random().nextInt(100)));
 						itemStack.setItemMeta(im);
 						
-						this.projectile = loc.getWorld().dropItem(loc, itemStack);
+						this.projectile = loc.getWorld().dropItem(loc.clone().add(0, 0.2, 0), itemStack);
 						this.projectile.setPickupDelay(Integer.MAX_VALUE);
 						this.projectile.setVelocity(vector);
 					}
@@ -65,7 +65,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 					if(this.time > explosionDelay)
 					{
 						GameManager gm = GameManager.getInstance();
-						MCUtils.explosion(owner, GrenadeFrag.this, Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) * 0.35D, loc, 5.0D, "guns.grenade", 1.0D, owner.getTargetType());
+						MCUtils.explosion(owner, GrenadeFrag.this, Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) * 0.35D, projectile.getLocation(), 5.0D, "guns.grenade", 1.0D, owner.getTargetType());
 						this.projectile.remove();
 						this.cancel();
 					}

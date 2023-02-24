@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.SvAsset;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.mobs.mob.boss.PoisonousBoss;
@@ -17,9 +18,12 @@ import fr.lumin0u.survivor.objects.Room;
 import fr.lumin0u.survivor.objects.UpgradeBoxManager;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.Surviboard;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.snipers.Sniper;
+import fr.worsewarn.cosmox.game.events.PlayerJoinGameEvent;
+import fr.worsewarn.cosmox.game.teams.Team;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -174,7 +178,7 @@ public class PlayerEvents implements PacketListener, Listener
 						if(!zombieNear)
 						{
 							Room.placeFence(e.getClickedBlock().getLocation());
-							gm.getSvPlayer(player).addMoney(gm.getWave());
+							gm.getSvPlayer(player).addMoney(100 * (int) Math.sqrt(gm.getWave()) / (int) gm.getRooms().stream().filter(Room::isBought).mapToInt(room -> room.getFences().size()).sum());
 						}
 						else
 						{
@@ -404,7 +408,7 @@ public class PlayerEvents implements PacketListener, Listener
 						{
 							sp.getAtouts().add(asset);
 							
-							sp.getPlayer().sendMessage(Survivor.prefix + " §6Vous avez acheté l'atout §a" + asset.getName() + " §7(il apparait dans votre inventaire, appuyer sur votre touche de drop pour vous en débarrasser)");
+							sp.getPlayer().sendMessage(SurvivorGame.prefix + " §6Vous avez acheté l'atout §a" + asset.getName() + " §7(il apparait dans votre inventaire, appuyer sur votre touche de drop pour vous en débarrasser)");
 							
 							sp.addMoney(-asset.getPrice());
 							if(asset.equals(SvAsset.MASTODONTE))
@@ -491,43 +495,47 @@ public class PlayerEvents implements PacketListener, Listener
 	}
 	
 	@EventHandler
-	public void onJoin(PlayerJoinEvent e) {
+	public void onJoin(PlayerJoinGameEvent e) {
 		if(GameManager.getInstance() != null)
 		{
-			e.getPlayer().getInventory().clear();
-			e.getPlayer().updateInventory();
-			e.getPlayer().setWalkSpeed(0.2F);
+			Player player = e.getPlayer();
+			player.getInventory().clear();
+			player.updateInventory();
+			player.setWalkSpeed(0.2F);
 			
 			GameManager gm = GameManager.getInstance();
 			
-			SvPlayer svPlayer = gm.getOfflinePlayer(e.getPlayer().getUniqueId());
+			SvPlayer svPlayer = gm.getOfflinePlayer(player.getUniqueId());
 			gm.getOfflinePlayers().remove(svPlayer);
 			boolean contains = svPlayer != null;
 			
-			if(contains)
-				gm.getPlayers().add(svPlayer);
+			Bukkit.broadcastMessage(SurvivorGame.prefix + " §a+ §7" + e.getPlayer().getName() + " a rejoint la partie");
+			player.getInventory().clear();
 			
-			e.setJoinMessage(Survivor.prefix + " §a+ §7" + e.getPlayer().getName() + " a rejoint la partie");
-			e.getPlayer().getInventory().clear();
+			boolean inWave = gm.isInWave();
 			
 			if(!contains)
 			{
-				svPlayer = new SvPlayer(e.getPlayer());
+				svPlayer = new SvPlayer(player, inWave);
 				gm.getPlayers().add(svPlayer);
 				svPlayer.setMoney((int) (Math.pow(gm.getWave(), 1.5D) * 50.0D) / 50 * 50);
 				WeaponType.LITTLE_KNIFE.getNewWeapon(svPlayer).giveItem();
 				WeaponType.M1911.getNewWeapon(svPlayer).giveItem();
 			}
-			
-			e.getPlayer().setMaxHealth(gm.getDifficulty().getMaxHealth());
-			
-			Bukkit.getScheduler().runTaskLater(getPlugin(), () ->
+			else
 			{
-				e.getPlayer().teleport(gm.getSpawnpoint());
-				e.getPlayer().setGameMode(GameMode.ADVENTURE);
-			}, 1);
+				gm.getPlayers().add(svPlayer);
+			}
+			
+			svPlayer.toCosmox().setTeam(Team.RANDOM);
+			
+			player.setMaxHealth(gm.getDifficulty().getMaxHealth());
+			
+			player.teleport(gm.getSpawnpoint());
+			player.setGameMode(inWave ? GameMode.SPECTATOR : GameMode.ADVENTURE);
 			
 			svPlayer.cleanInventory();
+			Surviboard.reInitScoreboard(svPlayer);
 		}
 	}
 	
@@ -539,9 +547,9 @@ public class PlayerEvents implements PacketListener, Listener
 			SvPlayer sp = gm.getSvPlayer(e.getPlayer());
 			
 			if(gm.isStarted())
-				e.setQuitMessage(Survivor.prefix + " §c- §7" + e.getPlayer().getName() + " a quitté la partie");
+				e.setQuitMessage(SurvivorGame.prefix + " §c- §7" + e.getPlayer().getName() + " a quitté la partie");
 			else
-				e.setQuitMessage(Survivor.prefix + " §c- §7" + e.getPlayer().getName() + " a quitté le lobby");
+				e.setQuitMessage(SurvivorGame.prefix + " §c- §7" + e.getPlayer().getName() + " a quitté le lobby");
 			
 			if(sp == null)
 				return;

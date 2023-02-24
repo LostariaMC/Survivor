@@ -38,7 +38,6 @@ public class Survivor extends JavaPlugin
 	private EntityEvents entityListener;
 	private InventoryEvents inventoryListener;
 	public static int currentTick;
-	public static final String prefix = "§8[§9Survivor§8]";
 	private ProtocolManager protocolManager;
 	private API cosmoxAPI;
 	private final Map<UUID, MapConfigCreation> mapConfigs = new HashMap<>();
@@ -71,19 +70,13 @@ public class Survivor extends JavaPlugin
 	{
 		/*
 		* TODO
-		* * zombie invisible
 		*
-		* * lyly boss mdrr
-		* * double coup utilise 2x (bug pompe ?)
-		* * saconde main
-		* * vie boss pas bien
-		* * leaderboard wowo
-		* *? ammo box eat ?
-		* * on regagne de la vie ?
-		* * voteskip /2
+		* spec join
+		* upgradebox hologram ?
+	 	* grenade frag
+		* *reload/bizarre
 		*
-		* tjrs erreur lainbodies
-		* explosion lag
+		* lainbodies
 		*
 		* molecules
 		*/

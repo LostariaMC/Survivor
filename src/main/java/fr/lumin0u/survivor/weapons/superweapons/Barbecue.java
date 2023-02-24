@@ -1,7 +1,6 @@
 package fr.lumin0u.survivor.weapons.superweapons;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.Ray;
@@ -49,7 +48,7 @@ public class Barbecue extends HeatSender
 			{
 				if((ent.getBodyHitbox().multiply((double) i / 2.5).contains(point) || ent.getHeadHitbox().multiply((double) i / 2.5).contains(point)) && !hit.contains(ent))
 				{
-					ent.setFireTime(160L, owner, this, Waves.getEnnemiesLife(GameManager.getInstance().getWave(), GameManager.getInstance().getDifficulty()) / 12);
+					ent.setFireTime(160L, owner, this);
 					hit.add(ent);
 				}
 			}

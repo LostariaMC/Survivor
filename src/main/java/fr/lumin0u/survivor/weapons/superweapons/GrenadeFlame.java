@@ -1,7 +1,6 @@
 package fr.lumin0u.survivor.weapons.superweapons;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -30,7 +29,7 @@ public class GrenadeFlame extends AbstractGrenade implements SupplyWeapon
 		{
 			if(m.getFeets().distance(loc) < 20.0D && TransparentUtils.solidBetween(m.getFeets(), loc) < 3)
 			{
-				m.setFireTime((long) (450 - (int) (10.0D * m.getFeets().distance(loc))), owner, this, Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) / 15.0D);
+				m.setFireTime((long) (450 - (int) (17.0D * m.getFeets().distance(loc))), owner, this);
 			}
 		}
 		

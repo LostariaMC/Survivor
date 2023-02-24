@@ -44,11 +44,13 @@ public class Freezer extends HeatSender
 		{
 			Location point = r.getPoints().get(i);
 			
-			for(SvDamageable ent : owner.getTargetType().getDamageables(GameManager.getInstance()))
+			GameManager gm = GameManager.getInstance();
+			
+			for(SvDamageable ent : owner.getTargetType().getDamageables(gm))
 			{
 				if((ent.getBodyHitbox().multiply((double) i / 1.5).contains(point) || ent.getHeadHitbox().multiply((double) i / 1.5).contains(point)) && !hit.contains(ent))
 				{
-					ent.damage(Waves.getEnnemiesLife(GameManager.getInstance().getWave(), GameManager.getInstance().getDifficulty()) / 4, owner, this, false, null);
+					ent.damage(Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) / 20, owner, this, false, null);
 					ent.setFrozenTime(200L);
 					hit.add(ent);
 				}

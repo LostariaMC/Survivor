@@ -1,12 +1,11 @@
 package fr.lumin0u.survivor.objects;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.player.SvPlayer;
-import fr.lumin0u.survivor.utils.RDPicker;
+import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.weapons.Upgradeable;
 import fr.lumin0u.survivor.weapons.Weapon;
-import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.weapons.perks.Perk;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -69,14 +68,14 @@ public class UpgradeBoxManager
 			if(!(weapon instanceof Upgradeable))
 			{
 				sp.getPlayer().closeInventory();
-				sp.getPlayer().sendMessage(Survivor.prefix + " §cCette arme n'est pas améliorable");
+				sp.getPlayer().sendMessage(SurvivorGame.prefix + " §cCette arme n'est pas améliorable");
 				return;
 			}
 			if(sp.getMoney() <= ((Upgradeable) weapon).getNextLevelPrice())
 			{
 				sp.getPlayer().closeInventory();
 				sp.getPlayer().playSound(sp.getPlayer().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-				sp.getPlayer().sendMessage(Survivor.prefix + " §cVous ne possédez pas assez d'argent");
+				sp.getPlayer().sendMessage(SurvivorGame.prefix + " §cVous ne possédez pas assez d'argent");
 				return;
 			}
 			
@@ -94,14 +93,19 @@ public class UpgradeBoxManager
 			if(sp.getMoney() <= Perk.PRICE)
 			{
 				sp.getPlayer().closeInventory();
-				sp.getPlayer().sendMessage(Survivor.prefix + " §cVous ne possédez pas assez d'argent");
+				sp.getPlayer().sendMessage(SurvivorGame.prefix + " §cVous ne possédez pas assez d'argent");
 				return;
 			}
 			
-			sp.addMoney(-Perk.PRICE);
-			weapon.setPerk(Perk.FIRE_BULLET);
+			Perk perk = Perk.FIRE_BULLET;
 			
-			createAndShow();
+			sp.addMoney(-Perk.PRICE);
+			weapon.setPerk(perk);
+			weapon.giveItem();
+			
+			sp.getPlayer().sendMessage(SurvivorGame.prefix + " §eVous obtenez : " + perk.getDisplayName());
+			
+			sp.getPlayer().closeInventory();
 		}
 		
 		public void createAndShow()

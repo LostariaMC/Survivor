@@ -61,8 +61,6 @@ public class GameManager
 	private List<SvPlayer> voteSkippers = new ArrayList<>();
 	private GameBossBar bossBar;
 	
-	private int currentTick;
-	
 	private static GameManager instance;
 	
 	public GameManager(GameMap map)
@@ -176,7 +174,7 @@ public class GameManager
 		
 		if(this.defaultRoom != null && this.spawnpoint != null)
 		{
-			Bukkit.broadcastMessage(Survivor.prefix + " §6La partie commence !");
+			Bukkit.broadcastMessage(SurvivorGame.prefix + " §6La partie commence !");
 			endWave();
 			magicBoxManager.onGameStart();
 			
@@ -209,7 +207,7 @@ public class GameManager
 				ItemStack itemA = new ItemBuilder(Material.CARROT).setDisplayName("§6Approvisionnement").build();
 				p.getInventory().setItem(4, itemA);
 				p.updateInventory();
-				p.sendMessage(Survivor.prefix + " §cVous recevrez votre approvisionnement à partir de la vague 10");
+				p.sendMessage(SurvivorGame.prefix + " §cVous recevrez votre approvisionnement à partir de la vague 10");
 				
 				if(getSvPlayer(p) == null)
 				{
@@ -220,6 +218,7 @@ public class GameManager
 				WeaponType.LITTLE_KNIFE.getNewWeapon(sp).giveItem();
 				WeaponType.M1911.getNewWeapon(sp).giveItem();
 				p.teleport(spawnpoint);
+				p.setGameMode(GameMode.ADVENTURE);
 				p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 1.0F);
 			}
 			
@@ -473,14 +472,14 @@ public class GameManager
 		if(voteSkippers.size() >= skipRank)
 		{
 			nextWaveStartDate = Survivor.getCurrentTick() + 140;
-			Bukkit.broadcastMessage(Survivor.prefix + " §aLe temps d'attente a été réduit");
+			Bukkit.broadcastMessage(SurvivorGame.prefix + " §aLe temps d'attente a été réduit");
 			
 			for(SvPlayer sp : players)
 				sp.getPlayer().playSound(sp.getShootLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
 		}
 		else
 		{
-			Bukkit.broadcastMessage(Survivor.prefix + " §7Vote pour la réduction de l'attente: §e" + voteSkippers.size() + "§7/§6" + skipRank);
+			Bukkit.broadcastMessage(SurvivorGame.prefix + " §7Vote pour la réduction de l'attente: §e" + voteSkippers.size() + "§7/§6" + skipRank);
 		}
 	}
 	
@@ -512,6 +511,8 @@ public class GameManager
 				spawns.addAll(room.getMobSpawns());
 			}
 		}
+		
+		Collections.shuffle(spawns);
 		
 		for(Location loc : this.ammoBoxes)
 		{
@@ -717,20 +718,34 @@ public class GameManager
 	
 	public void endGame()
 	{
-		Bukkit.broadcastMessage(Survivor.prefix + " §cVous avez perdu, tout le monde est mort ...");
+		Bukkit.broadcastMessage(SurvivorGame.prefix + " §cVous avez perdu, tout le monde est mort ...");
 		
 		for(SvPlayer sp : this.players)
 		{
 			sp.getPlayer().sendMessage("§6Ennemis tués : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalKills"));
 			sp.getPlayer().sendMessage("§6Dégats infligés : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalDamage"));
 			
-			sp.toCosmox().addMolecules(wave * 2, "Vague " + wave);
+			sp.toCosmox().addMolecules(wave * 2 * Math.sqrt(difficulty.getNB()), "Vague " + wave);
 			
 			bossBar.bossBar.removeAll();
 		}
 		
 		API.instance().getManager().setPhase(Phase.END);
-		API.instance().getManager().getGame().addToResume("Vague atteinte : " + wave);
+		API.instance().getManager().getGame().addToResume("§7Vague atteinte : §a" + wave);
+		API.instance().getManager().getGame().addToResume("§7Durée de la partie : §e" + timeDisplay(Survivor.currentTick / 20));
+	}
+	
+	private String timeDisplay(int seconds)
+	{
+		StringBuilder s = new StringBuilder();
+		if(seconds >= 3600)
+			s.append(seconds / 3600).append("h ");
+		if(seconds >= 60)
+			s.append((seconds / 60) % 3600).append("m ");
+		
+		s.append(seconds % 600).append("s");
+		
+		return s.toString();
 	}
 	
 	public MagicBoxManager getMagicBoxManager()
@@ -746,7 +761,7 @@ public class GameManager
 	public void buyElectrical(Player p)
 	{
 		this.electricalBought = true;
-		Bukkit.broadcastMessage(Survivor.prefix + " §6" + p.getName() + " §aa activé l'électricité !");
+		Bukkit.broadcastMessage(SurvivorGame.prefix + " §6" + p.getName() + " §aa activé l'électricité !");
 	}
 	
 	public Location getElectrical()

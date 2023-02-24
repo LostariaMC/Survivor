@@ -57,6 +57,7 @@ public class Surviboard
 		GameManager gm = GameManager.getInstance();
 		
 		CosmoxScoreboard scoreboard = player.toCosmox().getScoreboard();
+		scoreboard.updateTitle("§f§lSURVIVOR");
 		
 		int i = 0;
 		

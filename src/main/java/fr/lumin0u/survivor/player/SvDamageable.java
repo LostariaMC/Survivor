@@ -15,7 +15,7 @@ public interface SvDamageable
 	
 	public void damage(double dmg, WeaponOwner damager, Weapon weapon, boolean headshot, Vector kb);
 	
-	public void setFireTime(long fireTime, WeaponOwner fireMan, Weapon weapon, double damage);
+	public void setFireTime(long fireTime, WeaponOwner fireMan, Weapon weapon);
 	
 	public void setFrozenTime(long frozenTime);
 }

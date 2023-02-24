@@ -2,7 +2,6 @@ package fr.lumin0u.survivor;
 
 import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.utils.SurvivorParameters;
-import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.worsewarn.cosmox.api.statistics.Statistic;
 import fr.worsewarn.cosmox.game.Game;
 import fr.worsewarn.cosmox.game.GameVariables;
@@ -12,6 +11,7 @@ import fr.worsewarn.cosmox.tools.map.MapLocation;
 import fr.worsewarn.cosmox.tools.map.MapLocationType;
 import fr.worsewarn.cosmox.tools.map.MapTemplate;
 import fr.worsewarn.cosmox.tools.map.MapType;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
@@ -20,6 +20,8 @@ import java.util.List;
 
 public class SurvivorGame
 {
+	public static String prefix = "§2§lSurvivor §f▪ ";
+	
 	/*
 	 * %y = sum of integers of a category
 	 * %b = value of parameter (boolean)
@@ -49,9 +51,9 @@ public class SurvivorGame
 				new Statistic("Victoires", GameVariables.WIN)
 		));
 		
-		statistics.addAll(Arrays.stream(WeaponType.values())
+		/*statistics.addAll(Arrays.stream(WeaponType.values())
 				.map(weaponType -> new Statistic("Dégats avec " + weaponType.getName(), "survivor:%sdmg".formatted(weaponType.getName()), false, false, false))
-				.toList());
+				.toList());*/
 		
 		// parameters
 		List<Parameter> parameters = new ArrayList<>(Arrays.asList(
@@ -62,7 +64,7 @@ public class SurvivorGame
 		));
 		
 		
-		Game game = new Game("survivor", "Survivor", "§2§lSurvivor §f▪ ", Material.ZOMBIE_HEAD, Arrays.asList(Team.RANDOM), 1, true, true,
+		Game game = new Game("survivor", "Survivor", ChatColor.DARK_GREEN, Material.ZOMBIE_HEAD, Arrays.asList(Team.RANDOM), 1, true, true,
 				statistics,
 				/*Achievements*/
 				List.of(),
@@ -90,6 +92,8 @@ public class SurvivorGame
 		
 		for(Parameter parameter : parameters)
 			game.addParameter(parameter);
+		
+		prefix = game.getPrefix();
 		
 		return game;
 	}

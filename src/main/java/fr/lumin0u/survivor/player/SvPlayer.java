@@ -9,9 +9,7 @@ import fr.lumin0u.survivor.utils.LainBodies;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
-import fr.lumin0u.survivor.weapons.knives.BucherKnife;
 import fr.lumin0u.survivor.weapons.knives.Knife;
-import fr.lumin0u.survivor.weapons.knives.LittleKnife;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import org.bukkit.*;
@@ -51,7 +49,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	private fr.lumin0u.survivor.Difficulty diffVote;
 	private final BadgesData badgesData;
 	private int fireTime;
-	private double fireDmg;
 	private WeaponOwner fireSource;
 	private Weapon fireSourceWeapon;
 	
@@ -63,16 +60,25 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public SvPlayer(Player player)
 	{
+		this(player, false);
+	}
+	
+	public SvPlayer(Player player, boolean dead)
+	{
 		super(player);
 		
 		this.weapons = new ArrayList<>();
 		this.assets = new ArrayList<>();
 		this.actionBar = null;
-		this.lifeState = LifeState.ALIVE;
+		this.lifeState = dead ? LifeState.DEAD : LifeState.ALIVE;
 		this.supply = WeaponType.GRENADE;
 		
 		badgesData = new BadgesData();
 		
+		startLifeRunnable();
+	}
+	
+	private void startLifeRunnable() {
 		new BukkitRunnable()
 		{
 			int turns = 10;
@@ -101,7 +107,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						bukkitPlayer.setFireTicks(19);
 						if(fireTime % 20 == 0)
 						{
-							damage(fireDmg, fireSource, fireSourceWeapon, false, null);
+							damage(0.5, fireSource, fireSourceWeapon, false, null);
 						}
 						
 						--fireTime;
@@ -149,15 +155,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						if(weaponInHand != null && weaponInHand.getClip() <= 0 && weaponInHand.getAmmo() > 0 && !weaponInHand.isReloading())
 						{
 							weaponInHand.reload();
-						}
-						
-						if(weaponInHand instanceof Knife)
-						{
-							bukkitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 999999, weaponInHand instanceof LittleKnife ? 14 : (weaponInHand instanceof BucherKnife ? 52 : 0), true, false));
-						}
-						else
-						{
-							bukkitPlayer.removePotionEffect(PotionEffectType.SLOW_DIGGING);
 						}
 						
 						if(GameManager.getInstance().isStarted())
@@ -250,7 +247,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							@Override
 							public void run()
 							{
-								if(weapon.equals(getWeaponInHand()) && weapon.isUseable() && System.currentTimeMillis() - lastClickDate < 150)
+								if(weapon.equals(getWeaponInHand()) && weapon.getClip() > 0 && weapon.isUseable() && System.currentTimeMillis() - lastClickDate < 150)
 								{
 									doShot.run();
 								}
@@ -393,7 +390,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public void death()
 	{
-		Bukkit.broadcastMessage(Survivor.prefix + " §6" + this.getName() + "§c est à terre !");
+		Bukkit.broadcastMessage(SurvivorGame.prefix + " §6" + this.getName() + "§c est à terre !");
 		
 		MCUtils.playSound(this.getPlayer().getLocation(), Sound.BLOCK_ANVIL_BREAK, 1000.0F);
 		this.lifeState = LifeState.ON_GROUND;
@@ -447,7 +444,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				private void playDead()
 				{
 					StatsManager.increaseStat(uid, "deaths", 1, true);
-					Bukkit.broadcastMessage(Survivor.prefix + " §6" + SvPlayer.this.getName() + "§c est mort !");
+					Bukkit.broadcastMessage(SurvivorGame.prefix + " §6" + SvPlayer.this.getName() + "§c est mort !");
 					
 					getPlayer().setGlowing(false);
 					lifeState = LifeState.DEAD;
@@ -541,7 +538,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							{
 								hardlyDead = true;
 								getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0));
-								getPlayer().sendMessage(Survivor.prefix + " §aEn voyant vos alliés vous sauver, vous vous raccrochez à la vie");
+								getPlayer().sendMessage(SurvivorGame.prefix + " §aEn voyant vos alliés vous sauver, vous vous raccrochez à la vie");
 							}
 							
 							getPlayer().setHealth(getPlayer().getMaxHealth());
@@ -565,7 +562,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 								as3.setCustomName("§2■ ■ ■ ■ ■ ·");
 							else if(reviveTime <= 0.0D)
 							{
-								Bukkit.broadcastMessage(Survivor.prefix + " §6" + getName() + "§a a été réanimé !");
+								Bukkit.broadcastMessage(SurvivorGame.prefix + " §6" + getName() + "§a a été réanimé !");
 								lifeState = LifeState.ALIVE;
 								getPlayer().teleport(deathLoc);
 								getPlayer().setGameMode(GameMode.ADVENTURE);
@@ -966,10 +963,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	}
 	
 	@Override
-	public void setFireTime(long fireTime, WeaponOwner fireMan, Weapon weapon, double damage)
+	public void setFireTime(long fireTime, WeaponOwner fireMan, Weapon weapon)
 	{
 		this.fireTime = (int) fireTime;
-		this.fireDmg = damage;
 		this.fireSource = fireMan;
 		this.fireSourceWeapon = weapon;
 	}

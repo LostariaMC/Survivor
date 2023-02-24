@@ -2,10 +2,9 @@ package fr.lumin0u.survivor.objects;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -14,11 +13,11 @@ import org.bukkit.block.data.type.Fence;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.Contract;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Room
 {
@@ -157,7 +156,7 @@ public class Room
 			}
 			
 			GameManager.getInstance().augmentPrice();
-			Bukkit.broadcastMessage(Survivor.prefix + " §5" + Bukkit.getOfflinePlayer(sp.getPlayerUid()).getName() + " §ea acheté §6" + getName());
+			Bukkit.broadcastMessage(SurvivorGame.prefix + " §5" + Bukkit.getOfflinePlayer(sp.getPlayerUid()).getName() + " §ea acheté §6" + getName());
 		}
 		
 		for(Location block : getAdditionalBlocks())

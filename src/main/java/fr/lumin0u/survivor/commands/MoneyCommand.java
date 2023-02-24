@@ -1,7 +1,7 @@
 package fr.lumin0u.survivor.commands;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.player.SvPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -28,7 +28,7 @@ public class MoneyCommand implements CommandExecutor
 			SvPlayer sp = GameManager.getInstance().getSvPlayer((Player) sender);
 			if(Bukkit.getPlayer(args[0]) == null)
 			{
-				sender.sendMessage(Survivor.prefix + " §cLe joueur '" + args[0] + "' n'a pas été trouvé");
+				sender.sendMessage(SurvivorGame.prefix + " §cLe joueur '" + args[0] + "' n'a pas été trouvé");
 				return true;
 			}
 			else
@@ -42,31 +42,31 @@ public class MoneyCommand implements CommandExecutor
 					amount = Integer.parseInt(args[1]);
 				} catch(NumberFormatException var9)
 				{
-					sender.sendMessage(Survivor.prefix + " §6" + args[1] + " §cn'est pas considéré comme un nombre");
+					sender.sendMessage(SurvivorGame.prefix + " §6" + args[1] + " §cn'est pas considéré comme un nombre");
 					return true;
 				}
 				
 				if(amount < 0)
 				{
-					sender.sendMessage(Survivor.prefix + " §cTu m'as pris pour une nouille ?");
+					sender.sendMessage(SurvivorGame.prefix + " §cTu m'as pris pour une nouille ?");
 					return true;
 				}
 				else if(amount == 0)
 				{
-					sender.sendMessage(Survivor.prefix + " §6Rien §an'a été correctement transmis !");
+					sender.sendMessage(SurvivorGame.prefix + " §6Rien §an'a été correctement transmis !");
 					return true;
 				}
 				else if(amount > sp.getMoney())
 				{
-					sender.sendMessage(Survivor.prefix + " §cVous ne possédez pas cet argent");
+					sender.sendMessage(SurvivorGame.prefix + " §cVous ne possédez pas cet argent");
 					return true;
 				}
 				else
 				{
 					victim.addMoney(amount);
 					sp.addMoney(-amount);
-					sender.sendMessage(Survivor.prefix + " §aVous avez correctement transmis §6" + amount + "$ §aà " + victim.getName() + " !");
-					victim.getPlayer().sendMessage(Survivor.prefix + " §aVous avez reçu §6" + amount + "$ §ade la part de " + sender.getName() + " !");
+					sender.sendMessage(SurvivorGame.prefix + " §aVous avez correctement transmis §6" + amount + "$ §aà " + victim.getName() + " !");
+					victim.getPlayer().sendMessage(SurvivorGame.prefix + " §aVous avez reçu §6" + amount + "$ §ade la part de " + sender.getName() + " !");
 					return true;
 				}
 			}

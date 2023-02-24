@@ -2,11 +2,14 @@ package fr.lumin0u.survivor.listeners;
 
 import com.comphenix.protocol.PacketType.Play.Server;
 import com.comphenix.protocol.events.PacketContainer;
+import fr.lumin0u.survivor.Difficulty;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.commands.MoneyCommand;
 import fr.lumin0u.survivor.commands.NoGameCommandExecutor;
 import fr.lumin0u.survivor.commands.VoteSkipCommand;
+import fr.lumin0u.survivor.utils.SurvivorParameters;
+import fr.worsewarn.cosmox.API;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.game.Phase;
 import fr.worsewarn.cosmox.game.events.GameStartEvent;
@@ -32,7 +35,9 @@ public class CosmoxEvents implements Listener
 		if(!event.getGame().equals(plugin.getGame()))
 			return;
 		
-		new GameManager(event.getMap()).startGame();
+		GameManager gm = new GameManager(event.getMap());
+		gm.setDifficulty(Difficulty.values()[API.instance().getGameParameter(SurvivorParameters.DIFFICULTY)]);
+		gm.startGame();
 		plugin.getCosmoxAPI().getManager().setPhase(Phase.GAME);
 		
 		plugin.getCommand("money").setExecutor(new MoneyCommand());

@@ -16,6 +16,16 @@ public class NMSUtils
 	{
 	}
 	
+	public static <T> T applyMethod(Object obj, String method, Object... arguments) {
+		try
+		{
+			return (T) obj.getClass().getMethod(method).invoke(obj, arguments);
+		} catch(ReflectiveOperationException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public static <T> T getHandle(Object obj) {
 		try
 		{

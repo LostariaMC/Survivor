@@ -120,6 +120,8 @@ public abstract class Weapon implements IWeapon
 	
 	public void reload()
 	{
+		isReloading = true;
+		
 		if(ammo > 0 && owner.hasItem(this))
 		{
 			final int modifiedReloadTime = owner.hasSpeedReload() ? (int) ((double) this.reloadTime / 1.6) : this.reloadTime;
@@ -191,6 +193,8 @@ public abstract class Weapon implements IWeapon
 		lore.add("§6Taille d'un chargeur : §a" + this.clipSize + (!isUpgradeable() ? "" : " §8\u279D " + getClipSizeAtLevel(level + 1)));
 		lore.add("§6Temps de reload : §a" + String.format("%.2f", (double) this.reloadTime / 20.0D) + (!isUpgradeable() ? "" : " §8\u279D " + String.format("%.2f", (double) getReloadTimeAtLevel(level + 1) / 20)));
 		lore.add("§6Niveau : §a" + this.level + (!isUpgradeable() ? "" : " §8\u279D " + (this.level + 1)));
+		if(perk != null)
+			lore.add("§6Perk : " + perk.getDisplayName());
 		return lore;
 	}
 	

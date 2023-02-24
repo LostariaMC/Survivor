@@ -5,6 +5,7 @@ import fr.lumin0u.survivor.DamageTarget;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.StatsManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.mobs.mob.boss.Boss;
 import fr.lumin0u.survivor.objects.Bonus;
 import fr.lumin0u.survivor.player.SvDamageable;
@@ -44,7 +45,6 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	protected long frozenTime;
 	protected WeaponOwner fireMan;
 	protected Weapon fireWeaponSource;
-	protected double firedmg;
 	protected double maxHealth;
 	protected double health;
 	protected boolean dead;
@@ -101,7 +101,7 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 						ent.setFireTicks((int) fireTime);
 						if(fireTime % 20L == 0L)
 						{
-							damage(firedmg, fireMan, fireWeaponSource, false, null);
+							damage(Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) / 20, fireMan, fireWeaponSource, false, null);
 						}
 						
 						--fireTime;
@@ -241,7 +241,7 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 				ent.setVelocity(ent.getVelocity().multiply(0.5).add(kb == null ? new Vector() : kb));
 				
 				if(weapon != null && weapon.hasPerk(Perk.FIRE_BULLET) && new Random().nextInt(10) == 0)
-					setFireTime(20, damager, weapon, dmg / 10);
+					setFireTime(50, damager, weapon);
 			}
 			
 			for(i = 0; i < 5; ++i)
@@ -310,11 +310,10 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	}
 	
 	@Override
-	public void setFireTime(long fireTime, WeaponOwner fireMan, Weapon weapon, double damage)
+	public void setFireTime(long fireTime, WeaponOwner fireMan, Weapon weapon)
 	{
 		this.fireTime = fireTime;
 		this.fireMan = fireMan;
-		this.firedmg = damage;
 		this.fireWeaponSource = weapon;
 	}
 	
