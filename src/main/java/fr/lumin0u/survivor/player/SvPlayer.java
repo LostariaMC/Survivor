@@ -497,7 +497,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				@Override
 				public void run()
 				{
-					if(!isOnline() && !lifeState.alive())
+					if(lifeState.alive())
+					{
+						cancel();
+						return;
+					}
+					
+					if(!isOnline())
 					{
 						lifeState = LifeState.DEAD;
 						LainBodies.wakeUp(uid);
@@ -515,6 +521,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							this.cancel();
 							cleanInventory();
 							LainBodies.wakeUp(SvPlayer.this.uid);
+							getPlayer().removePotionEffect(PotionEffectType.GLOWING);
 						}
 						
 						reviveTime += 4;
