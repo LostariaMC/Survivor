@@ -56,12 +56,13 @@ public class SurvivorGame
 				.toList());*/
 		
 		// parameters
-		List<Parameter> parameters = new ArrayList<>(Arrays.asList(
-				new Parameter(SurvivorParameters.DIFFICULTY, "",
-						Arrays.stream(Difficulty.values()).map(Difficulty::getColoredDisplayName).toList(),
-						new ItemBuilder(Material.SKELETON_SKULL).setDisplayName("§6Difficulté").addLore(List.of(" ", "§7Définir la difficulté de", "§7la partie", " ", "§e Valeur actuelle : %ls")).build(),
-						false, false)
-		));
+		Parameter difficultyParameter = new Parameter(SurvivorParameters.DIFFICULTY, "",
+				Arrays.stream(Difficulty.values()).map(Difficulty::getColoredDisplayName).toList(),
+				new ItemBuilder(Material.SKELETON_SKULL).setDisplayName("§6Difficulté").addLore(List.of(" ", "§7Définir la difficulté de", "§7la partie", " ", "§e Valeur actuelle : %ls")).build(),
+				false, false);
+		difficultyParameter.setCurrentInt(1);
+		
+		List<Parameter> parameters = new ArrayList<>(List.of(difficultyParameter));
 		
 		
 		Game game = new Game("survivor", "Survivor", ChatColor.DARK_GREEN, Material.ZOMBIE_HEAD, Arrays.asList(Team.RANDOM), 1, true, true,

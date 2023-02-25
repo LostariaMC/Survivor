@@ -423,6 +423,11 @@ public class GameManager
 					MCUtils.sendTitle(sp.getPlayer(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
 				}
 				
+				if(this.wave % 5 == 0)
+				{
+					sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getNB()) / 2, "Vague " + wave);
+				}
+				
 				sp.addMoney(75 + 25 * this.wave);
 				sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 9999999, 5));
 			}
@@ -725,8 +730,6 @@ public class GameManager
 		{
 			sp.getPlayer().sendMessage("§6Ennemis tués : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalKills"));
 			sp.getPlayer().sendMessage("§6Dégats infligés : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalDamage"));
-			
-			sp.toCosmox().addMolecules(wave * 2 * Math.sqrt(difficulty.getNB()), "Vague " + wave);
 			
 			bossBar.bossBar.removeAll();
 		}
