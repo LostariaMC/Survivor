@@ -527,6 +527,11 @@ public class PlayerEvents implements PacketListener, Listener
 				gm.getPlayers().add(svPlayer);
 			}
 			
+			if(inWave)
+			{
+				player.sendMessage(SurvivorGame.prefix + "§fUne vague est en cours, vous apparaitrez au début de la prochaine");
+			}
+			
 			svPlayer.toCosmox().setTeam(Team.RANDOM);
 			
 			player.setMaxHealth(gm.getDifficulty().getMaxHealth());

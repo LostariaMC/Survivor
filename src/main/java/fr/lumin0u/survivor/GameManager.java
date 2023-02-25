@@ -740,6 +740,7 @@ public class GameManager
 		API.instance().getManager().setPhase(Phase.END);
 		API.instance().getManager().getGame().addToResume("§7Vague atteinte : §a" + wave);
 		API.instance().getManager().getGame().addToResume("§7Durée de la partie : §e" + timeDisplay(Survivor.currentTick / 20));
+		API.instance().getManager().getGame().addToResume("§7Difficulté : " + difficulty.getColoredDisplayName());
 	}
 	
 	private String timeDisplay(int seconds)
