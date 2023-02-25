@@ -55,7 +55,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	private long lastShotDate;
 	
 	private static final long INSTANT_KILL_TIME = 20000L;
-	private static final long ON_GROUND_TIME = 500L;
+	private static final long ON_GROUND_TIME = 1000L;
 	
 	public SvPlayer(Player player)
 	{
@@ -390,7 +390,10 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		{
 			getPlayer().teleport(GameManager.getInstance().getSpawnpoint());
 			getPlayer().setGameMode(GameMode.ADVENTURE);
+			cleanInventory();
 		}
+		
+		LainBodies.wakeUp(uid);
 	}
 	
 	public void fallOnGround()
@@ -510,7 +513,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							as2.remove();
 							as3.remove();
 							this.cancel();
-							SvPlayer.this.cleanInventory();
+							cleanInventory();
 							LainBodies.wakeUp(SvPlayer.this.uid);
 						}
 						
@@ -534,6 +537,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							if(!lifeState.dead())
 							{
 								this.playDead();
+								cancel();
 							}
 						}
 						else
@@ -570,6 +574,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 								lifeState = LifeState.ALIVE;
 								getPlayer().teleport(deathLoc);
 								getPlayer().setGameMode(GameMode.ADVENTURE);
+								getPlayer().removePotionEffect(PotionEffectType.GLOWING);
 								deathDate = 0L;
 								cancel();
 								LainBodies.wakeUp(uid);
@@ -582,7 +587,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				}
 			}).runTaskTimer(Survivor.getInstance(), 1L, 1L);
 		}
-		
 	}
 	
 	public int getMoney()
