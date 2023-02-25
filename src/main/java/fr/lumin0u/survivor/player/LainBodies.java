@@ -27,7 +27,7 @@ public class LainBodies
 	}
 	
 	public static void lie(Player p)
-	{
+	{/*
 		try
 		{
 			playFakeBed(p);
@@ -36,7 +36,7 @@ public class LainBodies
 			var2.printStackTrace();
 		}
 		
-	}
+	*/}
 	
 	public static void wakeUp(UUID uid)
 	{

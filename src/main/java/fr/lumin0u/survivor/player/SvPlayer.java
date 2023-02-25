@@ -385,9 +385,15 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public void respawn()
 	{
+		this.lifeState = LifeState.ALIVE;
+		if(isOnline())
+		{
+			getPlayer().teleport(GameManager.getInstance().getSpawnpoint());
+			getPlayer().setGameMode(GameMode.ADVENTURE);
+		}
 	}
 	
-	public void death()
+	public void fallOnGround()
 	{
 		Bukkit.broadcastMessage(SurvivorGame.prefix + " §6" + this.getName() + "§c est à terre !");
 		
@@ -470,11 +476,14 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						{
 							getPlayer().setMaxHealth(GameManager.getInstance().getDifficulty().getMaxHealth());
 							getPlayer().setWalkSpeed(0.2F);
+							
+							getPlayer().sendMessage(SurvivorGame.prefix + "§cVous n'aviez pas l'atout §7Pierre tombale§c, vous avez donc perdu vos armes et vos atouts");
 						}
 					}
 					else
 					{
 						SvPlayer.this.assets.remove(SvAsset.PIERRE_TOMBALE);
+						getPlayer().sendMessage(SurvivorGame.prefix + "§cVous aviez l'atout §7Pierre tombale§c, vous n'avez donc pas perdu vos armes ni vos atouts, excepté l'atout pierre tombale");
 					}
 					
 					LainBodies.wakeUp(SvPlayer.this.uid);
@@ -485,14 +494,10 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				@Override
 				public void run()
 				{
-					if(!isOnline() && lifeState.onGround())
+					if(!isOnline() && !lifeState.alive())
 					{
-						if(!GameManager.getInstance().isInWave())
-						{
-							lifeState = LifeState.ALIVE;
-							this.cancel();
-							LainBodies.wakeUp(uid);
-						}
+						lifeState = LifeState.DEAD;
+						LainBodies.wakeUp(uid);
 					}
 					else
 					{
@@ -991,7 +996,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			Player p = getPlayer();
 			if(p.getHealth() <= dmg)
 			{
-				death();
+				fallOnGround();
 				p.setVelocity(new Vector(0, 0, 0));
 				
 				return true;

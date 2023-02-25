@@ -431,6 +431,9 @@ public class GameManager
 				sp.addMoney(75 + 25 * this.wave);
 				sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 9999999, 5));
 			}
+			
+			if(sp.isDead())
+				sp.respawn();
 		}
 		
 		new BukkitRunnable()
