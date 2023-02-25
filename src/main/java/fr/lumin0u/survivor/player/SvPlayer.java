@@ -714,7 +714,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			}
 			
 			diff = fr.lumin0u.survivor.Difficulty.values()[i];
-			ItemStack glass = diff.getGlass();
+			ItemStack glass = diff.getItemRep();
 			ItemMeta meta = glass.getItemMeta();
 			meta.setDisplayName(meta.getDisplayName());
 			glass.setItemMeta(meta);

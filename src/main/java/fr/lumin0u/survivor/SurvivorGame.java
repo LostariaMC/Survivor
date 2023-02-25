@@ -58,9 +58,10 @@ public class SurvivorGame
 		// parameters
 		Parameter difficultyParameter = new Parameter(SurvivorParameters.DIFFICULTY, "",
 				Arrays.stream(Difficulty.values()).map(Difficulty::getColoredDisplayName).toList(),
-				new ItemBuilder(Material.SKELETON_SKULL).setDisplayName("§6Difficulté").addLore(List.of(" ", "§7Définir la difficulté de", "§7la partie", " ", "§e Valeur actuelle : %ls")).build(),
+				new ItemBuilder(Difficulty.values()[0].getItemRep()).setDisplayName("§6Difficulté").setLore(List.of(" ", "§7Définir la difficulté de", "§7la partie", " ", "§e Valeur actuelle : %ls")).build(),
 				false, false);
 		difficultyParameter.setCurrentInt(1);
+		difficultyParameter.setItemModifier((item, p) -> item.setType(Difficulty.values()[p.getCurrentInt()].getItemRep().getType()));
 		
 		List<Parameter> parameters = new ArrayList<>(List.of(difficultyParameter));
 		

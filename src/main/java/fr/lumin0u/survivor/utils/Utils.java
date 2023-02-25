@@ -135,4 +135,10 @@ public class Utils
 		if(obj != null)
 			function.accept(obj);
 	}
+	
+	public static String title(String s) {
+		if(s.isEmpty())
+			return s;
+		return s.substring(0, 1).toUpperCase() + s.substring(1);
+	}
 }
