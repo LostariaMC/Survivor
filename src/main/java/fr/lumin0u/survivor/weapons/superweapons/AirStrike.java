@@ -2,7 +2,9 @@ package fr.lumin0u.survivor.weapons.superweapons;
 
 import com.comphenix.protocol.PacketType.Play.Server;
 import com.comphenix.protocol.events.PacketContainer;
+import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TransparentUtils;
@@ -34,10 +36,10 @@ public class AirStrike extends SuperWeapon
 	
 	@Override
 	public void rightClick() {
-		for(int i = 0; i < 10; ++i)
+		for(int i = 0; i < 15; ++i)
 		{
 			Random r = new Random();
-			this.fireball(owner.getShootLocation().clone().add(r.nextDouble() * 10.0D - 5.0D, 100.0D + r.nextDouble() * 20.0D - 10.0D, r.nextDouble() * 10.0D - 5.0D));
+			this.fireball(owner.getShootLocation().clone().add(r.nextDouble() * 20.0D - 10.0D, 100.0D + r.nextDouble() * 40.0D - 20.0D, r.nextDouble() * 20.0D - 10.0D));
 		}
 		this.useAmmo();
 	}
@@ -91,7 +93,8 @@ public class AirStrike extends SuperWeapon
 				MCUtils.explosionParticles(floc, 2.0F, 6, Particle.FLAME, Particle.SMOKE_LARGE);
 				if(floc.getY() <= yStop)
 				{
-					MCUtils.explosion(owner, AirStrike.this, 50.0D, floc, 10.0D, "", 0.0D, owner.getTargetType());
+					double life = Waves.getEnnemiesLife(GameManager.getInstance().getWave(), GameManager.getInstance().getDifficulty());
+					MCUtils.explosion(owner, AirStrike.this, life / 3, floc, 10.0D, "", 0.0D, owner.getTargetType());
 					loc.getWorld().playSound(floc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
 					this.cancel();
 					
