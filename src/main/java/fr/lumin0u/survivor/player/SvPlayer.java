@@ -5,7 +5,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import fr.lumin0u.survivor.Difficulty;
 import fr.lumin0u.survivor.*;
 import fr.lumin0u.survivor.utils.AABB;
-import fr.lumin0u.survivor.utils.LainBodies;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;

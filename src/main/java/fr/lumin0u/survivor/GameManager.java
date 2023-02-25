@@ -2,6 +2,7 @@ package fr.lumin0u.survivor;
 
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.mobs.Waves;
+import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.mobs.mob.Wolf;
 import fr.lumin0u.survivor.mobs.mob.Zombie;
 import fr.lumin0u.survivor.mobs.mob.*;

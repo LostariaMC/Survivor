@@ -7,7 +7,6 @@ import net.minecraft.world.entity.EntityInsentient;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalLookAtPlayer;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalMeleeAttack;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalSelector;
-import net.minecraft.world.entity.ai.navigation.NavigationAbstract;
 import net.minecraft.world.entity.monster.EntityZombie;
 import net.minecraft.world.entity.player.EntityHuman;
 import org.bukkit.GameMode;
@@ -126,7 +125,7 @@ public class Zombie extends Enemy
 		
 	}
 	
-	public boolean hasPath()
+	/*public boolean hasPath()
 	{
 		EntityZombie nmsEnt = NMSUtils.getNMSEntity(ent);
 		NavigationAbstract nav = nmsEnt.D();
@@ -138,7 +137,7 @@ public class Zombie extends Enemy
 		EntityZombie nmsEnt = NMSUtils.getNMSEntity(ent);
 		NavigationAbstract nav = nmsEnt.D();
 		return nav.j() != null ? nav.j().e() : 0;
-	}
+	}*/
 	
 	@Override
 	public void navigation()

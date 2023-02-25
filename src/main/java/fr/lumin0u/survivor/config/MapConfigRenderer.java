@@ -2,6 +2,7 @@ package fr.lumin0u.survivor.config;
 
 import com.comphenix.protocol.PacketType.Play.Server;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -12,7 +13,6 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.PacketDataSerializer;
 import net.minecraft.network.protocol.game.PacketPlayOutCustomPayload;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
-import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata;
 import net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity;
 import net.minecraft.resources.MinecraftKey;
 import net.minecraft.world.entity.Entity;
@@ -153,8 +153,13 @@ public class MapConfigRenderer
 			
 			PacketContainer asNamePacketSpawn = new PacketContainer(Server.SPAWN_ENTITY, new PacketPlayOutSpawnEntity(nmsName));
 			PacketContainer asPricePacketSpawn = new PacketContainer(Server.SPAWN_ENTITY, new PacketPlayOutSpawnEntity(nmsPrice));
-			PacketContainer asNamePacketMetadata = new PacketContainer(Server.ENTITY_METADATA, new PacketPlayOutEntityMetadata(nmsName.ae(), nmsName.ai(), true)); // see PlayerConnection#a(PacketPlayInUseEntity)
-			PacketContainer asPricePacketMetadata = new PacketContainer(Server.ENTITY_METADATA, new PacketPlayOutEntityMetadata(nmsPrice.ae(), nmsPrice.ai(), true));
+			PacketContainer asNamePacketMetadata = new PacketContainer(Server.ENTITY_METADATA);
+			asNamePacketMetadata.getIntegers().write(0, asName.getEntityId());
+			asNamePacketMetadata.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(asName).getWatchableObjects());
+			
+			PacketContainer asPricePacketMetadata = new PacketContainer(Server.ENTITY_METADATA);
+			asPricePacketMetadata.getIntegers().write(0, asPrice.getEntityId());
+			asPricePacketMetadata.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(asPrice).getWatchableObjects());
 			
 			player.sendPacket(asNamePacketSpawn);
 			player.sendPacket(asPricePacketSpawn);
