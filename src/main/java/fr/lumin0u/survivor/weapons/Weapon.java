@@ -127,7 +127,7 @@ public abstract class Weapon implements IWeapon
 			final int modifiedReloadTime = owner.hasSpeedReload() ? (int) ((double) this.reloadTime / 1.6) : this.reloadTime;
 			if(owner instanceof SvPlayer)
 			{
-				((SvPlayer) owner).getPlayer().setCooldown(wt.getMaterial(), modifiedReloadTime);
+				showCooldown(modifiedReloadTime);
 			}
 			
 			new BukkitRunnable()
@@ -150,15 +150,27 @@ public abstract class Weapon implements IWeapon
 						return;
 					}
 					
+					if(time == 0)
+					{
+						showCooldown(modifiedReloadTime - time);
+					}
+					
 					if(owner.getItemInHand().isSimilar(item))
 					{
 						time++;
 					}
-					
-					((SvPlayer) owner).getPlayer().setCooldown(wt.getMaterial(), (int) (modifiedReloadTime - time));
+					else
+					{
+						showCooldown(modifiedReloadTime - time);
+					}
 				}
 			}.runTaskTimer(Survivor.getInstance(), 1L, 1L);
 		}
+	}
+	
+	public void showCooldown(int ticks)
+	{
+		((SvPlayer) owner).getPlayer().setCooldown(wt.getMaterial(), ticks);
 	}
 	
 	public WeaponOwner getOwner()

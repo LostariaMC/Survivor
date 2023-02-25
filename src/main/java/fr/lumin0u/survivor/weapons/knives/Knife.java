@@ -50,7 +50,7 @@ public abstract class Knife extends Weapon
 			if(owner instanceof SvPlayer)
 			{
 				MCUtils.playSound(((SvPlayer) owner).getPlayer().getLocation(), this.wt.getSound());
-				((SvPlayer) owner).getPlayer().setCooldown(getType().getMaterial(), rpm);
+				showCooldown(rpm);
 			}
 			this.lastLClick = Survivor.getCurrentTick();
 			

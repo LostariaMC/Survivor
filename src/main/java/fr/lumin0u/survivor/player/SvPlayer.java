@@ -230,7 +230,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 					{
 						weapon.rightClick();
 						if(!weapon.isReloading())
-							getPlayer().setCooldown(weapon.getType().getMaterial(), Math.max(4, rpm));
+							weapon.showCooldown(Math.max(4, rpm));
 						lastShotDate = Survivor.getCurrentTick();
 					}
 				}
