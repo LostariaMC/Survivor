@@ -751,7 +751,7 @@ public class GameManager
 		if(seconds >= 60)
 			s.append((seconds / 60) % 3600).append("m ");
 		
-		s.append(seconds % 600).append("s");
+		s.append(seconds % 60).append("s");
 		
 		return s.toString();
 	}
