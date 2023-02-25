@@ -120,10 +120,10 @@ public abstract class Weapon implements IWeapon
 	
 	public void reload()
 	{
-		isReloading = true;
-		
 		if(ammo > 0 && owner.hasItem(this))
 		{
+			isReloading = true;
+			
 			final int modifiedReloadTime = owner.hasSpeedReload() ? (int) ((double) this.reloadTime / 1.6) : this.reloadTime;
 			if(owner instanceof SvPlayer)
 			{
@@ -137,35 +137,25 @@ public abstract class Weapon implements IWeapon
 				@Override
 				public void run()
 				{
-					try
+					isReloading = true;
+					
+					if(this.time >= modifiedReloadTime)
 					{
-						isReloading = true;
-						
-						if(this.time >= modifiedReloadTime)
-						{
-							isReloading = false;
-							this.cancel();
-							int clip = getClip();
-							setClip(Math.min(getAmmo() + clip, clipSize));
-							setAmmo(Math.max(0, getAmmo() - (clipSize - clip)));
-							item.setAmount(1);
-							return;
-						}
-						
-						if(owner.getItemInHand().isSimilar(item))
-						{
-							time++;
-						}
-						else
-						{
-							((SvPlayer) owner).getPlayer().setCooldown(wt.getMaterial(), (int) (modifiedReloadTime - time));
-						}
-					} catch(Exception var2)
-					{
-						var2.printStackTrace();
+						isReloading = false;
 						this.cancel();
+						int clip = getClip();
+						setClip(Math.min(getAmmo() + clip, clipSize));
+						setAmmo(Math.max(0, getAmmo() - (clipSize - clip)));
+						item.setAmount(1);
+						return;
 					}
 					
+					if(owner.getItemInHand().isSimilar(item))
+					{
+						time++;
+					}
+					
+					((SvPlayer) owner).getPlayer().setCooldown(wt.getMaterial(), (int) (modifiedReloadTime - time));
 				}
 			}.runTaskTimer(Survivor.getInstance(), 1L, 1L);
 		}
