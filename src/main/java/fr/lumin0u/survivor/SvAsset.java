@@ -17,7 +17,7 @@ public enum SvAsset
 	SPEED_RELOAD("Speed cola", Material.IRON_BARS, 3000),
 	TROIS_ARME("3 armes", Material.COMPARATOR, 2000),
 	QUICK_REVIVE("Quick revive", Material.APPLE, 2500),
-	PIERRE_TOMBALE("Pierre tombale", Material.FIRE_CHARGE, 2000);
+	PIERRE_TOMBALE("Pierre tombale", Material.FIREWORK_STAR, 2000);
 	
 	private final String name;
 	private final Material material;

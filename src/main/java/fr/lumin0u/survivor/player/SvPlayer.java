@@ -96,6 +96,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				Player bukkitPlayer = SvPlayer.this.getPlayer();
 				if(bukkitPlayer != null)
 				{
+					if(isAlive() && bukkitPlayer.hasPotionEffect(PotionEffectType.GLOWING))
+						bukkitPlayer.removePotionEffect(PotionEffectType.GLOWING);
+					
 					this.regen = Math.max(0, this.regen - 1);
 					if(this.lastHealth > bukkitPlayer.getHealth())
 					{

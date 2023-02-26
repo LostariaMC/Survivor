@@ -55,7 +55,7 @@ public class Surviboard
 	{
 		GameManager gm = GameManager.getInstance();
 		
-		CosmoxScoreboard scoreboard = player.toCosmox().getScoreboard();
+		CosmoxScoreboard scoreboard = new CosmoxScoreboard(player.toBukkit());
 		scoreboard.updateTitle("§f§lSURVIVOR");
 		
 		int i = 0;
@@ -77,6 +77,8 @@ public class Surviboard
 		scoreboard.updateLine(i++, "§8» Don§8: §7/money");
 		scoreboard.updateLine(i++, "§e");
 		scoreboard.updateLine(i, "§f");
+		
+		player.toCosmox().setScoreboard(scoreboard);
 	}
 	
 	public static void updatePlayerLine(SvPlayer sp) {

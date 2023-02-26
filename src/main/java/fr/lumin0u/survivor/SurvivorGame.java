@@ -22,7 +22,7 @@ import java.util.List;
 public class SurvivorGame
 {
 	public static String prefix = "§2§lSurvivor §f▪ ";
-	public static final ImmutableItemStack DIFF_VOTE_ITEM = new ItemBuilder(Material.SKELETON_SKULL).setDisplayName("§eChoix de la difficulté").buildImmutable();
+	public static final ImmutableItemStack DIFF_VOTE_ITEM = new ItemBuilder(Material.SKELETON_SKULL).setDisplayName("§eChoix de la difficulté").setLore("§7Si l'host choisit une difficulté,", "§7votre vote ne sera pas pris", "§7en compte").buildImmutable();
 	
 	/*
 	 * %y = sum of integers of a category

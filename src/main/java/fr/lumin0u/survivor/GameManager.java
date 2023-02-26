@@ -163,7 +163,7 @@ public class GameManager
 						Surviboard.updatePlayerLine(player);
 				}
 				
-				if(reinitialize)
+				if(reinitialize || new Random().nextInt(40) == 0)
 					for(SvPlayer player : players)
 						Surviboard.reInitScoreboard(player);
 			}
