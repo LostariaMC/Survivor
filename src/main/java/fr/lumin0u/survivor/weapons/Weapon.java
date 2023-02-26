@@ -170,7 +170,8 @@ public abstract class Weapon implements IWeapon
 	
 	public void showCooldown(int ticks)
 	{
-		((SvPlayer) owner).getPlayer().setCooldown(wt.getMaterial(), ticks);
+		if(owner instanceof SvPlayer)
+			((SvPlayer) owner).getPlayer().setCooldown(wt.getMaterial(), ticks);
 	}
 	
 	public WeaponOwner getOwner()
