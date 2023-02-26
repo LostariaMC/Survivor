@@ -39,7 +39,7 @@ public class AirStrike extends SuperWeapon
 		for(int i = 0; i < 15; ++i)
 		{
 			Random r = new Random();
-			this.fireball(owner.getShootLocation().clone().add(r.nextDouble() * 20.0D - 10.0D, 100.0D + r.nextDouble() * 40.0D - 20.0D, r.nextDouble() * 20.0D - 10.0D));
+			this.fireball(owner.getShootLocation().clone().add(r.nextDouble() * 10.0D - 50.0D, 100.0D + r.nextDouble() * 30.0D - 15.0D, r.nextDouble() * 10.0D - 50.0D));
 		}
 		this.useAmmo();
 	}
@@ -68,7 +68,7 @@ public class AirStrike extends SuperWeapon
 			MCUtils.sendPacket(player, spawnPacket);
 		
 		Location up3 = loc.clone();
-		up3.setY(owner.getShootLocation().getY() + 1.5);
+		up3.setY(owner.getShootLocation().getY() + 1);
 		double yStop = TransparentUtils.hitPointOrL2(up3, up3.clone().add(0, -6, 0), true).getY();
 		
 		new BukkitRunnable()
