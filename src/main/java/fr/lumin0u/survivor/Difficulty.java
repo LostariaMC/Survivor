@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Contract;
 
 public enum Difficulty
 {
+	NOT_SET("Non définie (à voter)", 20, 0.5, ChatColor.LIGHT_PURPLE, Material.PLAYER_HEAD, 0, 1),
 	//SUPER_EASY("Très simple", 20.0D, 1.0D, ChatColor.AQUA, Material.PLAYER_HEAD, 0.5D, 1, 0.4D),
 	EASY("Simple", 16.0D, 0.5D, ChatColor.GREEN, Material.CREEPER_HEAD, 2, 1.0D),
 	NORMAL("Normal", 10.0D, 0.5D, ChatColor.YELLOW, Material.ZOMBIE_HEAD, 3, 1.15D),

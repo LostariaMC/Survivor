@@ -30,6 +30,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -45,7 +46,8 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	private long deathDate;
 	private long instantKillStartDate;
 	private WeaponType supply;
-	private fr.lumin0u.survivor.Difficulty diffVote;
+	@NotNull
+	private fr.lumin0u.survivor.Difficulty diffVote = Difficulty.NOT_SET;
 	private final BadgesData badgesData;
 	private int fireTime;
 	private WeaponOwner fireSource;
@@ -55,7 +57,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	private long lastShotDate;
 	
 	private static final long INSTANT_KILL_TIME = 20000L;
-	private static final long ON_GROUND_TIME = 1000L;
+	private static final long ON_GROUND_TIME = 750L;
 	
 	public SvPlayer(Player player)
 	{
@@ -284,11 +286,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	//		}
 	//
 	//	}
-	
-	public String getName()
-	{
-		return Bukkit.getOfflinePlayer(this.uid).getName();
-	}
 	
 	public OfflinePlayer getOfflinePlayer()
 	{
@@ -742,7 +739,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			Material material = null;
 			String itemName = null;
 			
-			if(this.diffVote != null && this.diffVote.equals(diff))
+			if(this.diffVote != Difficulty.NOT_SET && this.diffVote.equals(diff))
 			{
 				if(GameManager.getInstance().getDifficulty().equals(diff))
 				{
@@ -795,12 +792,12 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		Bukkit.getScheduler().runTaskLater(Survivor.getInstance(), () -> badgesData.killInLast2Seconds--, 40);
 	}
 	
-	public fr.lumin0u.survivor.Difficulty getDiffVote()
+	public @NotNull Difficulty getDiffVote()
 	{
 		return this.diffVote;
 	}
 	
-	public void setDiffVote(Difficulty diffVote)
+	public void setDiffVote(@NotNull Difficulty diffVote)
 	{
 		this.diffVote = diffVote;
 	}
@@ -1030,6 +1027,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		return true;
 	}
 	
+	public static SvPlayer of(Object player) {
+		return WrappedPlayer.of(player).to(SvPlayer.class);
+	}
 	
 	
 	public class BadgesData

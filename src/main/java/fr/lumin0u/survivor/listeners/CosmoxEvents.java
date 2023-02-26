@@ -1,32 +1,31 @@
 package fr.lumin0u.survivor.listeners;
 
-import com.comphenix.protocol.PacketType.Play.Server;
-import com.comphenix.protocol.events.PacketContainer;
 import fr.lumin0u.survivor.Difficulty;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SurvivorGame;
+import fr.lumin0u.survivor.SurvivorGame.SurvivorParameters;
 import fr.lumin0u.survivor.commands.MoneyCommand;
 import fr.lumin0u.survivor.commands.NoGameCommandExecutor;
 import fr.lumin0u.survivor.commands.VoteSkipCommand;
-import fr.lumin0u.survivor.utils.SurvivorParameters;
+import fr.lumin0u.survivor.player.SvPlayer;
 import fr.worsewarn.cosmox.API;
-import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.game.Phase;
 import fr.worsewarn.cosmox.game.events.GameStartEvent;
 import fr.worsewarn.cosmox.game.events.GameStopEvent;
-import io.netty.buffer.Unpooled;
-import net.minecraft.network.PacketDataSerializer;
-import net.minecraft.network.protocol.game.PacketPlayOutCustomPayload;
-import net.minecraft.resources.MinecraftKey;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class CosmoxEvents implements Listener
 {
+	private Map<UUID, SvPlayer> waitingPlayers = new HashMap<>(10);
+	
 	@EventHandler
 	public void onGameStart(GameStartEvent event)
 	{
@@ -35,7 +34,7 @@ public class CosmoxEvents implements Listener
 		if(!event.getGame().equals(plugin.getGame()))
 			return;
 		
-		GameManager gm = new GameManager(event.getMap());
+		GameManager gm = new GameManager(event.getMap(), waitingPlayers.values());
 		gm.setDifficulty(Difficulty.values()[API.instance().getGameParameter(SurvivorParameters.DIFFICULTY)]);
 		gm.startGame();
 		plugin.getCosmoxAPI().getManager().setPhase(Phase.GAME);
@@ -60,12 +59,24 @@ public class CosmoxEvents implements Listener
 			
 			plugin.getCommand("money").setExecutor(NoGameCommandExecutor.INSTANCE);
 			plugin.getCommand("voteSkip").setExecutor(NoGameCommandExecutor.INSTANCE);
+			
+			waitingPlayers.clear();
 		}
 	}
 	
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event)
-	{
-		WrappedPlayer.of(event.getPlayer()).sendPacket(new PacketContainer(Server.CUSTOM_PAYLOAD, new PacketPlayOutCustomPayload(new MinecraftKey("register"), new PacketDataSerializer(Unpooled.copiedBuffer("debug/game_test_clear\0debug/game_test_add_marker\0".getBytes(StandardCharsets.UTF_8))))));
+	public void onInteract(PlayerInteractEvent event) {
+		if(event.getAction().isRightClick() && SurvivorGame.DIFF_VOTE_ITEM.equals(event.getItem()))
+		{
+			if(!waitingPlayers.containsKey(event.getPlayer().getUniqueId()))
+				waitingPlayers.put(event.getPlayer().getUniqueId(), new SvPlayer(event.getPlayer()));
+			
+			SvPlayer sp = waitingPlayers.get(event.getPlayer().getUniqueId());
+			
+			do sp.setDiffVote(Difficulty.values()[(sp.getDiffVote().ordinal() + 1) % Difficulty.values().length]);
+			while(sp.getDiffVote() == Difficulty.NOT_SET);
+			
+			sp.getPlayer().sendMessage(SurvivorGame.prefix + "§7Vous changez votre vote pour : " + sp.getDiffVote().getColoredDisplayName());
+		}
 	}
 }

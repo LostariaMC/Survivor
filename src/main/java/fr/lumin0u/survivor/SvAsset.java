@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public enum SvAsset
 {
@@ -72,6 +71,6 @@ public enum SvAsset
 	
 	public static ItemStack getMastoArmorPiece(Material part)
 	{
-		return new ItemBuilder(part).setColor(Color.BLACK).setUnbreakable(true).build();
+		return new ItemBuilder(part).setLeatherColor(Color.BLACK).setUnbreakable(true).build();
 	}
 }

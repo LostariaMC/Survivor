@@ -13,7 +13,6 @@ import fr.lumin0u.survivor.objects.Room;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.utils.MCUtils;
-import fr.lumin0u.survivor.utils.Surviboard;
 import fr.lumin0u.survivor.utils.Utils;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.worsewarn.cosmox.API;
@@ -31,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,7 +49,8 @@ public class GameManager
 	private boolean inWave;
 	private MagicBoxManager magicBoxManager;
 	private List<Location> ammoBoxes;
-	private Difficulty difficulty;
+	@NotNull
+	private Difficulty difficulty = Difficulty.NOT_SET;
 	private Location electrical;
 	private /*final*/ double priceAugmentation;
 	private boolean electricalBought;
@@ -64,9 +65,10 @@ public class GameManager
 	
 	private static GameManager instance;
 	
-	public GameManager(GameMap map)
+	public GameManager(GameMap map, Collection<SvPlayer> players)
 	{
 		instance = this;
+		this.players.addAll(players);
 		
 		Bukkit.getScheduler().runTaskTimer(Survivor.getInstance(), () -> Survivor.currentTick++, 1, 1);
 		
@@ -170,8 +172,10 @@ public class GameManager
 	
 	public void startGame()
 	{
-		if(difficulty == null)
-			difficulty = Difficulty.NORMAL;
+		if(difficulty == Difficulty.NOT_SET)
+		{
+			difficulty = getPlayers().stream().map(SvPlayer::getDiffVote).filter(diff -> diff != Difficulty.NOT_SET).collect(Utils.randomCollector()).orElse(Difficulty.NORMAL);
+		}
 		
 		if(this.defaultRoom != null && this.spawnpoint != null)
 		{

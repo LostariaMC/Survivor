@@ -1,8 +1,7 @@
-package fr.lumin0u.survivor.utils;
+package fr.lumin0u.survivor;
 
-import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.StatsManager;
 import fr.lumin0u.survivor.player.SvPlayer;
+import fr.lumin0u.survivor.utils.MCUtils;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.api.scoreboard.CosmoxScoreboard;
 import net.md_5.bungee.api.ChatColor;
@@ -29,18 +28,18 @@ public class Surviboard
 		
 		String lifePrefix;
 		
-		double m = sp.isOnline() ? 1 - sp.getPlayer().getHealth() / sp.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() : 0;
+		double normalizedHealth = sp.isOnline() ? 1 - sp.getPlayer().getHealth() / sp.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() : 0;
 		
 		if(!sp.isOnline())
 			lifePrefix = "§7§m";
 		else if(sp.isDead())
 			lifePrefix = "§8✞ ";
 		else if(sp.isOnGround())
-			lifePrefix = "§4";
+			lifePrefix = "§5§l";
 		else
-			lifePrefix = ChatColor.of(new Color(lerp(75, 0xaa, m), lerp(255, 0, m), lerp(75, 0, m))).toString();
+			lifePrefix = ChatColor.of(new Color(lerp(75, 0xaa, normalizedHealth), lerp(255, 0, normalizedHealth), lerp(75, 0, normalizedHealth))).toString();
 		
-		return "§7" + arrow + " " + lifePrefix + Bukkit.getOfflinePlayer(sp.getPlayerUid()).getName() + " §e" + sp.getMoney() + "$";
+		return "§7" + arrow + " " + lifePrefix + sp.getName() + " §e" + sp.getMoney() + "$";
 	}
 	
 	private static void updateScoreboardScore(SvPlayer player) {

@@ -1,12 +1,13 @@
 package fr.lumin0u.survivor;
 
+import fr.lumin0u.survivor.utils.ImmutableItemStack;
 import fr.lumin0u.survivor.utils.ItemBuilder;
-import fr.lumin0u.survivor.utils.SurvivorParameters;
 import fr.worsewarn.cosmox.api.statistics.Statistic;
 import fr.worsewarn.cosmox.game.Game;
 import fr.worsewarn.cosmox.game.GameVariables;
 import fr.worsewarn.cosmox.game.configuration.Parameter;
 import fr.worsewarn.cosmox.game.teams.Team;
+import fr.worsewarn.cosmox.tools.items.DefaultItemSlot;
 import fr.worsewarn.cosmox.tools.map.MapLocation;
 import fr.worsewarn.cosmox.tools.map.MapLocationType;
 import fr.worsewarn.cosmox.tools.map.MapTemplate;
@@ -21,6 +22,7 @@ import java.util.List;
 public class SurvivorGame
 {
 	public static String prefix = "§2§lSurvivor §f▪ ";
+	public static final ImmutableItemStack DIFF_VOTE_ITEM = new ItemBuilder(Material.SKELETON_SKULL).setDisplayName("§eChoix de la difficulté").buildImmutable();
 	
 	/*
 	 * %y = sum of integers of a category
@@ -58,9 +60,9 @@ public class SurvivorGame
 		// parameters
 		Parameter difficultyParameter = new Parameter(SurvivorParameters.DIFFICULTY, "",
 				Arrays.stream(Difficulty.values()).map(Difficulty::getColoredDisplayName).toList(),
-				new ItemBuilder(Difficulty.values()[0].getItemRep()).setDisplayName("§6Difficulté").setLore(List.of(" ", "§7Définir la difficulté de", "§7la partie", " ", "§e Valeur actuelle : %ls")).build(),
+				new ItemBuilder(Difficulty.NOT_SET.getItemRep()).setDisplayName("§6Difficulté").setLore(List.of(" ", "§7Définir la difficulté de", "§7la partie", " ", "§e Valeur actuelle : %ls")).build(),
 				false, false);
-		difficultyParameter.setCurrentInt(1);
+		difficultyParameter.setCurrentInt(Difficulty.NOT_SET.ordinal());
 		difficultyParameter.setItemModifier((item, p) -> item.setType(Difficulty.values()[p.getCurrentInt()].getItemRep().getType()));
 		
 		List<Parameter> parameters = new ArrayList<>(List.of(difficultyParameter));
@@ -92,11 +94,18 @@ public class SurvivorGame
 				.setGameAuthor("lumin0u")
 				.activeJoinInGame();
 		
+		game.addDefaultItemWaitingRoom(new DefaultItemSlot("diffVoteItem", DIFF_VOTE_ITEM), 7);
+		
 		for(Parameter parameter : parameters)
 			game.addParameter(parameter);
 		
 		prefix = game.getPrefix();
 		
 		return game;
+	}
+	
+	public static class SurvivorParameters
+	{
+		public static final String DIFFICULTY = "DIFFICULTY";
 	}
 }

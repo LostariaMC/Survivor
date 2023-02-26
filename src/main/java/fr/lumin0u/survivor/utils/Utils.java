@@ -1,9 +1,8 @@
 package fr.lumin0u.survivor.utils;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 public class Utils
 {
@@ -140,5 +139,34 @@ public class Utils
 		if(s.isEmpty())
 			return s;
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
+	}
+	
+	public static <T> Collector<T, LinkedList<T>, Optional<T>> randomCollector() {
+		return new Collector<T, LinkedList<T>, Optional<T>>() {
+			@Override
+			public Supplier<LinkedList<T>> supplier() {
+				return LinkedList::new;
+			}
+			
+			@Override
+			public BiConsumer<LinkedList<T>, T> accumulator() {
+				return LinkedList::add;
+			}
+			
+			@Override
+			public BinaryOperator<LinkedList<T>> combiner() {
+				return (l, r) -> {l.addAll(r); return r;};
+			}
+			
+			@Override
+			public Function<LinkedList<T>, Optional<T>> finisher() {
+				return l -> l.isEmpty() ? Optional.empty() : Optional.ofNullable(l.get(new Random().nextInt(l.size())));
+			}
+			
+			@Override
+			public Set<Characteristics> characteristics() {
+				return Set.of();
+			}
+		};
 	}
 }

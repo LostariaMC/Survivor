@@ -16,8 +16,8 @@ public class PoisonousBoss extends Boss
 	public void setArmor()
 	{
 		super.setArmor();
-		this.ent.getEquipment().setChestplate(new ItemBuilder(Material.LEATHER_CHESTPLATE).setColor(Color.OLIVE).build());
-		this.ent.getEquipment().setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setColor(Color.OLIVE).build());
-		this.ent.getEquipment().setBoots(new ItemBuilder(Material.LEATHER_BOOTS).setColor(Color.OLIVE).build());
+		this.ent.getEquipment().setChestplate(new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(Color.OLIVE).build());
+		this.ent.getEquipment().setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(Color.OLIVE).build());
+		this.ent.getEquipment().setBoots(new ItemBuilder(Material.LEATHER_BOOTS).setLeatherColor(Color.OLIVE).build());
 	}
 }
