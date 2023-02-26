@@ -60,11 +60,15 @@ public class Surviboard
 		
 		int i = 0;
 		
-		scoreboard.updateLine(i++, getWaveLine(gm));
 		scoreboard.updateLine(i++, "§0");
+		scoreboard.updateLine(i++, getWaveLine(gm));
+		scoreboard.updateLine(i++, "§7» Difficulté : " + gm.getDifficulty().getColoredDisplayName());
+		scoreboard.updateLine(i++, "§1");
 		
 		for(SvPlayer other : gm.getPlayers().stream().sorted(HASH_COMPARATOR).toList())
 		{
+			if(i > 9)
+				break;
 			scoreboard.updateLine(i++, getPlayerLine(other, player.toBukkit().getLocation()));
 			updateScoreboardScore(other);
 		}
