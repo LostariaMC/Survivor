@@ -15,8 +15,10 @@ import fr.worsewarn.cosmox.game.events.GameDefaultItemUseEvent;
 import fr.worsewarn.cosmox.game.events.GameStartEvent;
 import fr.worsewarn.cosmox.game.events.GameStopEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,19 +66,35 @@ public class CosmoxEvents implements Listener
 		}
 	}
 	
+	private SvPlayer getSvPlayer(Player player) {
+		if(!waitingPlayers.containsKey(player.getUniqueId()))
+			waitingPlayers.put(player.getUniqueId(), new SvPlayer(player));
+		
+		return waitingPlayers.get(player.getUniqueId());
+	}
+	
+	private void changeVote(Player player) {
+		SvPlayer sp = getSvPlayer(player);
+		
+		do sp.setDiffVote(Difficulty.values()[(sp.getDiffVote().ordinal() + 1) % Difficulty.values().length]);
+		while(sp.getDiffVote() == Difficulty.NOT_SET);
+		
+		player.sendMessage(SurvivorGame.prefix + "§7Vous changez votre vote pour : " + sp.getDiffVote().getColoredDisplayName());
+	}
+	
+	@EventHandler
+	public void onInteract(PlayerInteractEvent event) {
+		if(event.getAction().isRightClick() && SurvivorGame.DIFF_VOTE_ITEM.equals(event.getItem())) {
+			changeVote(event.getPlayer());
+		}
+		if(event.getAction().isLeftClick() && SurvivorGame.DIFF_VOTE_ITEM.equals(event.getItem())) {
+			event.getPlayer().sendMessage(SurvivorGame.prefix + "§7Votre vote actuel est : " + getSvPlayer(event.getPlayer()).getDiffVote().getColoredDisplayName());
+		}
+	}
+	
 	@EventHandler
 	public void onUseLobbyItem(GameDefaultItemUseEvent event) {
 		if(SurvivorGame.DIFF_VOTE_ITEM.equals(event.getItemStack()))
-		{
-			if(!waitingPlayers.containsKey(event.getPlayer().getUniqueId()))
-				waitingPlayers.put(event.getPlayer().getUniqueId(), new SvPlayer(event.getPlayer()));
-			
-			SvPlayer sp = waitingPlayers.get(event.getPlayer().getUniqueId());
-			
-			do sp.setDiffVote(Difficulty.values()[(sp.getDiffVote().ordinal() + 1) % Difficulty.values().length]);
-			while(sp.getDiffVote() == Difficulty.NOT_SET);
-			
-			sp.getPlayer().sendMessage(SurvivorGame.prefix + "§7Vous changez votre vote pour : " + sp.getDiffVote().getColoredDisplayName());
-		}
+			changeVote(event.getPlayer());
 	}
 }
