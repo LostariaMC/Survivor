@@ -11,12 +11,12 @@ import fr.lumin0u.survivor.commands.VoteSkipCommand;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.worsewarn.cosmox.API;
 import fr.worsewarn.cosmox.game.Phase;
+import fr.worsewarn.cosmox.game.events.GameDefaultItemUseEvent;
 import fr.worsewarn.cosmox.game.events.GameStartEvent;
 import fr.worsewarn.cosmox.game.events.GameStopEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,8 +65,8 @@ public class CosmoxEvents implements Listener
 	}
 	
 	@EventHandler
-	public void onInteract(PlayerInteractEvent event) {
-		if(event.getAction().isRightClick() && SurvivorGame.DIFF_VOTE_ITEM.equals(event.getItem()))
+	public void onUseLobbyItem(GameDefaultItemUseEvent event) {
+		if(SurvivorGame.DIFF_VOTE_ITEM.equals(event.getItemStack()))
 		{
 			if(!waitingPlayers.containsKey(event.getPlayer().getUniqueId()))
 				waitingPlayers.put(event.getPlayer().getUniqueId(), new SvPlayer(event.getPlayer()));
