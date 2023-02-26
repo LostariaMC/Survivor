@@ -87,8 +87,12 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			double lastHealth;
 			int lastLookElec;
 			
+			@Override
 			public void run()
 			{
+				if(GameManager.getInstance() == null)
+					return;
+				
 				Player bukkitPlayer = SvPlayer.this.getPlayer();
 				if(bukkitPlayer != null)
 				{
