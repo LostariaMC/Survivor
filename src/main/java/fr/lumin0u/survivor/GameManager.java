@@ -667,7 +667,9 @@ public class GameManager
 		
 		new BukkitRunnable()
 		{
-			List<Integer> remainingCountBuffer = new ArrayList<>();
+			int lastCount = finalEnnemies;
+			int ticksNoChange = 0;
+			int ticksSinceStart = 0;
 			
 			@Override
 			public void run()
@@ -676,43 +678,28 @@ public class GameManager
 				{
 					this.cancel();
 				}
-				else if(GameManager.this.mayBeEndWave)
+				else if(mayBeEndWave)
 				{
-					int remain = 0;
-					
-					for(Enemy mx : GameManager.this.mobs)
+					if(getRemainingEnnemies() != lastCount)
 					{
-						if(mx instanceof Boss)
-						{
-							remain += GameManager.this.wave;
-						}
-						else
-						{
-							++remain;
-						}
+						lastCount = getRemainingEnnemies();
+						ticksNoChange = 0;
 					}
-					
-					Utils.insert(this.remainingCountBuffer, remain, 0);
-					int same = 0;
-					
-					Iterator var6;
-					for(var6 = this.remainingCountBuffer.iterator(); var6.hasNext(); ++same)
+					else
 					{
-						Integer integer = (Integer) var6.next();
-						if(integer != remain)
-						{
-							break;
-						}
+						ticksNoChange++;
 					}
+					ticksSinceStart++;
 					
-					if(same > 10 && remain < (2 * Math.sqrt((double) finalEnnemies / 10.0D) + same - 10) / 10)
+					double treshold = (double) ticksSinceStart / 500 * (double) Math.min(ticksNoChange - 100, 400) / 400;
+					
+					if(getRemainingEnnemies() < treshold)
 					{
 						for(Enemy m : new ArrayList<>(mobs))
 						{
-							m.kill((SvPlayer) null);
+							m.kill(null);
 						}
 					}
-					
 				}
 			}
 		}.runTaskTimer(Survivor.getInstance(), 20L, 20L);
