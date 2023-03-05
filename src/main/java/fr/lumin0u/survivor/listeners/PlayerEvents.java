@@ -512,7 +512,7 @@ public class PlayerEvents implements PacketListener, Listener
 			
 			if(!contains)
 			{
-				svPlayer = new SvPlayer(player, inWave);
+				svPlayer = new SvPlayer(player);
 				gm.getPlayers().add(svPlayer);
 				svPlayer.setMoney((int) (Math.pow(gm.getWave(), 1.5D) * 50.0D) / 50 * 50);
 				WeaponType.LITTLE_KNIFE.getNewWeapon(svPlayer).giveItem();
@@ -526,6 +526,7 @@ public class PlayerEvents implements PacketListener, Listener
 			if(inWave)
 			{
 				player.sendMessage(SurvivorGame.prefix + "§fUne vague est en cours, vous apparaitrez au début de la prochaine");
+				svPlayer.setDeadLifeStateCauseHeJustJoined();
 			}
 			
 			svPlayer.toCosmox().setTeam(Team.RANDOM);

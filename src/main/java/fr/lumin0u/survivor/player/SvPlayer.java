@@ -61,22 +61,22 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public SvPlayer(Player player)
 	{
-		this(player, false);
-	}
-	
-	public SvPlayer(Player player, boolean dead)
-	{
 		super(player);
 		
 		this.weapons = new ArrayList<>();
 		this.assets = new ArrayList<>();
 		this.actionBar = null;
-		this.lifeState = dead ? LifeState.DEAD : LifeState.ALIVE;
+		this.lifeState = LifeState.ALIVE;
 		this.supply = WeaponType.GRENADE;
 		
 		badgesData = new BadgesData();
 		
 		startLifeRunnable();
+	}
+	
+	public void setDeadLifeStateCauseHeJustJoined()
+	{
+		lifeState = LifeState.DEAD;
 	}
 	
 	private void startLifeRunnable() {
