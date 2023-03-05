@@ -103,7 +103,7 @@ public class InventoryEvents implements Listener
 				e.getItemDrop().remove();
 				gm.getSvPlayer(p).getAtouts().remove(asset);
 				
-				p.sendMessage(SurvivorGame.prefix + " §6Vous avez retiré l'atout §a" + asset.getName());
+				p.sendMessage(SurvivorGame.prefix + "§6Vous avez retiré l'atout §a" + asset.getName());
 				gm.getSvPlayer(p).addMoney(asset.getPrice() / 2);
 				
 				if(asset.equals(SvAsset.MASTODONTE))

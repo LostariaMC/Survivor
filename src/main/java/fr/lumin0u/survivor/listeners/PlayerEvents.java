@@ -404,7 +404,7 @@ public class PlayerEvents implements PacketListener, Listener
 						{
 							sp.getAtouts().add(asset);
 							
-							sp.getPlayer().sendMessage(SurvivorGame.prefix + " §6Vous avez acheté l'atout §a" + asset.getName() + " §7(il apparait dans votre inventaire, appuyer sur votre touche de drop pour vous en débarrasser)");
+							sp.getPlayer().sendMessage(SurvivorGame.prefix + "§6Vous avez acheté l'atout §a" + asset.getName() + " §7(il apparait dans votre inventaire, appuyer sur votre touche de drop pour vous en débarrasser)");
 							
 							sp.addMoney(-asset.getPrice());
 							if(asset.equals(SvAsset.MASTODONTE))
@@ -505,7 +505,7 @@ public class PlayerEvents implements PacketListener, Listener
 			gm.getOfflinePlayers().remove(svPlayer);
 			boolean contains = svPlayer != null;
 			
-			Bukkit.broadcastMessage(SurvivorGame.prefix + " §a+ §7" + e.getPlayer().getName() + " a rejoint la partie");
+			Bukkit.broadcastMessage(SurvivorGame.prefix + "§a+ §7" + e.getPlayer().getName() + " a rejoint la partie");
 			player.getInventory().clear();
 			
 			boolean inWave = gm.isInWave();
@@ -548,9 +548,9 @@ public class PlayerEvents implements PacketListener, Listener
 			SvPlayer sp = gm.getSvPlayer(e.getPlayer());
 			
 			if(gm.isStarted())
-				e.setQuitMessage(SurvivorGame.prefix + " §c- §7" + e.getPlayer().getName() + " a quitté la partie");
+				e.setQuitMessage(SurvivorGame.prefix + "§c- §7" + e.getPlayer().getName() + " a quitté la partie");
 			else
-				e.setQuitMessage(SurvivorGame.prefix + " §c- §7" + e.getPlayer().getName() + " a quitté le lobby");
+				e.setQuitMessage(SurvivorGame.prefix + "§c- §7" + e.getPlayer().getName() + " a quitté le lobby");
 			
 			if(sp == null)
 				return;

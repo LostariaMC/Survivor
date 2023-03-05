@@ -156,7 +156,7 @@ public class Room
 			}
 			
 			GameManager.getInstance().augmentPrice();
-			Bukkit.broadcastMessage(SurvivorGame.prefix + " §5" + Bukkit.getOfflinePlayer(sp.getPlayerUid()).getName() + " §ea acheté §6" + getName());
+			Bukkit.broadcastMessage(SurvivorGame.prefix + "§5" + Bukkit.getOfflinePlayer(sp.getPlayerUid()).getName() + " §ea acheté §6" + getName());
 		}
 		
 		for(Location block : getAdditionalBlocks())

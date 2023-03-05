@@ -68,14 +68,14 @@ public class UpgradeBoxManager
 			if(!(weapon instanceof Upgradeable))
 			{
 				sp.getPlayer().closeInventory();
-				sp.getPlayer().sendMessage(SurvivorGame.prefix + " §cCette arme n'est pas améliorable");
+				sp.getPlayer().sendMessage(SurvivorGame.prefix + "§cCette arme n'est pas améliorable");
 				return;
 			}
 			if(sp.getMoney() <= ((Upgradeable) weapon).getNextLevelPrice())
 			{
 				sp.getPlayer().closeInventory();
 				sp.getPlayer().playSound(sp.getPlayer().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-				sp.getPlayer().sendMessage(SurvivorGame.prefix + " §cVous ne possédez pas assez d'argent");
+				sp.getPlayer().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent");
 				return;
 			}
 			
@@ -93,7 +93,7 @@ public class UpgradeBoxManager
 			if(sp.getMoney() <= Perk.PRICE)
 			{
 				sp.getPlayer().closeInventory();
-				sp.getPlayer().sendMessage(SurvivorGame.prefix + " §cVous ne possédez pas assez d'argent");
+				sp.getPlayer().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent");
 				return;
 			}
 			
@@ -103,7 +103,7 @@ public class UpgradeBoxManager
 			weapon.setPerk(perk);
 			weapon.giveItem();
 			
-			sp.getPlayer().sendMessage(SurvivorGame.prefix + " §eVous obtenez : " + perk.getDisplayName());
+			sp.getPlayer().sendMessage(SurvivorGame.prefix + "§eVous obtenez : " + perk.getDisplayName());
 			
 			sp.getPlayer().closeInventory();
 		}

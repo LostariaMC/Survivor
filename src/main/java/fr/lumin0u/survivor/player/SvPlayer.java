@@ -402,7 +402,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public void fallOnGround()
 	{
-		Bukkit.broadcastMessage(SurvivorGame.prefix + " §6" + this.getName() + "§c est à terre !");
+		Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + this.getName() + "§c est à terre !");
 		
 		MCUtils.playSound(this.getPlayer().getLocation(), Sound.BLOCK_ANVIL_BREAK, 1000.0F);
 		this.lifeState = LifeState.ON_GROUND;
@@ -456,7 +456,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				private void playDead()
 				{
 					StatsManager.increaseStat(uid, "deaths", 1, true);
-					Bukkit.broadcastMessage(SurvivorGame.prefix + " §6" + SvPlayer.this.getName() + "§c est mort !");
+					Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + SvPlayer.this.getName() + "§c est mort !");
 					
 					getPlayer().setGlowing(false);
 					lifeState = LifeState.DEAD;
@@ -557,7 +557,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							{
 								hardlyDead = true;
 								getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0));
-								getPlayer().sendMessage(SurvivorGame.prefix + " §aEn voyant vos alliés vous sauver, vous vous raccrochez à la vie");
+								getPlayer().sendMessage(SurvivorGame.prefix + "§aEn voyant vos alliés vous sauver, vous vous raccrochez à la vie");
 							}
 							
 							getPlayer().setHealth(getPlayer().getMaxHealth());
@@ -581,7 +581,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 								as3.setCustomName("§2■ ■ ■ ■ ■ ·");
 							else if(reviveTime <= 0.0D)
 							{
-								Bukkit.broadcastMessage(SurvivorGame.prefix + " §6" + getName() + "§a a été réanimé !");
+								Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + getName() + "§a a été réanimé !");
 								lifeState = LifeState.ALIVE;
 								getPlayer().teleport(deathLoc);
 								getPlayer().setGameMode(GameMode.ADVENTURE);

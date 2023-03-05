@@ -21,6 +21,7 @@ import fr.worsewarn.cosmox.game.Phase;
 import fr.worsewarn.cosmox.game.teams.Team;
 import fr.worsewarn.cosmox.tools.map.GameMap;
 import org.bukkit.*;
+import org.bukkit.Note.Tone;
 import org.bukkit.block.data.type.Cake;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -179,7 +180,7 @@ public class GameManager
 		
 		if(this.defaultRoom != null && this.spawnpoint != null)
 		{
-			Bukkit.broadcastMessage(SurvivorGame.prefix + " §6La partie commence !");
+			Bukkit.broadcastMessage(SurvivorGame.prefix + "§6La partie commence !");
 			endWave();
 			magicBoxManager.onGameStart();
 			
@@ -212,7 +213,7 @@ public class GameManager
 				ItemStack itemA = new ItemBuilder(Material.CARROT).setDisplayName("§6Approvisionnement").build();
 				p.getInventory().setItem(4, itemA);
 				p.updateInventory();
-				p.sendMessage(SurvivorGame.prefix + " §cVous recevrez votre approvisionnement à partir de la vague 10");
+				p.sendMessage(SurvivorGame.prefix + "§cVous recevrez votre approvisionnement à partir de la vague 10");
 				
 				if(getSvPlayer(p) == null)
 				{
@@ -485,14 +486,17 @@ public class GameManager
 		if(voteSkippers.size() >= skipRank)
 		{
 			nextWaveStartDate = Survivor.getCurrentTick() + 140;
-			Bukkit.broadcastMessage(SurvivorGame.prefix + " §aLe temps d'attente a été réduit");
+			Bukkit.broadcastMessage(SurvivorGame.prefix + "§aLe temps d'attente a été réduit");
 			
 			for(SvPlayer sp : players)
 				sp.getPlayer().playSound(sp.getShootLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
 		}
 		else
 		{
-			Bukkit.broadcastMessage(SurvivorGame.prefix + " §7Vote pour la réduction de l'attente: §e" + voteSkippers.size() + "§7/§6" + skipRank);
+			Bukkit.broadcastMessage(SurvivorGame.prefix + "§7Vote pour la réduction de l'attente: §e" + voteSkippers.size() + "§7/§6" + skipRank + " §7(/voteskip)");
+			
+			for(SvPlayer sp : players)
+				sp.getPlayer().playNote(sp.getPlayer().getLocation(), Instrument.PLING, Note.flat(1, Tone.A));
 		}
 	}
 	
@@ -731,7 +735,7 @@ public class GameManager
 	
 	public void endGame()
 	{
-		Bukkit.broadcastMessage(SurvivorGame.prefix + " §cVous avez perdu, tout le monde est mort ...");
+		Bukkit.broadcastMessage(SurvivorGame.prefix + "§cVous avez perdu, tout le monde est mort ...");
 		
 		for(SvPlayer sp : this.players)
 		{
@@ -773,7 +777,7 @@ public class GameManager
 	public void buyElectrical(Player p)
 	{
 		this.electricalBought = true;
-		Bukkit.broadcastMessage(SurvivorGame.prefix + " §6" + p.getName() + " §aa activé l'électricité !");
+		Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + p.getName() + " §aa activé l'électricité !");
 	}
 	
 	public Location getElectrical()
