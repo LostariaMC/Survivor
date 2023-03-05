@@ -94,7 +94,7 @@ public class CosmoxEvents implements Listener
 	
 	@EventHandler
 	public void onUseLobbyItem(GameDefaultItemUseEvent event) {
-		if(SurvivorGame.DIFF_VOTE_ITEM.equals(event.getItemStack()))
+		if(event.getIdentifier().equals("diffVoteItem"))
 			changeVote(event.getPlayer());
 	}
 }

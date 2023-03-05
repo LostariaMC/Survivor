@@ -44,7 +44,7 @@ public class Surviboard
 	
 	private static void updateScoreboardScore(SvPlayer player) {
 		
-		player.toCosmox().setScoreboardScore(StatsManager.getStatInt(player.getUniqueId(), "kills"));
+		player.toCosmox().setScoreboardScore(player.getMoney());
 	}
 	
 	private static String getWaveLine(GameManager gm) {
@@ -85,7 +85,7 @@ public class Surviboard
 		
 		GameManager gm = GameManager.getInstance();
 		
-		int line = 2 + gm.getPlayers().stream().sorted(Surviboard.HASH_COMPARATOR).toList().indexOf(sp);
+		int line = 4 + gm.getPlayers().stream().sorted(Surviboard.HASH_COMPARATOR).toList().indexOf(sp);
 		updateScoreboardScore(sp);
 		
 		for(WrappedPlayer player : WrappedPlayer.of(Bukkit.getOnlinePlayers()))
@@ -100,7 +100,7 @@ public class Surviboard
 		
 		for(WrappedPlayer player : WrappedPlayer.of(Bukkit.getOnlinePlayers()))
 		{
-			player.toCosmox().getScoreboard().updateLine(0, getWaveLine(gm));
+			player.toCosmox().getScoreboard().updateLine(1, getWaveLine(gm));
 		}
 	}
 	
