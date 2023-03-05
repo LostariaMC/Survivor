@@ -69,7 +69,11 @@ public interface IGun extends IWeapon
 							{
 								Color color;
 								if(weapon.hasPerk(Perk.FIRE_BULLET) && ra.nextInt(20) == 0)
-									color = Color.fromRGB(ra.nextInt(ra.nextInt(50) + 1) + 125, 75, 75);
+								{
+									int red = ra.nextInt(255 - 150) + 150;
+									int green = ra.nextInt(red - 150) + 150;
+									color = Color.fromRGB(red, green, 75);
+								}
 								else
 									color = Color.fromRGB(75, 75, 75);
 								point.getWorld().spawnParticle(Particle.REDSTONE, effectLoc, 0, new DustOptions(color, 1));

@@ -428,13 +428,11 @@ public class GameManager
 					MCUtils.sendTitle(sp.getPlayer(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
 				}
 				
-				if(this.wave % 5 == 0)
-				{
-					sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getNB()) / 2, "Vague " + wave);
-				}
+				sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getNB()) / 5, "Vague " + wave);
+				
 				
 				sp.addMoney(75 + 25 * this.wave);
-				sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 9999999, 5));
+				sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, waveDelay, 5));
 			}
 			
 			if(sp.isDead())
