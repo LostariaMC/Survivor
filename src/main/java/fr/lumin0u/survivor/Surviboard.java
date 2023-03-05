@@ -12,10 +12,12 @@ import org.bukkit.attribute.Attribute;
 import java.awt.*;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Random;
 
 public class Surviboard
 {
-	public static final Comparator<Object> HASH_COMPARATOR = (o1, o2) -> Integer.compare(Objects.hashCode(o1), Objects.hashCode(o2));
+	private static final int SEED = new Random().nextInt();
+	private static final Comparator<Object> HASH_COMPARATOR = (o1, o2) -> Integer.compare(Objects.hashCode(o1) * SEED, Objects.hashCode(o2) * SEED);
 	
 	private static int lerp(double a, double b, double m)
 	{
@@ -67,7 +69,7 @@ public class Surviboard
 		
 		for(SvPlayer other : gm.getPlayers().stream().sorted(HASH_COMPARATOR).toList())
 		{
-			if(i > 9)
+			if(i > 10)
 				break;
 			scoreboard.updateLine(i++, getPlayerLine(other, player.toBukkit().getLocation()));
 			updateScoreboardScore(other);
@@ -75,7 +77,6 @@ public class Surviboard
 		
 		scoreboard.updateLine(i++, "§d");
 		scoreboard.updateLine(i++, "§8» Don§8: §7/money");
-		scoreboard.updateLine(i++, "§e");
 		scoreboard.updateLine(i, "§f");
 		
 		player.toCosmox().setScoreboard(scoreboard);
@@ -85,7 +86,7 @@ public class Surviboard
 		
 		GameManager gm = GameManager.getInstance();
 		
-		int line = 4 + gm.getPlayers().stream().sorted(Surviboard.HASH_COMPARATOR).toList().indexOf(sp);
+		int line = 5 + gm.getPlayers().stream().sorted(Surviboard.HASH_COMPARATOR).toList().indexOf(sp);
 		updateScoreboardScore(sp);
 		
 		for(WrappedPlayer player : WrappedPlayer.of(Bukkit.getOnlinePlayers()))
