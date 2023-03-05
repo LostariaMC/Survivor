@@ -96,9 +96,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				Player bukkitPlayer = SvPlayer.this.getPlayer();
 				if(bukkitPlayer != null)
 				{
-					if(isAlive() && bukkitPlayer.hasPotionEffect(PotionEffectType.GLOWING))
-						bukkitPlayer.removePotionEffect(PotionEffectType.GLOWING);
-					
 					this.regen = Math.max(0, this.regen - 1);
 					if(this.lastHealth > bukkitPlayer.getHealth())
 					{
@@ -394,6 +391,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		{
 			getPlayer().teleport(GameManager.getInstance().getSpawnpoint());
 			getPlayer().setGameMode(GameMode.ADVENTURE);
+			getPlayer().setGlowing(false);
 			cleanInventory();
 		}
 		
@@ -525,7 +523,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							this.cancel();
 							cleanInventory();
 							LainBodies.wakeUp(SvPlayer.this.uid);
-							getPlayer().removePotionEffect(PotionEffectType.GLOWING);
+							getPlayer().setGlowing(false);
 						}
 						
 						reviveTime += 4;
@@ -585,7 +583,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 								lifeState = LifeState.ALIVE;
 								getPlayer().teleport(deathLoc);
 								getPlayer().setGameMode(GameMode.ADVENTURE);
-								getPlayer().removePotionEffect(PotionEffectType.GLOWING);
+								getPlayer().setGlowing(false);
 								deathDate = 0L;
 								cancel();
 								LainBodies.wakeUp(uid);
