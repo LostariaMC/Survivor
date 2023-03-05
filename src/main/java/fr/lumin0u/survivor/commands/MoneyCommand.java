@@ -26,50 +26,61 @@ public class MoneyCommand implements CommandExecutor
 		else
 		{
 			SvPlayer sp = GameManager.getInstance().getSvPlayer((Player) sender);
-			if(Bukkit.getPlayer(args[0]) == null)
+			
+			try
 			{
-				sender.sendMessage(SurvivorGame.prefix + " §cLe joueur '" + args[0] + "' n'a pas été trouvé");
+				int amount = Integer.parseInt(args[0]);
+				
+				tryExchangeMoney(sp, args[1], amount);
+				
+				return true;
+			} catch(NumberFormatException ignored)
+			{}
+			
+			int amount;
+			try
+			{
+				amount = Integer.parseInt(args[1]);
+			} catch(NumberFormatException var9)
+			{
+				sender.sendMessage(SurvivorGame.prefix + "§6" + args[1] + " §cn'est pas considéré comme un nombre");
 				return true;
 			}
-			else
-			{
-				SvPlayer victim = GameManager.getInstance().getSvPlayer(Bukkit.getPlayer(args[0]));
-				boolean var7 = false;
-				
-				int amount;
-				try
-				{
-					amount = Integer.parseInt(args[1]);
-				} catch(NumberFormatException var9)
-				{
-					sender.sendMessage(SurvivorGame.prefix + " §6" + args[1] + " §cn'est pas considéré comme un nombre");
-					return true;
-				}
-				
-				if(amount < 0)
-				{
-					sender.sendMessage(SurvivorGame.prefix + " §cTu m'as pris pour une nouille ?");
-					return true;
-				}
-				else if(amount == 0)
-				{
-					sender.sendMessage(SurvivorGame.prefix + " §6Rien §an'a été correctement transmis !");
-					return true;
-				}
-				else if(amount > sp.getMoney())
-				{
-					sender.sendMessage(SurvivorGame.prefix + " §cVous ne possédez pas cet argent");
-					return true;
-				}
-				else
-				{
-					victim.addMoney(amount);
-					sp.addMoney(-amount);
-					sender.sendMessage(SurvivorGame.prefix + " §aVous avez correctement transmis §6" + amount + "$ §aà " + victim.getName() + " !");
-					victim.getPlayer().sendMessage(SurvivorGame.prefix + " §aVous avez reçu §6" + amount + "$ §ade la part de " + sender.getName() + " !");
-					return true;
-				}
-			}
+			tryExchangeMoney(sp, args[0], amount);
+			
+			return true;
+		}
+	}
+	
+	private void tryExchangeMoney(SvPlayer source, String targetName, int amount)
+	{
+		Player bukkitTarget = Bukkit.getPlayer(targetName);
+		if(bukkitTarget == null)
+		{
+			source.getPlayer().sendMessage(SurvivorGame.prefix + "§cLe joueur '" + targetName + "' n'a pas été trouvé");
+			return;
+		}
+		
+		SvPlayer target = SvPlayer.of(bukkitTarget);
+		
+		if(amount < 0)
+		{
+			source.getPlayer().sendMessage(SurvivorGame.prefix + "§cTu m'as pris pour une nouille ?");
+		}
+		else if(amount == 0)
+		{
+			source.getPlayer().sendMessage(SurvivorGame.prefix + "§6Rien §an'a été correctement transmis !");
+		}
+		else if(amount > source.getMoney())
+		{
+			source.getPlayer().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas cet argent");
+		}
+		else
+		{
+			target.addMoney(amount);
+			source.addMoney(-amount);
+			source.getPlayer().sendMessage(SurvivorGame.prefix + "§aVous avez correctement transmis §6" + amount + "$ §aà " + target.getName() + " !");
+			target.getPlayer().sendMessage(SurvivorGame.prefix + "§aVous avez reçu §6" + amount + "$ §ade la part de " + source.getName() + " !");
 		}
 	}
 }
