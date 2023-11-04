@@ -151,7 +151,11 @@ public class GameManager
 	
 	public void startGame() {
 		if(difficulty == Difficulty.NOT_SET) {
-			difficulty = getPlayers().stream().map(SvPlayer::getDiffVote).filter(diff -> diff != Difficulty.NOT_SET).collect(Utils.randomCollector()).orElse(Difficulty.NORMAL);
+			difficulty = getPlayers().stream()
+					.map(SvPlayer::getDiffVote)
+					.filter(diff -> diff != Difficulty.NOT_SET)
+					.collect(Utils.randomCollector())
+					.orElse(Difficulty.NORMAL);
 		}
 		
 		if(this.defaultRoom != null && this.spawnpoint != null) {

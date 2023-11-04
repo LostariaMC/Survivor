@@ -170,7 +170,7 @@ public class Utils
 			public BiConsumer<IntTPair<T>, T> accumulator() {
 				return (acc, obj) -> {
 					acc.n++;
-					if(random.nextInt(acc.n + 1) == 0)
+					if(random.nextInt(acc.n) == 0)
 						acc.obj = obj;
 				};
 			}
