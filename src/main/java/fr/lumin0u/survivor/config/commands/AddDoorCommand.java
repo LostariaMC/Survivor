@@ -7,7 +7,7 @@ import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.objects.Door;
 import fr.lumin0u.survivor.objects.Room;
 import fr.lumin0u.survivor.utils.MCUtils;
-import org.bukkit.Material;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,7 +33,7 @@ public class AddDoorCommand extends SvArgCommand implements Listener
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
-		MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+		MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
 		if(config == null)
 		{
 			player.sendMessage("§cVous n'avez pas commencé de configuration (voir /sv startConfig)");
@@ -60,7 +60,7 @@ public class AddDoorCommand extends SvArgCommand implements Listener
 	@Override
 	public List<String> getPossibleArgs(CommandSender executer, String[] args) {
 		Player player = (Player) executer;
-		MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+		MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
 		if(config != null)
 		{
 			return config.getNonDefaultRooms().stream().map(room -> room.getName().replace(" ", "_")).collect(Collectors.toList());
@@ -73,7 +73,7 @@ public class AddDoorCommand extends SvArgCommand implements Listener
 		if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && playerRoomHashMap.containsKey(e.getPlayer()))
 		{
 			Player player = e.getPlayer();
-			MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+			MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
 			Room room = playerRoomHashMap.get(player);
 			
 			List<Vector> bars = MCUtils.blocksOfSameTypeAround(e.getClickedBlock()).stream().map(block -> block.getLocation().toVector()).toList();
@@ -86,13 +86,13 @@ public class AddDoorCommand extends SvArgCommand implements Listener
 					@Override
 					public void redo() {
 						room.getDoors().add(door);
-						Survivor.getInstance().getMapConfigRenderer(e.getPlayer().getUniqueId()).update();
+						Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(e.getPlayer())).update();
 					}
 					
 					@Override
 					public void undo() {
 						room.getDoors().remove(door);
-						Survivor.getInstance().getMapConfigRenderer(e.getPlayer().getUniqueId()).update();
+						Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(e.getPlayer())).update();
 					}
 				}, "annuler")));
 			}

@@ -28,7 +28,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 	@Override
 	public void explode(Location loc)
 	{
-		MCUtils.explosion(owner, this, 10.0D, loc, 2.0D, "guns.grenade", 1.0D, owner.getTargetType());
+		MCUtils.explosion(owner, this, 10.0D, loc, 2.0D, 1.0D, owner.getTargetType());
 		
 		for(int i = 0; i < 10; ++i)
 		{
@@ -54,7 +54,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 					{
 						ItemStack itemStack = new ItemStack(Material.CLAY_BALL);
 						ItemMeta im = itemStack.getItemMeta();
-						im.displayName(Component.text(Long.toHexString(System.nanoTime()) + "" + new Random().nextInt(100)));
+						im.displayName(Component.text(Long.toHexString(System.nanoTime()) + new Random().nextInt(100)));
 						itemStack.setItemMeta(im);
 						
 						this.projectile = loc.getWorld().dropItem(loc.clone().add(0, 0.2, 0), itemStack);
@@ -65,7 +65,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 					if(this.time > explosionDelay)
 					{
 						GameManager gm = GameManager.getInstance();
-						MCUtils.explosion(owner, GrenadeFrag.this, Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) * 0.35D, projectile.getLocation(), 5.0D, "guns.grenade", 1.0D, owner.getTargetType());
+						MCUtils.explosion(owner, GrenadeFrag.this, Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) * 0.75D, projectile.getLocation(), 5.0D, 1.0D, owner.getTargetType());
 						this.projectile.remove();
 						this.cancel();
 					}

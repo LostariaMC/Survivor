@@ -1,6 +1,7 @@
 package fr.lumin0u.survivor;
 
 import fr.lumin0u.survivor.config.MapConfig;
+import fr.lumin0u.survivor.mobs.Group;
 import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.mobs.mob.Wolf;
@@ -34,26 +35,25 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GameManager
 {
-	private World world;
+	private final World world;
 	private Location spawnpoint;
-	private final List<SvPlayer> players = new ArrayList<>();
-	private List<SvPlayer> offlines;
-	private List<Enemy> mobs;
-	private Room defaultRoom;
+	private final List<Enemy> mobs;
+	private final Room defaultRoom;
 	private List<Room> rooms;
 	private int doorPrice;
 	private int wave;
 	private boolean inWave;
-	private MagicBoxManager magicBoxManager;
+	private final MagicBoxManager magicBoxManager;
 	private List<Location> ammoBoxes;
 	@NotNull
 	private Difficulty difficulty = Difficulty.NOT_SET;
 	private Location electrical;
-	private /*final*/ double priceAugmentation;
+	private final /*final*/ double priceAugmentation;
 	private boolean electricalBought;
 	private long nextWaveStartDate;
 	private boolean dogWave;
@@ -61,15 +61,15 @@ public class GameManager
 	private int spawnedWolves;
 	private int totalWolves;
 	private BukkitRunnable wolfRunnable;
-	private List<SvPlayer> voteSkippers = new ArrayList<>();
-	private GameBossBar bossBar;
+	private final List<SvPlayer> voteSkippers = new ArrayList<>();
+	private final GameBossBar bossBar;
+	
+	private int totalFenceCount;
 	
 	private static GameManager instance;
 	
-	public GameManager(GameMap map, Collection<SvPlayer> players)
-	{
+	public GameManager(GameMap map) {
 		instance = this;
-		this.players.addAll(players);
 		
 		Bukkit.getScheduler().runTaskTimer(Survivor.getInstance(), () -> Survivor.currentTick++, 1, 1);
 		
@@ -77,8 +77,7 @@ public class GameManager
 		
 		Waves.init();
 		
-		// TODO world = map.getWorld();
-		world = Bukkit.getWorld(Survivor.getInstance().getGame().getName());
+		world = map.getWorld();
 		
 		world.setTime(18000L);
 		world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -87,7 +86,6 @@ public class GameManager
 		world.setDifficulty(org.bukkit.Difficulty.NORMAL);
 		world.setPVP(false);
 		
-		this.offlines = new ArrayList<>();
 		this.mobs = new ArrayList<>();
 		this.rooms = new ArrayList<>();
 		this.ammoBoxes = new ArrayList<>();
@@ -103,6 +101,7 @@ public class GameManager
 		magicBoxManager = new MagicBoxManager(config.magicBoxes.stream().map(v -> v.toLocation(world)).toList(), this);
 		
 		rooms = new ArrayList<>(config.getRooms());
+		totalFenceCount = rooms.stream().mapToInt(room -> room.getFences().size()).sum();
 		
 		for(Room room : rooms)
 			room.setWorld(world);
@@ -115,20 +114,15 @@ public class GameManager
 		this.defaultRoom.setBought(true);
 		this.priceAugmentation = Math.pow(50.0D, 1.0D / ((double) this.rooms.size() - 1.0D));
 		
-		for(ItemFrame itemFrame : world.getEntitiesByClass(ItemFrame.class))
-		{
-			for(WeaponType wt : WeaponType.values())
-			{
-				if(wt.getMaterial().equals(itemFrame.getItem().getType()))
-				{
+		for(ItemFrame itemFrame : world.getEntitiesByClasses(ItemFrame.class, GlowItemFrame.class).stream().map(ItemFrame.class::cast).toList()) {
+			for(WeaponType wt : WeaponType.values()) {
+				if(wt.getMaterial().equals(itemFrame.getItem().getType())) {
 					itemFrame.setItem(wt.getItemToSell());
 				}
 			}
 			
-			for(SvAsset asset : SvAsset.values())
-			{
-				if(asset.getMaterial().equals(itemFrame.getItem().getType()))
-				{
+			for(SvAsset asset : SvAsset.values()) {
+				if(asset.getMaterial().equals(itemFrame.getItem().getType())) {
 					itemFrame.setItem(asset.getItem());
 				}
 			}
@@ -137,8 +131,7 @@ public class GameManager
 		new BukkitRunnable()
 		{
 			@Override
-			public void run()
-			{
+			public void run() {
 				bossBar.update();
 			}
 		}.runTaskTimer(Survivor.getInstance(), 1L, 1L);
@@ -148,61 +141,36 @@ public class GameManager
 			private final List<SvPlayer> seen = new ArrayList<>();
 			
 			@Override
-			public void run()
-			{
-				boolean reinitialize = false;
-				
-				for(SvPlayer player : players)
-				{
-					if(!seen.contains(player))
-					{
-						seen.add(player);
-						reinitialize = true;
-						break;
-					}
-					else
-						Surviboard.updatePlayerLine(player);
+			public void run() {
+				for(SvPlayer player : getPlayers()) {
+					Surviboard.updatePlayerLine(player);
 				}
-				
-				if(reinitialize || new Random().nextInt(40) == 0)
-					for(SvPlayer player : players)
-						Surviboard.reInitScoreboard(player);
 			}
 		}.runTaskTimer(Survivor.getInstance(), 10L, 10L);
 	}
 	
-	public void startGame()
-	{
-		if(difficulty == Difficulty.NOT_SET)
-		{
+	public void startGame() {
+		if(difficulty == Difficulty.NOT_SET) {
 			difficulty = getPlayers().stream().map(SvPlayer::getDiffVote).filter(diff -> diff != Difficulty.NOT_SET).collect(Utils.randomCollector()).orElse(Difficulty.NORMAL);
 		}
 		
-		if(this.defaultRoom != null && this.spawnpoint != null)
-		{
+		if(this.defaultRoom != null && this.spawnpoint != null) {
 			Bukkit.broadcastMessage(SurvivorGame.prefix + "§6La partie commence !");
 			endWave();
 			magicBoxManager.onGameStart();
 			
-			for(LivingEntity ent : world.getEntitiesByClass(LivingEntity.class))
-			{
-				if(!(ent instanceof Player))
-				{
+			for(LivingEntity ent : world.getEntitiesByClass(LivingEntity.class)) {
+				if(!(ent instanceof Player)) {
 					ent.remove();
 				}
 			}
 			
-			for(Item ent : world.getEntitiesByClass(Item.class))
-			{
+			for(Item ent : world.getEntitiesByClass(Item.class)) {
 				ent.remove();
 			}
 			
-			for(Player p : Bukkit.getOnlinePlayers())
-			{
-				Surviboard.reInitScoreboard(WrappedPlayer.of(p));
-				
-				if(WrappedPlayer.of(p).toCosmox().isTeam(Team.SPEC))
-				{
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(WrappedPlayer.of(p).toCosmox().isTeam(Team.SPEC)) {
 					p.setGameMode(GameMode.SPECTATOR);
 					p.teleport(spawnpoint);
 					continue;
@@ -215,12 +183,7 @@ public class GameManager
 				p.updateInventory();
 				p.sendMessage(SurvivorGame.prefix + "§cVous recevrez votre approvisionnement à partir de la vague 10");
 				
-				if(getSvPlayer(p) == null)
-				{
-					this.players.add(new SvPlayer(p));
-				}
-				
-				SvPlayer sp = getSvPlayer(p);
+				SvPlayer sp = SvPlayer.of(p);
 				WeaponType.LITTLE_KNIFE.getNewWeapon(sp).giveItem();
 				WeaponType.M1911.getNewWeapon(sp).giveItem();
 				p.teleport(spawnpoint);
@@ -228,26 +191,23 @@ public class GameManager
 				p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 1.0F);
 			}
 			
-			for(Room room : this.rooms)
-			{
+			for(Room room : this.rooms) {
 				room.startZombieVsFencesTask();
 				room.updateDoors();
 			}
+			
+			Bukkit.getOnlinePlayers().stream().map(SvPlayer::of).forEach(Surviboard::reInitScoreboard);
 		}
-		else
-		{
+		else {
 			Bukkit.broadcastMessage("§cVeuillez finir la config avant de lancer la partie");
 		}
 	}
 	
-	public void augmentPrice()
-	{
+	public void augmentPrice() {
 		this.doorPrice = (int) ((double) this.doorPrice * this.priceAugmentation);
 		
-		for(Room room : this.rooms)
-		{
-			if(!room.isBought())
-			{
+		for(Room room : this.rooms) {
+			if(!room.isBought()) {
 				room.updateDoors();
 			}
 		}
@@ -259,67 +219,61 @@ public class GameManager
 		return this.startDate == 0L ? 0L : System.currentTimeMillis() - this.startDate;
 	}*/
 	
-	public int getDoorPrice()
-	{
+	public int getDoorPrice() {
 		return this.doorPrice;
 	}
 	
-	public List<SvPlayer> getPlayers()
-	{
-		return this.players;
+	public int getTotalFenceCount() {
+		return totalFenceCount;
 	}
 	
-	public SvPlayer getSvPlayer(Player p)
-	{
-		return getSvPlayer(p.getUniqueId());
-	}
-	
-	public SvPlayer getSvPlayer(UUID uid)
-	{
-		for(SvPlayer sp : players)
-			if(sp.getUniqueId().equals(uid))
-				return sp;
+	/** @return non-spec players, maybe offline */
+	public Collection<SvPlayer> getPlayers() {
+		// load online players first
+		Bukkit.getOnlinePlayers().forEach(SvPlayer::of);
 		
-		return null;
+		return Survivor.getInstance().getLoadedSvPlayers().stream()
+				.filter(Predicate.not(SvPlayer::isSpectator))
+				.toList();
 	}
 	
-	public static GameManager getInstance()
-	{
+	/** @return non-spec players */
+	public Collection<SvPlayer> getOnlinePlayers() {
+		return Bukkit.getOnlinePlayers().stream()
+				.map(SvPlayer::of)
+				.filter(Predicate.not(SvPlayer::isSpectator))
+				.toList();
+	}
+	
+	public static GameManager getInstance() {
 		return instance;
 	}
 	
-	public List<Enemy> getMobs()
-	{
+	public List<Enemy> getMobs() {
 		return this.mobs;
 	}
 	
-	public List<Boss> getAliveBosses()
-	{
+	public List<Boss> getAliveBosses() {
 		return mobs.stream().filter(Boss.class::isInstance).map(Boss.class::cast).toList();
 	}
 	
-	public World getWorld()
-	{
+	public World getWorld() {
 		return this.world;
 	}
 	
-	public Location getSpawnpoint()
-	{
+	public Location getSpawnpoint() {
 		return this.spawnpoint;
 	}
 	
-	public void setSpawnpoint(Location loc)
-	{
+	public void setSpawnpoint(Location loc) {
 		this.spawnpoint = loc;
 	}
 	
-	public int getRemainingEnnemies()
-	{
+	public int getRemainingEnnemies() {
 		return dogWave ? totalWolves - spawnedWolves + mobs.size() : mobs.size();
 	}
 	
-	public boolean isDogWave()
-	{
+	public boolean isDogWave() {
 		return this.dogWave;
 	}
 	
@@ -365,18 +319,15 @@ public class GameManager
 		}
 	}*/
 	
-	public Room getDefaultRoom()
-	{
+	public Room getDefaultRoom() {
 		return this.defaultRoom;
 	}
 	
-	public List<Room> getRooms()
-	{
+	public List<Room> getRooms() {
 		return this.rooms;
 	}
 	
-	public List<Door> getDoors()
-	{
+	public List<Door> getDoors() {
 		return this.rooms.stream().flatMap((room) ->
 		{
 			return room.getDoors().stream();
@@ -384,23 +335,19 @@ public class GameManager
 	}
 	
 	/* kept for compatibility */
-	public boolean isStarted()
-	{
+	public boolean isStarted() {
 		return true;
 	}
 	
-	public int getWave()
-	{
+	public int getWave() {
 		return this.wave;
 	}
 	
-	public int getTimeUntilNextWave()
-	{
+	public int getTimeUntilNextWave() {
 		return (int) (this.nextWaveStartDate - (long) Survivor.getCurrentTick());
 	}
 	
-	public void endWave()
-	{
+	public void endWave() {
 		this.dogWave = false;
 		this.mayBeEndWave = false;
 		inWave = false;
@@ -411,29 +358,23 @@ public class GameManager
 		bossBar.onChangeState();
 		Surviboard.updateWave();
 		
-		for(SvPlayer sp : this.players)
-		{
-			if(sp.getPlayer() != null)
-			{
-				if(wave >= 9 && sp.getPlayer().getInventory().contains(Material.CARROT))
-					sp.getPlayer().getInventory().remove(Material.CARROT);
-				
-				if(this.wave >= 9)
-				{
-					sp.getSupply().getNewWeapon(sp).giveItem();
-				}
-				
-				if(this.wave != 0)
-				{
-					MCUtils.sendTitle(sp.getPlayer(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
-				}
-				
-				sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getNB()) / 5, "Vague " + wave);
-				
-				
-				sp.addMoney(75 + 25 * this.wave);
-				sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, waveDelay, 5));
+		for(SvPlayer sp : getOnlinePlayers()) {
+			if(wave >= 9 && sp.toBukkit().getInventory().contains(Material.CARROT))
+				sp.toBukkit().getInventory().remove(Material.CARROT);
+			
+			if(this.wave >= 9) {
+				sp.getSupply().getNewWeapon(sp).giveItem();
 			}
+			
+			if(this.wave != 0) {
+				MCUtils.sendTitle(sp.toBukkit(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
+			}
+			
+			sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getNB()) / 5, "Vague " + wave);
+			
+			
+			sp.addMoney(75 + 25 * this.wave);
+			sp.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, waveDelay, 5));
 			
 			if(sp.isDead())
 				sp.respawn();
@@ -442,14 +383,11 @@ public class GameManager
 		new BukkitRunnable()
 		{
 			@Override
-			public void run()
-			{
-				if(inWave)
-				{
+			public void run() {
+				if(inWave) {
 					cancel();
 				}
-				else if(Survivor.getCurrentTick() >= nextWaveStartDate)
-				{
+				else if(Survivor.getCurrentTick() >= nextWaveStartDate) {
 					GameManager.this.nextWave();
 					cancel();
 				}
@@ -457,13 +395,11 @@ public class GameManager
 		}.runTaskTimer(Survivor.getInstance(), 1, 1);
 	}
 	
-	public boolean isInWave()
-	{
+	public boolean isInWave() {
 		return inWave;
 	}
 	
-	public void skipWave()
-	{
+	public void skipWave() {
 		nextWaveStartDate = Survivor.getCurrentTick();
 		
 		if(wolfRunnable != null)
@@ -472,68 +408,57 @@ public class GameManager
 		new ArrayList<>(getInstance().getMobs()).forEach(m -> m.kill(null));
 	}
 	
-	public void addVoteSkipper(SvPlayer voter)
-	{
+	public void addVoteSkipper(SvPlayer voter) {
 		if(Survivor.getCurrentTick() + 140 >= nextWaveStartDate || inWave || voteSkippers.contains(voter))
 			return;
 		
 		voteSkippers.add(voter);
 		
-		int skipRank = players.size() / 2 + 1;
+		int skipRank = getOnlinePlayers().size() / 2 + 1;
 		
-		if(voteSkippers.size() >= skipRank)
-		{
+		if(voteSkippers.size() >= skipRank) {
 			nextWaveStartDate = Survivor.getCurrentTick() + 140;
 			Bukkit.broadcastMessage(SurvivorGame.prefix + "§aLe temps d'attente a été réduit");
 			
-			for(SvPlayer sp : players)
-				sp.getPlayer().playSound(sp.getShootLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+			for(SvPlayer sp : getOnlinePlayers())
+				sp.toBukkit().playSound(sp.getShootLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
 		}
-		else
-		{
+		else {
 			Bukkit.broadcastMessage(SurvivorGame.prefix + "§7Vote pour la réduction de l'attente: §e" + voteSkippers.size() + "§7/§6" + skipRank + " §7(/voteskip)");
 			
-			for(SvPlayer sp : players)
-				sp.getPlayer().playNote(sp.getPlayer().getLocation(), Instrument.PLING, Note.flat(1, Tone.A));
+			for(SvPlayer sp : getOnlinePlayers())
+				sp.toBukkit().playNote(sp.toBukkit().getLocation(), Instrument.PLING, Note.flat(1, Tone.A));
 		}
 	}
 	
-	public void nextWave()
-	{
-		++this.wave;
+	public void nextWave() {
+		++wave;
 		
-		for(SvPlayer sp : this.getPlayers())
-		{
-			MCUtils.sendTitle(sp.getPlayer(), 10, 40, 20, "§4Vague " + this.wave);
-			sp.getPlayer().removePotionEffect(PotionEffectType.REGENERATION);
+		Survivor.getInstance().getLogger().info("Vague " + wave);
+		
+		for(SvPlayer sp : getOnlinePlayers()) {
+			MCUtils.sendTitle(sp.toBukkit(), 10, 40, 20, "§4Vague " + wave);
+			sp.toBukkit().removePotionEffect(PotionEffectType.REGENERATION);
 		}
 		
 		boolean dogWave = Waves.isDogWave(this.wave);
 		this.dogWave = dogWave;
-		int ennemies = (int) (Waves.getNbEnnemies(this.wave, this.difficulty) * Math.sqrt(getPlayers().size()));
-		if(dogWave)
-		{
-			ennemies = (int) Math.pow((double) ennemies, 0.7);
-		}
-		int finalEnnemies = ennemies;
+		int nbZombies = (int) (Waves.getNbEnnemies(this.wave, this.difficulty) * Math.sqrt(getOnlinePlayers().size()));
+		int ennemies = dogWave ? (int) Math.pow(nbZombies, 0.7) : nbZombies;
 		
 		List<Location> spawns = new ArrayList<>();
 		
-		for(Room room : this.rooms)
-		{
-			if(room.isBought())
-			{
+		for(Room room : this.rooms) {
+			if(room.isBought()) {
 				spawns.addAll(room.getMobSpawns());
 			}
 		}
 		
 		Collections.shuffle(spawns);
 		
-		for(Location loc : this.ammoBoxes)
-		{
+		for(Location loc : this.ammoBoxes) {
 			int j = Survivor.CAKE_MAX_BITES;
-			if(loc.getBlock().getType().equals(Material.CAKE))
-			{
+			if(loc.getBlock().getType().equals(Material.CAKE)) {
 				j = ((Cake) loc.getBlock().getBlockData()).getBites();
 			}
 			
@@ -546,82 +471,70 @@ public class GameManager
 		this.mayBeEndWave = false;
 		spawnedWolves = 0;
 		
-		if(!dogWave)
-		{
-			if(spawns.isEmpty())
-			{
+		if(!dogWave) {
+			if(spawns.isEmpty()) {
 				Bukkit.broadcastMessage("§cVeuillez définir des points d'apparition pour les zombies");
 				return;
 			}
 			
-			for(int i = 0; i < getPlayers().size() / 4 + 1 && wave % 10 == 0; i++)
-			{
-				Location bossSpawn = (Location) spawns.get((new Random()).nextInt(spawns.size()));
-				
-				double bossHealth = (double) (this.wave * 60 - 20);
-				double bossWalkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
-				Boss boss = Boss.createRandom(bossSpawn, bossHealth, bossWalkSpeed * 1.1D);
-				boss.setReward(this.wave * this.wave * 10);
+			if(wave % 10 == 0) {
+				for(int i = 0; i < getOnlinePlayers().size() / 4 + 1; i++) {
+					Location bossSpawn = spawns.get((new Random()).nextInt(spawns.size()));
+					
+					double bossHealth = this.wave * 60 - 20;
+					double bossWalkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
+					Boss boss = Boss.createRandom(bossSpawn, bossHealth, bossWalkSpeed * 1.1D);
+					boss.setReward(this.wave * this.wave * 10);
+				}
 			}
 			
 			int mod = ennemies % spawns.size();
 			int spawnsSize = spawns.size();
 			
-			for(int j = 0; j < spawnsSize; ++j)
-			{
-				Location spawn = (Location) spawns.get(j);
+			for(int j = 0; j < spawnsSize; ++j) {
+				Location spawn = spawns.get(j);
 				List<Zombie> zombies = new ArrayList<>();
 				
-				for(int i = mod > j ? -1 : 0; i < ennemies / spawns.size(); ++i)
-				{
+				for(int i = mod > j ? -1 : 0; i < ennemies / spawns.size(); ++i) {
 					double health = Math.max(0, Waves.getEnnemiesLife(this.wave, this.difficulty) + Math.random() * 6 - 3);
 					double walkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
 					Zombie m;
-					if((new Random()).nextInt(20) == 1 && this.wave > 3)
-					{
+					if((new Random()).nextInt(20) == 1 && this.wave > 3) {
 						m = new BabyZombie(spawn, health / 2.0D, walkSpeed * 1.3D);
 					}
-					else if((new Random()).nextInt(15) == 1 && this.wave > 2)
-					{
+					else if((new Random()).nextInt(15) == 1 && this.wave > 2) {
 						m = new ZombieShooter(spawn, health / 2.0D, walkSpeed);
 					}
-					else if((new Random()).nextInt(15) == 1 && this.wave > 4)
-					{
+					else if((new Random()).nextInt(15) == 1 && this.wave > 4) {
 						m = new ZombieGrappler(spawn, health, walkSpeed);
 					}
-					else
-					{
+					else {
 						m = new Zombie(spawn, health, walkSpeed);
 					}
 					
 					zombies.add(m);
-					((Zombie) m).setReward(10 + this.wave);
+					m.setReward(10 + this.wave);
 				}
 				
 				this.mayBeEndWave = true;
-				if(!zombies.isEmpty())
-				{
+				if(!zombies.isEmpty()) {
 					Group group = new Group(zombies);
 					zombies.forEach(zombie -> zombie.setGroup(group));
 				}
 			}
 		}
-		else
-		{
-			this.totalWolves = finalEnnemies;
+		else {
+			this.totalWolves = ennemies;
 			wolfRunnable = new BukkitRunnable()
 			{
 				int time = 0;
 				Location nextLoc;
 				
 				@Override
-				public void run()
-				{
-					if(this.time <= 0)
-					{
-						if(this.nextLoc == null)
-						{
-							this.nextLoc = Waves.aWolfSpawnLocationAround(players.get(new Random().nextInt(players.size())).getPlayer());
+				public void run() {
+					if(this.time <= 0) {
+						if(this.nextLoc == null) {
+							this.nextLoc = Waves.aWolfSpawnLocationAround(getOnlinePlayers().stream().collect(Utils.randomCollector()).get().toBukkit());
 						}
 						
 						double health = Math.max(0, Waves.getEnnemiesLife(wave, difficulty) + Math.random() * 6 - 3);
@@ -630,9 +543,8 @@ public class GameManager
 						
 						int spawnCount = Math.min(new Random().nextInt((int) Math.sqrt(wave)) + 1, totalWolves - spawnedWolves);
 						
-						for(int i = 0; i < spawnCount; i++)
-						{
-							Wolf wo = new Wolf(this.nextLoc, health * 0.4D, (double) (walkSpeed * 2.0F));
+						for(int i = 0; i < spawnCount; i++) {
+							Wolf wo = new Wolf(this.nextLoc, health * 0.4D, walkSpeed * 2.0F);
 							wo.setReward(10 + GameManager.this.wave);
 						}
 						
@@ -642,8 +554,7 @@ public class GameManager
 						
 						this.time = (new Random()).nextInt(130) + 40;
 						
-						if(spawnedWolves >= totalWolves)
-						{
+						if(spawnedWolves >= totalWolves) {
 							mayBeEndWave = true;
 							this.cancel();
 							return;
@@ -652,9 +563,8 @@ public class GameManager
 						Bukkit.getScheduler().runTaskAsynchronously(Survivor.getInstance(), new Runnable()
 						{
 							@Override
-							public void run()
-							{
-								nextLoc = Waves.aWolfSpawnLocationAround(((SvPlayer) players.get((new Random()).nextInt(players.size()))).getPlayer());
+							public void run() {
+								nextLoc = Waves.aWolfSpawnLocationAround(getOnlinePlayers().stream().collect(Utils.randomCollector()).get().toBukkit());
 							}
 						});
 					}
@@ -665,67 +575,58 @@ public class GameManager
 			wolfRunnable.runTaskTimer(Survivor.getInstance(), 1L, 1L);
 		}
 		
-		new BukkitRunnable()
-		{
-			int lastCount = finalEnnemies;
-			int ticksNoChange = 0;
-			int ticksSinceStart = 0;
-			
-			@Override
-			public void run()
+		if(wave % 10 != 0) {
+			new BukkitRunnable()
 			{
-				if(!inWave)
-				{
-					this.cancel();
-				}
-				else if(mayBeEndWave)
-				{
-					if(getRemainingEnnemies() != lastCount)
-					{
-						lastCount = getRemainingEnnemies();
-						ticksNoChange = 0;
+				int lastCount = ennemies;
+				int secNoChange = 0;
+				int secSinceStart = 0;
+				
+				@Override
+				public void run() {
+					if(!inWave) {
+						cancel();
 					}
-					else
-					{
-						ticksNoChange++;
-					}
-					ticksSinceStart++;
-					
-					double treshold = (double) ticksSinceStart / 500 * (double) Math.min(ticksNoChange - 100, 400) / 400;
-					
-					if(getRemainingEnnemies() < treshold)
-					{
-						for(Enemy m : new ArrayList<>(mobs))
-						{
-							m.kill(null);
+					else if(mayBeEndWave) {
+						if(getRemainingEnnemies() != lastCount) {
+							lastCount = getRemainingEnnemies();
+							secNoChange = 0;
+						}
+						else {
+							secNoChange++;
+						}
+						secSinceStart++;
+						
+						double treshold = (double) (secSinceStart + secNoChange - 5) / 60;//(double) ticksSinceStart / 500 * (double) Math.min(ticksNoChange - 100, 400) / 400;
+						
+						if(getRemainingEnnemies() < ennemies / 5 && secNoChange > 5 && treshold > 0 && getRemainingEnnemies() < treshold * treshold) {
+							for(Enemy m : new ArrayList<>(mobs)) {
+								m.kill(null);
+							}
 						}
 					}
 				}
-			}
-		}.runTaskTimer(Survivor.getInstance(), 20L, 20L);
+			}.runTaskTimer(Survivor.getInstance(), 20L, 20L);
+		}
 		
 		bossBar.onChangeState();
 		Surviboard.updateWave();
 	}
 	
-	public boolean mayBeEndWave()
-	{
+	public boolean mayBeEndWave() {
 		return this.mayBeEndWave;
 	}
 	
-	public void setWave(int wave)
-	{
+	public void setWave(int wave) {
 		this.wave = wave;
 	}
 	
-	public void endGame()
-	{
+	public void endGame() {
 		Bukkit.broadcastMessage(SurvivorGame.prefix + "§cVous avez perdu, tout le monde est mort ...");
 		
-		for(SvPlayer sp : this.players)
-		{
-			sp.getPlayer().sendMessage("§6Ennemis tués : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalKills"));
-			sp.getPlayer().sendMessage("§6Dégats infligés : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalDamage"));
+		for(SvPlayer sp : getOnlinePlayers()) {
+			sp.toBukkit().sendMessage("§6Ennemis tués : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalKills"));
+			sp.toBukkit().sendMessage("§6Dégats infligés : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalDamage"));
 			
 			bossBar.bossBar.removeAll();
 		}
@@ -736,8 +637,7 @@ public class GameManager
 		API.instance().getManager().getGame().addToResume("§7Difficulté : " + difficulty.getColoredDisplayName());
 	}
 	
-	private String timeDisplay(int seconds)
-	{
+	private String timeDisplay(int seconds) {
 		StringBuilder s = new StringBuilder();
 		if(seconds >= 3600)
 			s.append(seconds / 3600).append("h ");
@@ -749,52 +649,32 @@ public class GameManager
 		return s.toString();
 	}
 	
-	public MagicBoxManager getMagicBoxManager()
-	{
+	public MagicBoxManager getMagicBoxManager() {
 		return this.magicBoxManager;
 	}
 	
-	public List<Location> getAmmoBoxes()
-	{
+	public List<Location> getAmmoBoxes() {
 		return this.ammoBoxes;
 	}
 	
-	public void buyElectrical(Player p)
-	{
+	public void buyElectrical(SvPlayer p) {
 		this.electricalBought = true;
 		Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + p.getName() + " §aa activé l'électricité !");
 	}
 	
-	public Location getElectrical()
-	{
+	public Location getElectrical() {
 		return this.electrical;
 	}
 	
-	public boolean canPlayerBuyAsset()
-	{
+	public boolean canPlayerBuyAsset() {
 		return this.electrical == null || this.electricalBought;
 	}
 	
-	public SvPlayer getOfflinePlayer(UUID uid)
-	{
-		for(SvPlayer sp : offlines)
-			if(uid.equals(sp.getPlayerUid()))
-				return sp;
-		return null;
-	}
-	
-	public List<SvPlayer> getOfflinePlayers()
-	{
-		return this.offlines;
-	}
-	
-	public Enemy getMob(Entity ent)
-	{
+	public Enemy getMob(Entity ent) {
 		return mobs.stream().filter(mob -> mob.getEntity().equals(ent)).findFirst().orElse(null);
 	}
 	
-	public Difficulty getDifficulty()
-	{
+	public Difficulty getDifficulty() {
 		/*if(this.difficulty == null)
 		{
 			this.calculateDifficulty();
@@ -807,8 +687,7 @@ public class GameManager
 		this.difficulty = difficulty;
 	}
 	
-	public void destroy()
-	{
+	public void destroy() {
 		if(instance == this)
 			instance = null;
 	}
@@ -818,38 +697,32 @@ public class GameManager
 		private final BossBar bossBar;
 		private double max;
 		
-		public GameBossBar()
-		{
+		public GameBossBar() {
 			bossBar = Bukkit.createBossBar("En attente ...", BarColor.WHITE, BarStyle.SOLID);
 		}
 		
 		public void onChangeState() {
-			if(isInWave())
-			{
+			if(isInWave()) {
 				this.max = getRemainingEnnemies();
 				bossBar.setColor(BarColor.WHITE);
 			}
-			else
-			{
+			else {
 				this.max = getTimeUntilNextWave();
 				bossBar.setColor(BarColor.GREEN);
 			}
 		}
 		
 		public void update() {
-			for(Player player : Bukkit.getOnlinePlayers())
-			{
+			for(Player player : Bukkit.getOnlinePlayers()) {
 				if(!bossBar.getPlayers().contains(player))
 					bossBar.addPlayer(player);
 			}
 			
-			if(isInWave())
-			{
+			if(isInWave()) {
 				bossBar.setTitle("§6Ennemis restant: §c" + getRemainingEnnemies() + (getAliveBosses().size() > 0 ? " §7(" + getAliveBosses().size() + " boss" + (getAliveBosses().size() > 1 ? "es" : "") + ")" : ""));
 				bossBar.setProgress(Math.min(1, (double) getRemainingEnnemies() / max));
 			}
-			else
-			{
+			else {
 				bossBar.setTitle("§eProchaine vague: §6" + (getTimeUntilNextWave() / 20) + "s §8(/voteskip)");
 				bossBar.setProgress(1 - (double) getTimeUntilNextWave() / max);
 			}

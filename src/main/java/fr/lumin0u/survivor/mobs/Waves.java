@@ -66,7 +66,7 @@ public class Waves
 	
 	public static double getEnnemiesSpeed(int wave, Difficulty diff)
 	{
-		return 0.13 + Math.sqrt(diff.getNB()) / 400.0D * (double) wave;
+		return 0.13 + Math.sqrt(diff.getNB()) / 800.0D * (double) wave;
 	}
 	
 	public static boolean isBossWave(int wave)

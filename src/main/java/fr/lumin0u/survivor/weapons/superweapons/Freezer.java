@@ -5,6 +5,7 @@ import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.Ray;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -18,7 +19,7 @@ public class Freezer extends HeatSender
 {
 	public Freezer(WeaponOwner owner)
 	{
-		super(owner, WeaponType.FREEZER);
+		super(owner, WeaponType.FREEZER, TFSound.FREEZER_SHOT);
 	}
 	
 	@Override

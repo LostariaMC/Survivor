@@ -1,8 +1,10 @@
 package fr.lumin0u.survivor.mobs.mob;
 
+import fr.lumin0u.survivor.mobs.Group;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.NMSUtils;
+import fr.lumin0u.survivor.utils.TFSound;
 import net.minecraft.world.entity.EntityInsentient;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalLookAtPlayer;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalMeleeAttack;
@@ -31,7 +33,12 @@ public class Zombie extends Enemy
 	
 	public Zombie(Location spawnLoc, double maxHealth, double walkSpeed)
 	{
-		super(EntityType.ZOMBIE, spawnLoc, maxHealth, walkSpeed);
+		this(spawnLoc, maxHealth, walkSpeed, TFSound.ZOMBIE_HURT, TFSound.ZOMBIE_DEATH);
+	}
+	
+	public Zombie(Location spawnLoc, double maxHealth, double walkSpeed, TFSound hurtSound, TFSound deathSound)
+	{
+		super(EntityType.ZOMBIE, spawnLoc, maxHealth, walkSpeed, hurtSound, deathSound);
 	}
 	
 	public Group getGroup()
@@ -161,10 +168,10 @@ public class Zombie extends Enemy
 		
 		SvPlayer target = null;
 		
-		for(SvPlayer sp : gm.getPlayers())
+		for(SvPlayer sp : gm.getOnlinePlayers())
 		{
-			Player p = sp.getPlayer();
-			if(target == null || p.getLocation().distance(this.ent.getLocation()) < target.getPlayer().getLocation().distance(this.ent.getLocation()))
+			Player p = sp.toBukkit();
+			if(target == null || p.getLocation().distance(this.ent.getLocation()) < target.toBukkit().getLocation().distance(this.ent.getLocation()))
 			{
 				if(sp.isAlive() && p.getGameMode().equals(GameMode.ADVENTURE))
 				{
@@ -177,11 +184,11 @@ public class Zombie extends Enemy
 		
 		if(target != null)
 		{
-			Location targetLoc = target.getPlayer().getLocation();
+			Location targetLoc = target.toBukkit().getLocation();
 			
-			if(targetLoc.distance(this.ent.getLocation()) < 500.0D)
+			if(targetLoc.distance(this.ent.getLocation()) < 100.0D)
 			{
-				this.ent.setTarget(target.getPlayer());
+				this.ent.setTarget(target.toBukkit());
 				return;
 			}
 			/*

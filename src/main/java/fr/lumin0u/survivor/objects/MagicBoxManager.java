@@ -1,17 +1,14 @@
 package fr.lumin0u.survivor.objects;
 
 import fr.lumin0u.survivor.GameManager;
+import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.AABB;
-import fr.lumin0u.survivor.utils.MCUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -85,9 +82,8 @@ public class MagicBoxManager
 		return this.currentBox;
 	}
 	
-	public void onClickOnBox(Player p)
-	{
-		this.mbTask.onClickOnBox(GameManager.getInstance().getSvPlayer(p));
+	public void onClickOnBox(SvPlayer p) {
+		this.mbTask.onClickOnBox(p);
 	}
 	
 	public MBTask getMbTask()

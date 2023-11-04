@@ -5,6 +5,7 @@ import fr.lumin0u.survivor.commands.SvArgCommand;
 import fr.lumin0u.survivor.config.Action;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -22,7 +23,7 @@ public class CancelCommand extends SvArgCommand
 	public void execute(CommandSender sender, String[] args) {
 		
 		Player player = (Player) sender;
-		MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+		MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
 		if(config == null)
 		{
 			player.sendMessage("§cVous n'avez pas commencé de configuration (voir /sv startConfig)");

@@ -2,7 +2,7 @@ package fr.lumin0u.survivor.weapons.superweapons;
 
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.WeaponOwner;
-import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.IGun;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.Bukkit;
@@ -10,18 +10,23 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
 
-public abstract class Gun extends SuperWeapon implements IGun
+public abstract class SuperGun extends SuperWeapon implements IGun
 {
+	protected final TFSound sound;
 	protected double dmg;
 	protected double range;
 	protected double accuracy;
 	
-	public Gun(WeaponOwner owner, WeaponType wt)
-	{
+	public SuperGun(WeaponOwner owner, WeaponType wt) {
+		this(owner, wt, TFSound.GUN_SHOT);
+	}
+	
+	public SuperGun(WeaponOwner owner, WeaponType wt, TFSound sound) {
 		super(owner, wt);
 		this.dmg = wt.get("dmg");
 		this.range = wt.get("range");
 		this.accuracy = wt.get("accuracy");
+		this.sound = sound;
 	}
 	
 	@Override
@@ -30,7 +35,7 @@ public abstract class Gun extends SuperWeapon implements IGun
 		if(!isUseable())
 			return;
 		
-		MCUtils.playSound(this.owner.getShootLocation(), this.wt.getSound());
+		sound.play(owner.getShootLocation());
 		shoot();
 		this.useAmmo();
 		

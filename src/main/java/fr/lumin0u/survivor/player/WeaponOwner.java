@@ -18,15 +18,9 @@ public interface WeaponOwner extends SvDamageable
 	
 	public List<Weapon> getWeapons();
 	
-	public default void addWeapon(Weapon weapon)
-	{
-		getWeapons().add(weapon);
-	}
+	public void addWeapon(Weapon weapon);
 	
-	public default void removeWeapon(Weapon weapon)
-	{
-		getWeapons().remove(weapon);
-	}
+	public void removeWeapon(Weapon weapon);
 	
 	public default <T extends Weapon> List<T> getWeaponsByType(Class<T> clazz)
 	{

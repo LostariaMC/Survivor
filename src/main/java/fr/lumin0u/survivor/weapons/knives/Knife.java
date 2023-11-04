@@ -6,8 +6,8 @@ import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
-import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Ray;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.Location;
@@ -49,7 +49,7 @@ public abstract class Knife extends Weapon
 		{
 			if(owner instanceof SvPlayer)
 			{
-				MCUtils.playSound(((SvPlayer) owner).getPlayer().getLocation(), this.wt.getSound());
+				TFSound.MELEE_MISS.playTo((SvPlayer) owner);
 				showCooldown(rpm);
 			}
 			this.lastLClick = Survivor.getCurrentTick();

@@ -2,9 +2,9 @@ package fr.lumin0u.survivor.commands.gamecommands;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.commands.AbstractGameCommand;
+import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.weapons.Weapon;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
 
@@ -18,10 +18,10 @@ public class LevelUpCommand extends AbstractGameCommand
 	@Override
 	public void execute(CommandSender sender, String[] args)
 	{
-		Player p = (Player) sender;
+		SvPlayer player = SvPlayer.of(sender);
 		GameManager gm = GameManager.getInstance();
-		Weapon w = gm.getSvPlayer(p).getWeaponInHand();
-		if(gm.getSvPlayer(p) != null && w != null)
+		Weapon w = player.getWeaponInHand();
+		if(!player.isSpectator() && w != null)
 		{
 			for(int i = 0; i < Integer.parseInt(args[0]); ++i)
 			{

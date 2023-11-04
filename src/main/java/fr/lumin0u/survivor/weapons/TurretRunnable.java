@@ -6,16 +6,14 @@ import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Ray;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.utils.TransparentUtils;
 import fr.lumin0u.survivor.weapons.superweapons.Turret;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -121,7 +119,7 @@ public class TurretRunnable extends BukkitRunnable
 					{
 						this.isShooting = true;
 						Ray shoot = new Ray(tur, MCUtils.vectorFrom(tur.toVector(), this.target.getBodyHitbox().midpoint()).normalize().multiply(0.2D), 40.0D, 0.7D);
-						MCUtils.playSound(this.turret.getLocation(), "guns.m240l", 20.0F);
+						TFSound.GUN_SHOT.play(turret.getLocation());
 						IGun.rawShoot(this.owner, weapon, shoot, 1.5D + 0.3D * (double) GameManager.getInstance().getWave());
 					}
 					else

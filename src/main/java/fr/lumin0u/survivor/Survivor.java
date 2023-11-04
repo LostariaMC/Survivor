@@ -2,7 +2,6 @@ package fr.lumin0u.survivor;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.utility.MinecraftReflection;
 import fr.lumin0u.survivor.commands.NoGameCommandExecutor;
 import fr.lumin0u.survivor.commands.SurvivorCommand;
 import fr.lumin0u.survivor.config.MapConfig;
@@ -40,7 +39,8 @@ public class Survivor extends JavaPlugin
 	public static int currentTick;
 	private ProtocolManager protocolManager;
 	private API cosmoxAPI;
-	private final Map<UUID, MapConfigCreation> mapConfigs = new HashMap<>();
+	private final Map<WrappedPlayer, MapConfigCreation> mapConfigs = new HashMap<>();
+	private final List<SvPlayer> svPlayers = new ArrayList<>();
 	
 	public static int CAKE_MAX_BITES = 7;
 	
@@ -51,12 +51,12 @@ public class Survivor extends JavaPlugin
 		WrappedPlayer.registerType(new PlayerWrapper<SvPlayer>(SvPlayer.class) {
 			@Override
 			public SvPlayer unWrap(java.util.UUID uuid) {
-				return GameManager.getInstance() == null ? null : GameManager.getInstance().getSvPlayer(uuid);
+				return getSvPlayer(uuid);
 			}
 			
 			@Override
 			public java.util.UUID wrap(SvPlayer svPlayer) {
-				return svPlayer.getUniqueId();
+				return svPlayer == null ? null : svPlayer.getUniqueId();
 			}
 		});
 	}
@@ -86,8 +86,10 @@ public class Survivor extends JavaPlugin
 		instance = this;
 		cosmoxAPI = API.instance();
 		
-		survivorGame = SurvivorGame.get();
-		cosmoxAPI.registerNewGame(survivorGame);
+		if(!cosmoxAPI.isBuildingServer()) {
+			survivorGame = SurvivorGame.get();
+			cosmoxAPI.registerNewGame(survivorGame);
+		}
 		
 		getServer().getPluginManager().registerEvents(new CosmoxEvents(), this);
 		
@@ -200,11 +202,6 @@ public class Survivor extends JavaPlugin
 		return commandSender.isOp() ? 100 : 0;
 	}
 	
-	public boolean isGhost(Player p)
-	{
-		return false;
-	}
-	
 	public static int getCurrentTick()
 	{
 		return currentTick;
@@ -215,38 +212,45 @@ public class Survivor extends JavaPlugin
 		return protocolManager;
 	}
 	
-	public Class<?> findNMSClass(String name)
-	{
-		return MinecraftReflection.getMinecraftClass(name);
-	}
-	
-	public Class<?> findCraftbukkitClass(String name)
-	{
-		return MinecraftReflection.getCraftBukkitClass(name);
-	}
-	
 	public API getCosmoxAPI() {
 		return cosmoxAPI;
 	}
 	
-	public Map<UUID, MapConfigCreation> getInCreationMapConfigs() {
+	public Map<WrappedPlayer, MapConfigCreation> getInCreationMapConfigs() {
 		return mapConfigs;
 	}
 	
-	public MapConfig getMapConfig(UUID uid) {
-		return Utils.ifNotNullApply(mapConfigs.get(uid), MapConfigCreation::config);
+	public MapConfig getMapConfig(WrappedPlayer player) {
+		return Utils.ifNotNullApply(mapConfigs.get(player), MapConfigCreation::config);
 	}
 	
-	public String getMapConfigName(UUID uid) {
-		return Utils.ifNotNullApply(mapConfigs.get(uid), MapConfigCreation::name);
+	public String getMapConfigName(WrappedPlayer player) {
+		return Utils.ifNotNullApply(mapConfigs.get(player), MapConfigCreation::name);
 	}
 	
-	public MapConfigRenderer getMapConfigRenderer(UUID uid) {
-		return Utils.ifNotNullApply(mapConfigs.get(uid), MapConfigCreation::renderer);
+	public MapConfigRenderer getMapConfigRenderer(WrappedPlayer player) {
+		return Utils.ifNotNullApply(mapConfigs.get(player), MapConfigCreation::renderer);
 	}
 	
-	public static File getPluginConfigDir()
-	{
+	public static File getPluginConfigDir() {
 		return new File("/srv/MinecraftServer/dev/config/plugins/release/Survivor");
+	}
+	
+	public Collection<SvPlayer> getLoadedSvPlayers() {
+		return new ArrayList<>(svPlayers);
+	}
+	
+	public SvPlayer getSvPlayer(Player p) {
+		return getSvPlayer(p.getUniqueId());
+	}
+	
+	public SvPlayer getSvPlayer(UUID uid) {
+		for(SvPlayer sp : svPlayers)
+			if(sp.getUniqueId().equals(uid))
+				return sp;
+		
+		SvPlayer sp = new SvPlayer(uid);
+		svPlayers.add(sp);
+		return sp;
 	}
 }

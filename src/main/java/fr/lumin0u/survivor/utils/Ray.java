@@ -1,6 +1,5 @@
 package fr.lumin0u.survivor.utils;
 
-import fr.lumin0u.survivor.utils.TransparentUtils.CollisionResult;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.RayTraceResult;

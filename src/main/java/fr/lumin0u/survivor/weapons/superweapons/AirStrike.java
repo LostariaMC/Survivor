@@ -9,10 +9,10 @@ import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TransparentUtils;
 import fr.lumin0u.survivor.weapons.WeaponType;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -36,10 +36,10 @@ public class AirStrike extends SuperWeapon
 	
 	@Override
 	public void rightClick() {
-		for(int i = 0; i < 15; ++i)
+		for(int i = 0; i < 15; i++)
 		{
 			Random r = new Random();
-			this.fireball(owner.getShootLocation().clone().add(r.nextDouble() * 10.0D - 50.0D, 100.0D + r.nextDouble() * 30.0D - 15.0D, r.nextDouble() * 10.0D - 50.0D));
+			this.fireball(owner.getShootLocation().clone().add(r.nextDouble() * 10 - 5, 100 + r.nextDouble() * 30 - 15, r.nextDouble() * 10 - 5));
 		}
 		this.useAmmo();
 	}
@@ -65,7 +65,7 @@ public class AirStrike extends SuperWeapon
 		spawnPacket.getEntityTypeModifier().write(0, EntityType.FIREBALL);
 		
 		for(Player player : Bukkit.getOnlinePlayers())
-			MCUtils.sendPacket(player, spawnPacket);
+			WrappedPlayer.of(player).sendPacket(spawnPacket);
 		
 		Location up3 = loc.clone();
 		up3.setY(owner.getShootLocation().getY() + 1);
@@ -88,21 +88,20 @@ public class AirStrike extends SuperWeapon
 						.write(2, floc.getZ());
 				
 				for(Player player : Bukkit.getOnlinePlayers())
-					MCUtils.sendPacket(player, movePacket);
+					WrappedPlayer.of(player).sendPacket(movePacket);
 				
 				MCUtils.explosionParticles(floc, 2.0F, 6, Particle.FLAME, Particle.SMOKE_LARGE);
 				if(floc.getY() <= yStop)
 				{
 					double life = Waves.getEnnemiesLife(GameManager.getInstance().getWave(), GameManager.getInstance().getDifficulty());
-					MCUtils.explosion(owner, AirStrike.this, life / 3, floc, 10.0D, "", 0.0D, owner.getTargetType());
-					loc.getWorld().playSound(floc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
+					MCUtils.explosion(owner, AirStrike.this, life / 3, floc, 10.0D, 0.0D, owner.getTargetType());
 					this.cancel();
 					
 					PacketContainer destroyPacket = new PacketContainer(Server.ENTITY_DESTROY);
 					destroyPacket.getIntLists().write(0, Collections.singletonList(eid));
 					
 					for(Player player : Bukkit.getOnlinePlayers())
-						MCUtils.sendPacket(player, destroyPacket);
+						WrappedPlayer.of(player).sendPacket(destroyPacket);
 				}
 				
 				i++;

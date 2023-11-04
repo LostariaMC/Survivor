@@ -3,26 +3,22 @@ package fr.lumin0u.survivor.objects;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.MultipleFacing;
-import org.bukkit.block.data.type.Fence;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.util.Vector;
-import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Door
 {
@@ -90,7 +86,6 @@ public class Door
 			bar.setType(Material.AIR);
 		}
 		
-		MCUtils.playSound(getMidLoc().toLocation(world), Sound.ENTITY_GENERIC_EXPLODE, 30.0F);
 		if(this.asName != null)
 		{
 			this.asName.remove();
@@ -155,8 +150,7 @@ public class Door
 	}
 	
 	@Deprecated
-	public void setRoom(Room room)
-	{
+	public void setRoom(Room room) {
 		this.room = room;
 	}
 	

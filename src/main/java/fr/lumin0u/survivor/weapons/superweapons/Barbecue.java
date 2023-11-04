@@ -4,6 +4,7 @@ import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.Ray;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -17,7 +18,7 @@ public class Barbecue extends HeatSender
 {
 	public Barbecue(WeaponOwner owner)
 	{
-		super(owner, WeaponType.BARBECUE);
+		super(owner, WeaponType.BARBECUE, TFSound.FLAME_THROWER_SHOT);
 	}
 	
 	@Override

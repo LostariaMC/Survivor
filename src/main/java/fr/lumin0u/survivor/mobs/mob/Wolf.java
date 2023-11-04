@@ -2,8 +2,10 @@ package fr.lumin0u.survivor.mobs.mob;
 
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.AABB;
+import fr.lumin0u.survivor.utils.TFSound;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -15,7 +17,7 @@ public class Wolf extends Enemy
 {
 	public Wolf(Location spawnLoc, double maxHealth, double walkSpeed)
 	{
-		super(EntityType.WOLF, spawnLoc, maxHealth, walkSpeed);
+		super(EntityType.WOLF, spawnLoc, maxHealth, walkSpeed, TFSound.simple(Sound.ENTITY_WOLF_HURT), TFSound.simple(Sound.ENTITY_WOLF_DEATH));
 	}
 	
 	@Override
@@ -41,9 +43,8 @@ public class Wolf extends Enemy
 	}
     
     @Override
-	public void navigation()
-	{
-		Iterator var1 = this.gm.getPlayers().iterator();
+	public void navigation() {
+		Iterator<SvPlayer> var1 = gm.getOnlinePlayers().iterator();
 		
 		while(true)
 		{
@@ -54,17 +55,16 @@ public class Wolf extends Enemy
 				if(!var1.hasNext())
 				{
 					((org.bukkit.entity.Wolf) this.ent).setAngry(true);
-					if(this.target != null)
-					{
-						((org.bukkit.entity.Wolf) this.ent).setTarget(this.target.getPlayer());
+					if(this.target != null) {
+						((org.bukkit.entity.Wolf) this.ent).setTarget(this.target.toBukkit());
 					}
 					
 					return;
 				}
 				
 				sp = (SvPlayer) var1.next();
-				p = sp.getPlayer();
-			} while(this.target != null && !(p.getLocation().distance(this.ent.getLocation()) < this.target.getPlayer().getLocation().distance(this.ent.getLocation())));
+				p = sp.toBukkit();
+			} while(this.target != null && !(p.getLocation().distance(this.ent.getLocation()) < this.target.toBukkit().getLocation().distance(this.ent.getLocation())));
 			
 			if(sp.isAlive() && p.getGameMode().equals(GameMode.ADVENTURE))
 			{

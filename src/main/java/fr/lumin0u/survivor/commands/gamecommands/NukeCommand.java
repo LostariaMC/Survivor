@@ -22,7 +22,7 @@ public class NukeCommand extends AbstractGameCommand
         {
             if(sender instanceof Player)
             {
-                m.kill(GameManager.getInstance().getSvPlayer((Player) sender));
+                m.kill(SvPlayer.of(sender));
             }
             else
             {

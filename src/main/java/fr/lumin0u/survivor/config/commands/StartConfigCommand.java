@@ -39,7 +39,7 @@ public class StartConfigCommand extends SvArgCommand
 				sender.sendMessage("§cCe nom n'est pas valide");
 			}
 		}
-		else if(Survivor.getInstance().getMapConfig(((Player) sender).getUniqueId()) != null)
+		else if(Survivor.getInstance().getMapConfig(WrappedPlayer.of(sender)) != null)
 		{
 			confirmQueue.put((Player) sender, args[0]);
 			sender.sendMessage("§cVous étiez déjà en train de configurer une map !");
@@ -60,7 +60,7 @@ public class StartConfigCommand extends SvArgCommand
 	{
 		if(Survivor.getInstance().getInCreationMapConfigs().containsKey(player.getUniqueId()))
 		{
-			Survivor.getInstance().getMapConfigRenderer(player.getUniqueId()).stop();
+			Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).stop();
 		}
 		
 		if(MapConfig.doesConfigExists(mapName))
@@ -70,6 +70,6 @@ public class StartConfigCommand extends SvArgCommand
 		
 		MapConfig config = MapConfig.loadConfig(mapName);
 		
-		Survivor.getInstance().getInCreationMapConfigs().put(player.getUniqueId(), new MapConfigCreation(config, mapName, new MapConfigRenderer(WrappedPlayer.of(player), config)));
+		Survivor.getInstance().getInCreationMapConfigs().put(WrappedPlayer.of(player), new MapConfigCreation(config, mapName, new MapConfigRenderer(WrappedPlayer.of(player), config)));
 	}
 }

@@ -1,6 +1,7 @@
 package fr.lumin0u.survivor.listeners;
 
 import com.comphenix.protocol.PacketType.Play.Client;
+import com.comphenix.protocol.PacketType.Play.Server;
 import com.comphenix.protocol.events.ListeningWhitelist;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -13,8 +14,10 @@ import fr.lumin0u.survivor.objects.Door;
 import fr.lumin0u.survivor.objects.MagicBoxManager;
 import fr.lumin0u.survivor.objects.Room;
 import fr.lumin0u.survivor.objects.UpgradeBoxManager;
+import fr.lumin0u.survivor.player.LainBodies;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.snipers.Sniper;
@@ -66,11 +69,11 @@ public class PlayerEvents implements PacketListener, Listener
 		{
 			if(!this.cancelAnimation)
 			{
-				Player p = e.getPlayer();
+				SvPlayer sp = SvPlayer.of(e.getPlayer());
 				GameManager gm = GameManager.getInstance();
-				if(e.getAnimationType().equals(PlayerAnimationType.ARM_SWING) && gm.getSvPlayer(p) != null)
+				if(e.getAnimationType().equals(PlayerAnimationType.ARM_SWING) && !sp.isSpectator())
 				{
-					gm.getSvPlayer(p).onLeftClick();
+					sp.onLeftClick();
 				}
 			}
 		}
@@ -81,15 +84,13 @@ public class PlayerEvents implements PacketListener, Listener
 		if(GameManager.getInstance() != null)
 		{
 			ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
-			Player player = e.getPlayer();
+			SvPlayer sp = SvPlayer.of(e.getPlayer());
 			GameManager gm = GameManager.getInstance();
-			if(gm.getSvPlayer(player) != null)
-			{
-				for(Sniper w : gm.getSvPlayer(player).getWeaponsByType(Sniper.class))
-				{
-					if(item.equals(w.getItem()))
-					{
-						w.onScroll();
+			
+			if(!sp.isSpectator()) {
+				for(Sniper w : sp.getWeaponsByType(Sniper.class)) {
+					if(item.equals(w.getItem())) {
+						w.unScope();
 					}
 				}
 			}
@@ -98,8 +99,7 @@ public class PlayerEvents implements PacketListener, Listener
 	
 	@EventHandler
 	public void onSwitchHands(PlayerSwapHandItemsEvent event) {
-		if(GameManager.getInstance() != null)
-		{
+		if(GameManager.getInstance() != null) {
 			event.setCancelled(true);
 		}
 	}
@@ -109,101 +109,78 @@ public class PlayerEvents implements PacketListener, Listener
 		if(GameManager.getInstance() != null)
 		{
 			ItemStack item = e.getItem();
-			final Player player = e.getPlayer();
-			final GameManager gm = GameManager.getInstance();
-			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && !e.getPlayer().getGameMode().equals(GameMode.CREATIVE))
-			{
+			SvPlayer player = SvPlayer.of(e.getPlayer());
+			
+			GameManager gm = GameManager.getInstance();
+			
+			if(!player.toBukkit().getGameMode().equals(GameMode.CREATIVE)) {
 				e.setCancelled(true);
 			}
 			
-			if(gm.isStarted() && player.getGameMode().equals(GameMode.ADVENTURE))
-			{
+			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getType().equals(Material.ENDER_CHEST) && gm.isStarted()) {
+				gm.getMagicBoxManager().onClickOnBox(player);
 				e.setCancelled(true);
 			}
 			
-			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getType().equals(Material.ENDER_CHEST) && gm.isStarted())
+			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getItem() != null && (e.getClickedBlock().getType().equals(Material.HOPPER) || e.getClickedBlock().getType().equals(Material.BARRIER)) && gm.isStarted() && player.isAlive())
 			{
-				gm.getMagicBoxManager().onClickOnBox(e.getPlayer());
-				e.setCancelled(true);
-			}
-			
-			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getItem() != null && (e.getClickedBlock().getType().equals(Material.HOPPER) || e.getClickedBlock().getType().equals(Material.BARRIER)) && gm.isStarted() && gm.getSvPlayer(player).isAlive())
-			{
-				boolean hopper = IS_PACK_A_PUNCH.test(e.getClickedBlock());
-				if(!hopper)
-				{
-					hopper = IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(1, 0, 0));
-				}
-				
-				if(!hopper)
-				{
-					hopper = IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(-1, 0, 0));
-				}
-				
-				if(!hopper)
-				{
-					hopper = IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(0, 0, 1));
-				}
-				
-				if(!hopper)
-				{
-					hopper = IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(0, 0, -1));
-				}
+				boolean hopper = IS_PACK_A_PUNCH.test(e.getClickedBlock())
+						|| IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(1, 0, 0))
+						|| IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(-1, 0, 0))
+						|| IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(0, 0, 1))
+						|| IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(0, 0, -1));
 				
 				if(hopper)
 				{
 					if(e.getClickedBlock().getType().equals(Material.BARRIER))
 					{
-						MCUtils.armSwingAnimation(player, false);
+						MCUtils.armSwingAnimation(player.toBukkit(), false);
 					}
 					
-					UpgradeBoxManager.onClickHopper(e.getClickedBlock(), e.getPlayer());
+					UpgradeBoxManager.onClickHopper(e.getClickedBlock(), player);
 					e.setCancelled(true);
 					return;
 				}
 			}
 			
-			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getBlockData() instanceof Gate && gm.isStarted() && gm.getSvPlayer(player).isAlive())
+			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getBlockData() instanceof Gate && gm.isStarted() && player.isAlive())
 			{
 				boolean zombieNear = gm.getMobs().stream().anyMatch(m -> m.getEntity().getLocation().distance(e.getClickedBlock().getLocation()) < 4.0D);
 				
-				new BukkitRunnable()
+				Room room = gm.getRooms().stream().filter(r -> r.getFences().contains(e.getClickedBlock().getLocation())).findFirst().get();
+				
+				/*new BukkitRunnable()
 				{
 					@Override
-					public void run() {
+					public void run() {*/
 						if(!zombieNear)
 						{
-							Room.placeFence(e.getClickedBlock().getLocation());
-							gm.getSvPlayer(player).addMoney(100 * (int) Math.sqrt(gm.getWave()) / (int) gm.getRooms().stream().filter(Room::isBought).mapToInt(room -> room.getFences().size()).sum());
+							room.placeFence(e.getClickedBlock().getLocation());
+							player.addMoney(100 * Math.sqrt(gm.getWave()) / gm.getTotalFenceCount());
 						}
 						else
 						{
-							Room.placeGate(e.getClickedBlock().getLocation());
+							room.placeGate(e.getClickedBlock().getLocation());
 						}
-						
-					}
-				}.runTaskLater(Survivor.getInstance(), 2L);
+				/*	}
+				}.runTaskLater(Survivor.getInstance(), 2L);*/
 			}
 			
-			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-			{
-				if(gm.isStarted())
-				{
-					for(Door d : gm.getDoors())
-					{
-						if(d.getBars().contains(e.getClickedBlock()) && !d.getRoom().isBought())
-						{
-							d.buy(gm.getSvPlayer(player));
+			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+				if(gm.isStarted()) {
+					for(Door d : gm.getDoors()) {
+						if(d.getBars().contains(e.getClickedBlock()) && !d.getRoom().isBought()) {
+							d.buy(player);
 							return;
 						}
 					}
 				}
 			}
 			
-			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getLocation().equals(gm.getElectrical()) && !gm.canPlayerBuyAsset() && gm.getSvPlayer(player).getMoney() >= 1000)
+			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getLocation().equals(gm.getElectrical()) && !gm.canPlayerBuyAsset() && player.getMoney() >= 1000)
 			{
 				gm.buyElectrical(player);
-				gm.getSvPlayer(player).addMoney(-1000);
+				player.addMoney(-1000);
 				
 				if(e.getClickedBlock().getType().equals(Material.LEVER))
 				{
@@ -215,22 +192,14 @@ public class PlayerEvents implements PacketListener, Listener
 			
 			if(item != null && item.getType().equals(Material.CARROT))
 			{
-				gm.getSvPlayer(player).openSupplyInventory();
+				player.openSupplyInventory();
 			}
 			
-			if(!gm.isStarted() && item != null)
-			{
-				if(item.getType().equals(Material.SKELETON_SKULL))
-				{
-					gm.getSvPlayer(player).openDiffInventory();
-				}
-			}
-			
-			if((e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) && gm.getSvPlayer(player) != null)
+			if((e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) && !player.isSpectator())
 			{
 				List<Weapon> needsAmmo = new ArrayList<>();
 				
-				for(Weapon w : gm.getSvPlayer(player).getSimpleWeapons())
+				for(Weapon w : player.getSimpleWeapons())
 				{
 					if(w.getAmmo() < w.getMaxAmmo())
 					{
@@ -240,7 +209,7 @@ public class PlayerEvents implements PacketListener, Listener
 				
 				if(!needsAmmo.isEmpty())
 				{
-					BlockIterator itr = new BlockIterator(player.getEyeLocation().setDirection(player.getEyeLocation().getDirection()), 0.0D, 5);
+					BlockIterator itr = new BlockIterator(player.toBukkit().getEyeLocation().setDirection(player.toBukkit().getEyeLocation().getDirection()), 0.0D, 5);
 					
 					while(itr.hasNext())
 					{
@@ -248,14 +217,13 @@ public class PlayerEvents implements PacketListener, Listener
 						
 						if(block.getType().equals(Material.CAKE))
 						{
-							MCUtils.armSwingAnimation(player, false);
+							MCUtils.armSwingAnimation(player.toBukkit(), false);
 							Cake cake = (Cake) block.getBlockData();
 							
 							for(int i = 0; i < Math.min(needsAmmo.size(), Survivor.CAKE_MAX_BITES - cake.getBites() + 1); ++i)
 							{
-								MCUtils.playSound(player.getLocation(), "guns.ammotake", 10.0F);
-								if(needsAmmo.get(i).getAmmo() <= 0)
-								{
+								TFSound.AMMO_TAKE.play(player.toBukkit().getLocation());
+								if(needsAmmo.get(i).getAmmo() <= 0) {
 									needsAmmo.get(i).reload();
 								}
 								
@@ -278,9 +246,8 @@ public class PlayerEvents implements PacketListener, Listener
 					}
 				}
 				
-				if(item != null && gm.getSvPlayer(player).getWeaponInHand() != null)
-				{
-					gm.getSvPlayer(player).onRightClick();
+				if(player.getWeaponInHand() != null) {
+					player.onRightClick();
 				}
 			}
 			
@@ -295,14 +262,13 @@ public class PlayerEvents implements PacketListener, Listener
 	
 	@EventHandler
 	public void onDamage(EntityDamageEvent e) {
-		if(GameManager.getInstance() != null && e.getEntity() instanceof Player p)
+		if(GameManager.getInstance() != null && e.getEntity() instanceof Player)
 		{
-			p.setFireTicks(0);
+			SvPlayer player = SvPlayer.of(e.getEntity());
+			player.toBukkit().setFireTicks(0);
 			Enemy damagerMob = null;
-			if(e.getCause().equals(DamageCause.ENTITY_ATTACK) && GameManager.getInstance().getSvPlayer(p).isAlive())
-			{
+			if(e.getCause().equals(DamageCause.ENTITY_ATTACK) && player.isAlive()) {
 				Entity damager = ((EntityDamageByEntityEvent) e).getDamager();
-				
 				for(DamageModifier mod : DamageModifier.values())
 					if(e.isApplicable(mod))
 						e.setDamage(mod, 0);
@@ -311,30 +277,27 @@ public class PlayerEvents implements PacketListener, Listener
 				
 				damagerMob = GameManager.getInstance().getMob(damager);
 				
-				if(damager instanceof Zombie && damagerMob instanceof PoisonousBoss)
-				{
-					p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 0));
+				if(damager instanceof Zombie && damagerMob instanceof PoisonousBoss) {
+					player.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 0));
 				}
 			}
-			else if(e.getCause() != DamageCause.POISON)
-			{
+			else if(e.getCause() != DamageCause.POISON) {
 				e.setCancelled(true);
 			}
 			
-			if(!e.isCancelled() && GameManager.getInstance().getSvPlayer(p).damage(e.getFinalDamage(), damagerMob, null, false, null, true))
-			{
+			if(!e.isCancelled() && player.damage(e.getFinalDamage(), damagerMob, null, false, null, true)) {
 				e.setCancelled(true);
 			}
 		}
 	}
 	
 	@EventHandler
-	public void onInteractAtEntity(final PlayerInteractEntityEvent e) {
+	public void onInteractAtEntity(PlayerInteractEntityEvent e) {
 		if(GameManager.getInstance() != null)
 		{
 			GameManager gm = GameManager.getInstance();
-			SvPlayer sp = gm.getSvPlayer(e.getPlayer());
-			if(e.getRightClicked().getType().equals(EntityType.ITEM_FRAME) && (!((ItemFrame) e.getRightClicked()).getItem().getType().equals(Material.AIR) || !e.getPlayer().getGameMode().equals(GameMode.CREATIVE)) && gm.isStarted() && sp.isAlive())
+			SvPlayer player = SvPlayer.of(e.getPlayer());
+			if((e.getRightClicked().getType().equals(EntityType.ITEM_FRAME) || e.getRightClicked().getType().equals(EntityType.GLOW_ITEM_FRAME)) && !((ItemFrame) e.getRightClicked()).getItem().getType().equals(Material.AIR) && gm.isStarted() && player.isAlive())
 			{
 				e.setCancelled(true);
 				
@@ -343,35 +306,35 @@ public class PlayerEvents implements PacketListener, Listener
 					if(wt.getMaterial().equals(((ItemFrame) e.getRightClicked()).getItem().getType()))
 					{
 						((ItemFrame) e.getRightClicked()).setItem(wt.getItemToSell());
-						if(wt.getPrice() <= sp.getMoney() && !sp.getWeaponTypes().contains(wt))
+						if(wt.getPrice() <= player.getMoney() && !player.getWeaponTypes().contains(wt))
 						{
-							if(sp.getSimpleWeapons().size() >= (sp.getAtouts().contains(SvAsset.TROIS_ARME) ? 3 : 2))
+							if(player.getSimpleWeapons().size() >= (player.getAtouts().contains(SvAsset.TROIS_ARME) ? 3 : 2))
 							{
-								for(Weapon w : new ArrayList<>(sp.getSimpleWeapons()))
+								for(Weapon w : new ArrayList<>(player.getSimpleWeapons()))
 								{
 									if(e.getPlayer().getInventory().getItemInMainHand().equals(w.getItem()))
 									{
-										sp.removeWeapon(w);
-										sp.getPlayer().getInventory().remove(w.getType().getMaterial());
-										wt.getNewWeapon(sp).giveItem();
-										sp.addMoney(-wt.getPrice());
+										player.removeWeapon(w);
+										player.toBukkit().getInventory().remove(w.getType().getMaterial());
+										wt.getNewWeapon(player).giveItem();
+										player.addMoney(-wt.getPrice());
 									}
 								}
 							}
 							else
 							{
-								wt.getNewWeapon(sp).giveItem();
-								sp.addMoney(-wt.getPrice());
+								wt.getNewWeapon(player).giveItem();
+								player.addMoney(-wt.getPrice());
 							}
 						}
-						else if(wt.getPrice() / 2 <= sp.getMoney() && sp.getWeaponTypes().contains(wt))
+						else if((double) wt.getPrice() / 2 <= player.getMoney() && player.getWeaponTypes().contains(wt))
 						{
-							for(Weapon w : new ArrayList<>(sp.getSimpleWeapons()))
+							for(Weapon w : new ArrayList<>(player.getSimpleWeapons()))
 							{
 								if(w.getType().equals(wt) && w.getAmmo() < w.getMaxAmmo())
 								{
 									w.setAmmo(w.getMaxAmmo());
-									sp.addMoney(-wt.getPrice() / 2);
+									player.addMoney((double) -wt.getPrice() / 2);
 								}
 							}
 						}
@@ -400,25 +363,25 @@ public class PlayerEvents implements PacketListener, Listener
 							break;
 						}
 						
-						if(asset.getPrice() <= sp.getMoney() && !sp.getAtouts().contains(asset) && sp.getAtouts().size() < 4)
+						if(asset.getPrice() <= player.getMoney() && !player.getAtouts().contains(asset) && player.getAtouts().size() < 4)
 						{
-							sp.getAtouts().add(asset);
+							player.getAtouts().add(asset);
 							
-							sp.getPlayer().sendMessage(SurvivorGame.prefix + "§6Vous avez acheté l'atout §a" + asset.getName() + " §7(il apparait dans votre inventaire, appuyer sur votre touche de drop pour vous en débarrasser)");
+							player.toBukkit().sendMessage(SurvivorGame.prefix + "§6Vous avez acheté l'atout §a" + asset.getName() + " §7(il apparait dans votre inventaire, appuyer sur votre touche de drop pour vous en débarrasser)");
 							
-							sp.addMoney(-asset.getPrice());
+							player.addMoney(-asset.getPrice());
 							if(asset.equals(SvAsset.MASTODONTE))
 							{
-								sp.getPlayer().setMaxHealth(GameManager.getInstance().getDifficulty().getMaxHealth() * 2.0D);
-								sp.getPlayer().setHealth(GameManager.getInstance().getDifficulty().getMaxHealth() * 2.0D);
+								player.toBukkit().setMaxHealth(GameManager.getInstance().getDifficulty().getMaxHealth() * 2.0D);
+								player.toBukkit().setHealth(GameManager.getInstance().getDifficulty().getMaxHealth() * 2.0D);
 							}
 							
 							if(asset.equals(SvAsset.MARATHON))
 							{
-								sp.getPlayer().setWalkSpeed(0.3F);
+								player.toBukkit().setWalkSpeed(0.3F);
 							}
 							
-							sp.cleanInventory();
+							player.cleanInventory();
 						}
 					}
 				}
@@ -448,30 +411,26 @@ public class PlayerEvents implements PacketListener, Listener
 	public void onMove(PlayerMoveEvent e) {
 		if(GameManager.getInstance() != null)
 		{
-			SvPlayer sp = GameManager.getInstance().getSvPlayer(e.getPlayer());
+			SvPlayer sp = SvPlayer.of(e.getPlayer());
 			
-			if(/*((LivingEntity) e.getPlayer()).isOnGround() && */sp != null)
-			{
+			
+			if(sp.isOnGround()) {
+				e.getTo().setX(e.getFrom().getX());
+				e.getTo().setZ(e.getFrom().getZ());
+			}
+			
+			if(sp.isDead()) {
 				Location tp = sp.checkNotOnBeacon();
 				if(tp != null)
 					e.setTo(tp);
+				
+				if(GameManager.getInstance().getRooms().stream().anyMatch(room -> room.getFences().contains(e.getTo().getBlock().getLocation()) || room.getFences().contains(e.getTo().getBlock().getLocation().add(0.0D, 1.0D, 0.0D)))) {
+					e.setCancelled(true);
+				}
 			}
 			
-			if(sp != null && sp.isOnGround())
-			{
-				e.getTo().setX(e.getFrom().getX());
-				e.getTo().setZ(e.getFrom().getZ());
-				e.setTo(e.getTo());
-			}
-			
-			if(GameManager.getInstance().getRooms().stream().anyMatch(room -> room.getFences().contains(e.getTo().getBlock().getLocation()) || room.getFences().contains(e.getTo().getBlock().getLocation().add(0.0D, 1.0D, 0.0D))))
-				e.setCancelled(true);
-			
-			if(e.getPlayer().getGameMode().equals(GameMode.SPECTATOR))
-			{
-				if(!e.getPlayer().getWorld().equals(GameManager.getInstance().getWorld()) || Bukkit.getOnlinePlayers().stream().filter(player -> !player.getGameMode().equals(GameMode.SPECTATOR)).mapToDouble(player -> player.getLocation().distance(e.getTo())).min().orElse(0) > 100)
-					e.getPlayer().teleport(Bukkit.getOnlinePlayers().stream().filter(player -> !player.getGameMode().equals(GameMode.SPECTATOR)).findFirst().get());
-			}
+			if(sp.isSpectator() && !e.getPlayer().getWorld().equals(GameManager.getInstance().getWorld()) || Bukkit.getOnlinePlayers().stream().filter(player -> !player.getGameMode().equals(GameMode.SPECTATOR)).mapToDouble(player -> player.getLocation().distance(e.getTo())).min().orElse(0) > 100)
+				e.getPlayer().teleport(Bukkit.getOnlinePlayers().stream().filter(player -> !player.getGameMode().equals(GameMode.SPECTATOR)).findFirst().get());
 		}
 	}
 	
@@ -501,43 +460,30 @@ public class PlayerEvents implements PacketListener, Listener
 			
 			GameManager gm = GameManager.getInstance();
 			
-			SvPlayer svPlayer = gm.getOfflinePlayer(player.getUniqueId());
-			gm.getOfflinePlayers().remove(svPlayer);
-			boolean contains = svPlayer != null;
+			SvPlayer sp = SvPlayer.of(player);
 			
 			Bukkit.broadcastMessage(SurvivorGame.prefix + "§a+ §7" + e.getPlayer().getName() + " a rejoint la partie");
 			player.getInventory().clear();
 			
 			boolean inWave = gm.isInWave();
 			
-			if(!contains)
-			{
-				svPlayer = new SvPlayer(player);
-				gm.getPlayers().add(svPlayer);
-				svPlayer.setMoney((int) (Math.pow(gm.getWave(), 1.5D) * 50.0D) / 50 * 50);
-				WeaponType.LITTLE_KNIFE.getNewWeapon(svPlayer).giveItem();
-				WeaponType.M1911.getNewWeapon(svPlayer).giveItem();
-			}
-			else
-			{
-				gm.getPlayers().add(svPlayer);
-			}
+			sp.getWeapons().forEach(sp::giveWeaponItem);
 			
 			if(inWave)
 			{
 				player.sendMessage(SurvivorGame.prefix + "§fUne vague est en cours, vous apparaitrez au début de la prochaine");
-				svPlayer.setDeadLifeStateCauseHeJustJoined();
+				sp.setDeadLifeStateCauseHeJustJoined();
 			}
 			
-			svPlayer.toCosmox().setTeam(Team.RANDOM);
+			sp.toCosmox().setTeam(Team.RANDOM);
 			
 			player.setMaxHealth(gm.getDifficulty().getMaxHealth());
 			
 			player.teleport(gm.getSpawnpoint());
 			player.setGameMode(inWave ? GameMode.SPECTATOR : GameMode.ADVENTURE);
 			
-			svPlayer.cleanInventory();
-			Surviboard.reInitScoreboard(svPlayer);
+			sp.cleanInventory();
+			Bukkit.getOnlinePlayers().stream().map(SvPlayer::of).forEach(Surviboard::reInitScoreboard);
 		}
 	}
 	
@@ -546,24 +492,21 @@ public class PlayerEvents implements PacketListener, Listener
 		if(GameManager.getInstance() != null)
 		{
 			GameManager gm = GameManager.getInstance();
-			SvPlayer sp = gm.getSvPlayer(e.getPlayer());
+			SvPlayer sp = SvPlayer.of(e.getPlayer());
 			
 			if(gm.isStarted())
 				e.setQuitMessage(SurvivorGame.prefix + "§c- §7" + e.getPlayer().getName() + " a quitté la partie");
 			else
 				e.setQuitMessage(SurvivorGame.prefix + "§c- §7" + e.getPlayer().getName() + " a quitté le lobby");
 			
-			if(sp == null)
-				return;
+			//sp.onDisconnect();
 			
-			gm.getOfflinePlayers().add(sp);
-			gm.getPlayers().remove(sp);
-			if(gm.getPlayers().isEmpty() && gm.isStarted())
-			{
+			if(gm.getOnlinePlayers().isEmpty() && gm.isStarted()) {
 				gm.endGame();
 			}
-			
 		}
+		
+		LainBodies.onDisconnect(e.getPlayer().getEntityId());
 	}
 	
 	@EventHandler
@@ -585,7 +528,7 @@ public class PlayerEvents implements PacketListener, Listener
 			}
 			else if(clickedDoor.isPresent())
 			{
-				clickedDoor.get().buy(GameManager.getInstance().getSvPlayer(e.getPlayer()));
+				clickedDoor.get().buy(SvPlayer.of(e.getPlayer()));
 			}
 			else
 			{
@@ -602,18 +545,23 @@ public class PlayerEvents implements PacketListener, Listener
 	}
 	
 	@Override
-	public void onPacketSending(PacketEvent packetEvent) {
-	
+	public void onPacketSending(PacketEvent event) {
+		if(event.getPacket().getType().equals(Server.ENTITY_METADATA)
+				&& event.getPlayer().getEntityId() != event.getPacket().getIntegers().read(0)
+				&& LainBodies.isLain(event.getPacket().getIntegers().read(0)))
+		{
+			event.setCancelled(true);
+		}
 	}
 	
 	@Override
 	public ListeningWhitelist getSendingWhitelist() {
-		return null;
+		return ListeningWhitelist.EMPTY_WHITELIST;
 	}
 	
 	@Override
 	public ListeningWhitelist getReceivingWhitelist() {
-		return null;
+		return ListeningWhitelist.EMPTY_WHITELIST;
 	}
 	
 	@Override

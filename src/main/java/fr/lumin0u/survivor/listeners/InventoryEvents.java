@@ -11,7 +11,6 @@ import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
@@ -33,7 +32,7 @@ public class InventoryEvents implements Listener
 			e.setCancelled(true);
 		}
 		
-		SvPlayer sp = GameManager.getInstance().getSvPlayer((Player) e.getWhoClicked());
+		SvPlayer sp = SvPlayer.of(e.getWhoClicked());
 		
 		if(MCUtils.getTitle(e.getView()).equals("Approvisionnement") && e.getCurrentItem() != null)
 		{
@@ -49,22 +48,6 @@ public class InventoryEvents implements Listener
 			
 			sp.openSupplyInventory();
 		}
-		
-		/*if(MCUtils.getTitle(e.getView()).equals("Difficulté") && e.getCurrentItem() != null)
-		{
-			for(Difficulty diff : Difficulty.values())
-			{
-				ItemStack item = e.getCurrentItem().clone();
-				ItemStack item1 = diff.getNewGlass().clone();
-				if(item.getType().equals(item1.getType()))
-				{
-					sp.setDiffVote(diff);
-				}
-			}
-			
-			GameManager.getInstance().calculateDifficulty();
-			sp.openDiffInventory();
-		}*/
 		
 		if(UpgradeBoxManager.getUpgradeGui(sp) != null && e.getCurrentItem() != null)
 		{
@@ -82,18 +65,21 @@ public class InventoryEvents implements Listener
 		{
 			e.setCancelled(true);
 			ItemStack item = e.getItemDrop().getItemStack();
-			Player p = e.getPlayer();
+			SvPlayer player = SvPlayer.of(e.getPlayer());
 			GameManager gm = GameManager.getInstance();
-			final Weapon inHand = gm.getSvPlayer(p).getWeapon(e.getItemDrop().getItemStack());
+			
+			final Weapon inHand = player.getWeapon(e.getItemDrop().getItemStack());
+			
 			if(gm.isStarted() && inHand != null && inHand.isUseable() && inHand.getClip() < inHand.getClipSize())
 			{
-				(new BukkitRunnable()
+				new BukkitRunnable()
 				{
+					@Override
 					public void run()
 					{
 						inHand.reload();
 					}
-				}).runTaskLater(Survivor.getInstance(), 1L);
+				}.runTaskLater(Survivor.getInstance(), 1L);
 			}
 			
 			SvAsset asset = SvAsset.byMat(item.getType());
@@ -101,22 +87,19 @@ public class InventoryEvents implements Listener
 			{
 				e.setCancelled(false);
 				e.getItemDrop().remove();
-				gm.getSvPlayer(p).getAtouts().remove(asset);
+				player.getAtouts().remove(asset);
 				
-				p.sendMessage(SurvivorGame.prefix + "§6Vous avez retiré l'atout §a" + asset.getName());
-				gm.getSvPlayer(p).addMoney(asset.getPrice() / 2);
+				player.toBukkit().sendMessage(SurvivorGame.prefix + "§6Vous avez retiré l'atout §a" + asset.getName());
+				player.addMoney((double) asset.getPrice() / 2);
 				
-				if(asset.equals(SvAsset.MASTODONTE))
-				{
-					p.setHealth(GameManager.getInstance().getDifficulty().getMaxHealth());
-					p.setMaxHealth(GameManager.getInstance().getDifficulty().getMaxHealth());
+				if(asset.equals(SvAsset.MASTODONTE)) {
+					player.toBukkit().setHealth(GameManager.getInstance().getDifficulty().getMaxHealth());
+					player.toBukkit().setMaxHealth(GameManager.getInstance().getDifficulty().getMaxHealth());
 				}
-				
-				if(asset.equals(SvAsset.MARATHON))
-				{
-					p.setWalkSpeed(0.2F);
+				if(asset.equals(SvAsset.MARATHON)) {
+					player.toBukkit().setWalkSpeed(0.2F);
 				}
-				gm.getSvPlayer(p).cleanInventory();
+				player.cleanInventory();
 			}
 			
 		}

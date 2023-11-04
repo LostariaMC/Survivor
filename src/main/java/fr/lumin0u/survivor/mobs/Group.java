@@ -1,6 +1,9 @@
-package fr.lumin0u.survivor.mobs.mob;
+package fr.lumin0u.survivor.mobs;
 
 import fr.lumin0u.survivor.GameManager;
+import fr.lumin0u.survivor.mobs.mob.BabyZombie;
+import fr.lumin0u.survivor.mobs.mob.Enemy;
+import fr.lumin0u.survivor.mobs.mob.Zombie;
 import fr.lumin0u.survivor.mobs.mob.boss.CloneZombie;
 
 import java.util.ArrayList;

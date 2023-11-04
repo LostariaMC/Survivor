@@ -2,8 +2,8 @@ package fr.lumin0u.survivor.commands.gamecommands;
 
 import fr.lumin0u.survivor.commands.AbstractGameCommand;
 import fr.lumin0u.survivor.mobs.mob.*;
-import fr.lumin0u.survivor.mobs.mob.boss.CopyCatBoss;
 import fr.lumin0u.survivor.mobs.mob.boss.CloneBoss;
+import fr.lumin0u.survivor.mobs.mob.boss.CopyCatBoss;
 import fr.lumin0u.survivor.mobs.mob.boss.PoisonousBoss;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

@@ -1,6 +1,5 @@
 package fr.lumin0u.survivor.objects;
 
-import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.ItemBuilder;
@@ -11,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
@@ -26,14 +24,13 @@ public class UpgradeBoxManager
 	
 	private static Map<SvPlayer, UpgradeGui> onScreen = new HashMap<>();
 	
-	public static void onClickHopper(Block b, Player clicker)
+	public static void onClickHopper(Block b, SvPlayer clicker)
 	{
-		SvPlayer sp = GameManager.getInstance().getSvPlayer(clicker);
-		Weapon weapon = sp.getWeaponInHand();
+		Weapon weapon = clicker.getWeaponInHand();
 		
 		UpgradeGui gui = new UpgradeGui(weapon);
 		gui.createAndShow();
-		onScreen.put(sp, gui);
+		onScreen.put(clicker, gui);
 	}
 	
 	public static UpgradeGui getUpgradeGui(SvPlayer sp)
@@ -67,15 +64,15 @@ public class UpgradeBoxManager
 		{
 			if(!(weapon instanceof Upgradeable))
 			{
-				sp.getPlayer().closeInventory();
-				sp.getPlayer().sendMessage(SurvivorGame.prefix + "§cCette arme n'est pas améliorable");
+				sp.toBukkit().closeInventory();
+				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cCette arme n'est pas améliorable");
 				return;
 			}
 			if(sp.getMoney() <= ((Upgradeable) weapon).getNextLevelPrice())
 			{
-				sp.getPlayer().closeInventory();
-				sp.getPlayer().playSound(sp.getPlayer().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-				sp.getPlayer().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent");
+				sp.toBukkit().closeInventory();
+				sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent");
 				return;
 			}
 			
@@ -92,8 +89,8 @@ public class UpgradeBoxManager
 		{
 			if(sp.getMoney() <= Perk.PRICE)
 			{
-				sp.getPlayer().closeInventory();
-				sp.getPlayer().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent");
+				sp.toBukkit().closeInventory();
+				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent");
 				return;
 			}
 			
@@ -103,9 +100,9 @@ public class UpgradeBoxManager
 			weapon.setPerk(perk);
 			weapon.giveItem();
 			
-			sp.getPlayer().sendMessage(SurvivorGame.prefix + "§eVous obtenez : " + perk.getDisplayName());
+			sp.toBukkit().sendMessage(SurvivorGame.prefix + "§eVous obtenez : " + perk.getDisplayName());
 			
-			sp.getPlayer().closeInventory();
+			sp.toBukkit().closeInventory();
 		}
 		
 		public void createAndShow()
@@ -118,7 +115,7 @@ public class UpgradeBoxManager
 			boolean canUpgrade = isUpgradeable && ((Upgradeable) weapon).getNextLevelPrice() <= sp.getMoney();
 			inv.setItem(15, new ItemBuilder(canUpgrade ? Material.COOKED_RABBIT : Material.RABBIT).setDisplayName((isUpgradeable ? "§" + (canUpgrade ? "a" : "c") + "Améliorer §8- §6" + ((Upgradeable) weapon).getNextLevelPrice() + "$" : "§cNon améliorable")).build());
 			
-			sp.getPlayer().openInventory(inv);
+			sp.toBukkit().openInventory(inv);
 		}
 	}
 }

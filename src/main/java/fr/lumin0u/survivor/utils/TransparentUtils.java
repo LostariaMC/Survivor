@@ -1,13 +1,11 @@
 package fr.lumin0u.survivor.utils;
 
-import net.minecraft.world.level.block.DoubleBlockFinder.BlockType;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 

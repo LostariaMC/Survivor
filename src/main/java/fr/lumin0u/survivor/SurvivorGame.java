@@ -63,7 +63,6 @@ public class SurvivorGame
 				new ItemBuilder(Difficulty.NOT_SET.getItemRep()).setDisplayName("§6Difficulté").setLore(List.of(" ", "§7Définir la difficulté de", "§7la partie", " ", "§e Valeur actuelle : %ls")).build(),
 				false, false);
 		difficultyParameter.setCurrentInt(Difficulty.NOT_SET.ordinal());
-		difficultyParameter.setItemModifier((item, p) -> item.setType(Difficulty.values()[p.getCurrentInt()].getItemRep().getType()));
 		
 		List<Parameter> parameters = new ArrayList<>(List.of(difficultyParameter));
 		

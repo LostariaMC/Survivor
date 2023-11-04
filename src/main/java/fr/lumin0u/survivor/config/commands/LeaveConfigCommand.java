@@ -3,6 +3,7 @@ package fr.lumin0u.survivor.config.commands;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.commands.SvArgCommand;
 import fr.lumin0u.survivor.config.MapConfigCreation;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
@@ -21,7 +22,7 @@ public class LeaveConfigCommand extends SvArgCommand
     public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         
-        MapConfigCreation configCreation = Survivor.getInstance().getInCreationMapConfigs().get(player.getUniqueId());
+        MapConfigCreation configCreation = Survivor.getInstance().getInCreationMapConfigs().get(WrappedPlayer.of(player));
         
         if(configCreation == null)
         {
@@ -33,7 +34,7 @@ public class LeaveConfigCommand extends SvArgCommand
     }
     
     public static void leaveConfig(Player player) {
-        MapConfigCreation configCreation = Survivor.getInstance().getInCreationMapConfigs().get(player.getUniqueId());
+        MapConfigCreation configCreation = Survivor.getInstance().getInCreationMapConfigs().get(WrappedPlayer.of(player));
         
         configCreation.renderer().stop();
     
@@ -47,6 +48,6 @@ public class LeaveConfigCommand extends SvArgCommand
     
         player.sendMessage(component);
     
-        Survivor.getInstance().getInCreationMapConfigs().remove(player.getUniqueId());
+        Survivor.getInstance().getInCreationMapConfigs().remove(WrappedPlayer.of(player));
     }
 }

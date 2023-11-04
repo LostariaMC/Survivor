@@ -1,6 +1,9 @@
 package fr.lumin0u.survivor.utils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -141,31 +144,50 @@ public class Utils
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 	
-	public static <T> Collector<T, LinkedList<T>, Optional<T>> randomCollector() {
-		return new Collector<T, LinkedList<T>, Optional<T>>() {
+	public static <T> Collector<T, ?, Optional<T>> randomCollector() {
+		return randomCollector(new Random());
+	}
+	
+	public static <T> Collector<T, ?, Optional<T>> randomCollector(Random random) {
+		final class IntTPair<E>
+		{
+			private int n;
+			private E obj;
+			
+			IntTPair(int n, E obj) {
+				this.n = n;
+				this.obj = obj;
+			}
+		}
+		
+		return new Collector<T, IntTPair<T>, Optional<T>>() {
 			@Override
-			public Supplier<LinkedList<T>> supplier() {
-				return LinkedList::new;
+			public Supplier<IntTPair<T>> supplier() {
+				return () -> new IntTPair<>(0, null);
 			}
 			
 			@Override
-			public BiConsumer<LinkedList<T>, T> accumulator() {
-				return LinkedList::add;
+			public BiConsumer<IntTPair<T>, T> accumulator() {
+				return (acc, obj) -> {
+					acc.n++;
+					if(random.nextInt(acc.n + 1) == 0)
+						acc.obj = obj;
+				};
 			}
 			
 			@Override
-			public BinaryOperator<LinkedList<T>> combiner() {
-				return (l, r) -> {l.addAll(r); return r;};
+			public BinaryOperator<IntTPair<T>> combiner() {
+				return (l, r) -> new IntTPair<>(l.n + r.n, random.nextInt(l.n + r.n) < l.n ? l.obj : r.obj);
 			}
 			
 			@Override
-			public Function<LinkedList<T>, Optional<T>> finisher() {
-				return l -> l.isEmpty() ? Optional.empty() : Optional.ofNullable(l.get(new Random().nextInt(l.size())));
+			public Function<IntTPair<T>, Optional<T>> finisher() {
+				return p -> Optional.ofNullable(p.obj);
 			}
 			
 			@Override
 			public Set<Characteristics> characteristics() {
-				return Set.of();
+				return Set.of(Characteristics.CONCURRENT, Characteristics.UNORDERED);
 			}
 		};
 	}

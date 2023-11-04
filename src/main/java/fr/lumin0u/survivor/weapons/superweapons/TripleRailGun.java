@@ -4,16 +4,17 @@ import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.WeaponOwner;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.IRailGun;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.Color;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class TripleRailGun extends Gun implements IRailGun
+public class TripleRailGun extends SuperGun implements IRailGun
 {
 	public TripleRailGun(WeaponOwner owner)
 	{
-		super(owner, WeaponType.TRIPLE_RAILGUN);
+		super(owner, WeaponType.TRIPLE_RAILGUN, TFSound.RAILGUN_SHOT);
 	}
 	
 	@Override

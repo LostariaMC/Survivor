@@ -1,6 +1,5 @@
 package fr.lumin0u.survivor.utils;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.PacketType.Play;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.BlockPosition;
@@ -14,6 +13,7 @@ import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.weapons.Weapon;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.title.Title;
@@ -44,7 +44,7 @@ import java.util.*;
 
 public class MCUtils
 {
-	public static void playSound(Location l, Sound sound, float maxDistance)
+	/*public static void playSound(Location l, Sound sound, float maxDistance)
 	{
 		playSound(l, sound, maxDistance, 1);
 	}
@@ -59,12 +59,6 @@ public class MCUtils
 		playSound(l, sound, maxDistance, 1);
 	}
 	
-	public static void playSound(Location l, McSound sound)
-	{
-		for(Player p : l.getWorld().getPlayers())
-			playSound(p, l, sound.getSound(), sound.getVolume(), sound.getPitch());
-	}
-	
 	public static void playSound(Location l, String sound, float maxDistance, float pitch)
 	{
 		for(Player p : l.getWorld().getPlayers())
@@ -77,7 +71,7 @@ public class MCUtils
 			return;
 		
 		p.playSound(l, sound, maxDistance, pitch);
-	}
+	}*/
 	
 	public static String vecToString(Vector loc)
 	{
@@ -188,7 +182,8 @@ public class MCUtils
 	
 	public static boolean areSimilar(ItemStack i1, ItemStack i2)
 	{
-		return i1 == null || i2 == null || i1.getDurability() == i2.getDurability() && i1.getType().equals(i2.getType()) && (i1.getItemMeta() == null && i2.getItemMeta() == null || ChatColor.stripColor(i1.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(i2.getItemMeta().getDisplayName())));
+		return i1 == null && i2 == null
+				|| i1 != null && i2 != null && i1.getType().equals(i2.getType()) && (i1.getItemMeta() == null && i2.getItemMeta() == null || ChatColor.stripColor(i1.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(i2.getItemMeta().getDisplayName())));
 	}
 	
 	public static void damageAnimation(Entity p)
@@ -214,7 +209,7 @@ public class MCUtils
 			{
 				if(exceptForThem == null || !exceptForThem.contains(pl))
 				{
-					MCUtils.sendPacket(pl, packetAnimation);
+					WrappedPlayer.of(pl).sendPacket(packetAnimation);
 				}
 			}
 		} catch(Exception var7)
@@ -239,11 +234,11 @@ public class MCUtils
 		
 		for(Player p : players)
 		{
-			sendPacket(p, packet);
+			WrappedPlayer.of(p).sendPacket(packet);
 		}
 	}
 	
-	public static void explosion(WeaponOwner damager, Weapon weapon, double centerDamage, Location l, double radius, String sound, double kb, DamageTarget damageTarget)
+	public static void explosion(WeaponOwner damager, Weapon weapon, double centerDamage, Location l, double radius, double kb, DamageTarget damageTarget)
 	{
 		GameManager gm = GameManager.getInstance();
 		
@@ -259,8 +254,9 @@ public class MCUtils
 			}
 		}
 		
-		playSound(l, sound, (float) radius * 10.0F);
-		explosionParticles(l, (float) radius, (int) (centerDamage * radius / 2), Particle.FLAME, Particle.SMOKE_LARGE, Particle.CLOUD, Particle.EXPLOSION_LARGE);
+		TFSound.EXPLOSION.withVolume((float) radius / 16 * 3).play(l);
+		l.getWorld().spawnParticle(radius > 5 ? Particle.EXPLOSION_HUGE : Particle.EXPLOSION_LARGE, l, 1, 0, 0, 0, 0, null, true);
+		explosionParticles(l, (float) radius, (int) (centerDamage * radius / 2), Particle.FLAME, Particle.SMOKE_LARGE, Particle.CLOUD);
 		Random r = new Random();
 		
 		for(int i = 0; (double) i < 3.0D * radius; ++i)
@@ -268,7 +264,6 @@ public class MCUtils
 			Location lavaLoc = l.clone().add(r.nextDouble() * 5 - 2.5D, r.nextDouble() * 5 - 2.5D, r.nextDouble() * 5 - 2.5D);
 			l.getWorld().spawnParticle(Particle.LAVA, lavaLoc, 0);
 		}
-		
 	}
 	
 	public static YamlConfiguration configFromFileName(String name)
@@ -335,7 +330,7 @@ public class MCUtils
 			if(player.getEyeLocation().distance(l) < minDistance)
 			{
 				PacketContainer packet = new PacketContainer(Play.Server.ENTITY_DESTROY, new PacketPlayOutEntityDestroy(as.getEntityId()));
-				sendPacket(player, packet);
+				WrappedPlayer.of(player).sendPacket(packet);
 			}
 		}
 		
@@ -469,23 +464,7 @@ public class MCUtils
 		packetChat.getChatComponents().write(0, WrappedChatComponent.fromJson(json));
 		packetChat.getChatTypes().write(0, ChatType.SYSTEM);
 		
-		sendPacket(player, packetChat);
-	}
-	
-	public static void sendPacket(Player player, PacketContainer... packets)
-	{
-		for(PacketContainer packet : packets)
-			Survivor.getInstance().getProtocolManager().sendServerPacket(player, packet);
-	}
-	
-	@Deprecated
-	public static void sendPacket(Player player, PacketType type, Object... args)
-	{
-		PacketContainer packet = new PacketContainer(type);
-		for(int i = 0; i < args.length; i++)
-			packet.getModifier().write(i, args[i]);
-		
-		sendPacket(player, packet);
+		WrappedPlayer.of(player).sendPacket(packetChat);
 	}
 	
 	public static String getTitle(InventoryView view)

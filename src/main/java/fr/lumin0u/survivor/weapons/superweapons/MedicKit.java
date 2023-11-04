@@ -28,17 +28,17 @@ public class MedicKit extends SuperWeapon implements SupplyWeapon
 	{
 		this.useAmmo();
 		
-		for(SvPlayer sp : GameManager.getInstance().getPlayers())
+		for(SvPlayer sp : GameManager.getInstance().getOnlinePlayers())
 		{
-			if(sp.getPlayer().getLocation().distance(owner.getShootLocation()) < 20.0D)
+			if(sp.toBukkit().getLocation().distance(owner.getShootLocation()) < 20.0D)
 			{
-				sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 600, 2, true));
+				sp.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 600, 2, true));
 			}
 			
 			for(int i = 0; i < 100; ++i)
 			{
 				Location particleLoc = owner.getShootLocation().add(Math.random() * 20.0D - 10.0D, Math.random() * 4.0D - 2.0D, Math.random() * 20.0D - 10.0D);
-				sp.getPlayer().spawnParticle(Particle.VILLAGER_HAPPY, particleLoc, 0);
+				sp.toBukkit().spawnParticle(Particle.VILLAGER_HAPPY, particleLoc, 0);
 			}
 		}
 	}

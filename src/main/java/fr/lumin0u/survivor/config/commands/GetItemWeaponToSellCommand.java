@@ -1,6 +1,5 @@
 package fr.lumin0u.survivor.config.commands;
 
-import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.commands.SvArgCommand;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.command.CommandSender;

@@ -1,10 +1,8 @@
 package fr.lumin0u.survivor.commands.gamecommands;
 
-import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.commands.AbstractGameCommand;
-import fr.lumin0u.survivor.commands.SvArgCommand;
+import fr.lumin0u.survivor.player.SvPlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class GetMoneyCommand extends AbstractGameCommand
 {
@@ -14,6 +12,6 @@ public class GetMoneyCommand extends AbstractGameCommand
     
     @Override
     public void execute(CommandSender sender, String[] args) {
-        GameManager.getInstance().getSvPlayer((Player)sender).addMoney(Integer.valueOf(args[0]));
+        SvPlayer.of(sender).addMoney(Integer.valueOf(args[0]));
     }
 }

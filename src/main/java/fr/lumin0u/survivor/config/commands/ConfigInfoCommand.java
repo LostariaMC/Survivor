@@ -5,6 +5,7 @@ import fr.lumin0u.survivor.commands.SvArgCommand;
 import fr.lumin0u.survivor.config.ConfigUtil;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.objects.Room;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -21,7 +22,7 @@ public class ConfigInfoCommand extends SvArgCommand
 	public void execute(CommandSender sender, String[] args) {
 		
 		Player player = (Player) sender;
-		MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+		MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
 		if(config == null)
 		{
 			player.sendMessage("§cVous n'avez pas commencé de configuration (voir /sv startConfig)");

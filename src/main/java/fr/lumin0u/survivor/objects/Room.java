@@ -8,16 +8,18 @@ import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.TFSound;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Fence;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Room
 {
@@ -26,11 +28,12 @@ public class Room
 	private List<Vector> mobSpawns;
 	private List<Vector> fences;
 	private List<Vector> additionalBlocks;
+	private boolean hasPrice;
+	private int price;
+	
 	private World world;
 	private boolean bought;
-	private boolean valid;
-	private int price;
-	private boolean hasPrice;
+	private final Map<Block, BlockData> fenceDirections;
 	
 	public Room(String name, World world)
 	{
@@ -44,6 +47,7 @@ public class Room
 		this.doors = new ArrayList<>();
 		this.mobSpawns = new ArrayList<>();
 		this.fences = new ArrayList<>();
+		this.fenceDirections = new HashMap<>();
 	}
 	
 	public static Room unsafe(String name)
@@ -54,34 +58,28 @@ public class Room
 	public void startZombieVsFencesTask()
 	{
 		final Random r = new Random();
-		new BukkitRunnable()
-		{
+		fenceDirections.putAll(getFences().stream().collect(Collectors.toMap(Location::getBlock, l -> l.getBlock().getBlockData())));
+		
+		new BukkitRunnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				List<Location> fencesDone = new ArrayList<>();
 				
-				for(Enemy m : GameManager.getInstance().getMobs())
-				{
-					for(Location fence : getFences())
-					{
-						if(fence.distance(m.getEntity().getLocation()) < 4.0D && fence.getBlock().getBlockData() instanceof Fence && !fencesDone.contains(fence))
-						{
+				for(Enemy m : GameManager.getInstance().getMobs()) {
+					for(Location fence : getFences()) {
+						if(fence.distance(m.getEntity().getLocation()) < 4.0D && fence.getBlock().getBlockData() instanceof Fence && !fencesDone.contains(fence)) {
 							fencesDone.add(fence);
-							if(r.nextInt(7) == 0)
-							{
+							if(r.nextInt(7) == 0) {
 								placeGate(fence);
 							}
 							
-							if(r.nextInt(2) == 1)
-							{
-								for(int i = 0; i < 10; ++i)
-								{
+							if(r.nextInt(2) == 1) {
+								for(int i = 0; i < 10; ++i) {
 									fence.getWorld().spawnParticle(Particle.BLOCK_CRACK, fence.clone().add(r.nextDouble(), r.nextDouble(), r.nextDouble()), 5, fence.getBlock().getBlockData());
 								}
 							}
 							
-							//MCUtils.playSound(fence, Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, 10.0F);
+							TFSound.ZOMBIE_ATTACK_FENCE.play(fence);
 						}
 					}
 				}
@@ -188,11 +186,11 @@ public class Room
 		return additionalBlocks;
 	}
 	
-	public static void placeFence(Location loc)
+	public void placeFence(Location loc)
 	{
 		boolean isGate = loc.getBlock().getBlockData() instanceof Gate;
 		
-		if(isGate)
+		/*if(isGate)
 		{
 			Material material = Material.getMaterial(loc.getBlock().getType().name().replaceAll("_GATE$", ""));
 			
@@ -201,10 +199,12 @@ public class Room
 		else if(!(loc.getBlock().getBlockData() instanceof Fence))
 		{
 			loc.getBlock().setType(Material.OAK_FENCE);
-		}
+		}*/
+		
+		loc.getBlock().setBlockData(fenceDirections.get(loc.getBlock()));
 	}
 	
-	public static void placeGate(Location loc)
+	public void placeGate(Location loc)
 	{
 		boolean isFence = loc.getBlock().getBlockData() instanceof Fence;
 		
@@ -233,16 +233,13 @@ public class Room
 				door.place();
 			}
 		}
-		
 	}
 	
-	public int getPrice()
-	{
+	public int getPrice() {
 		return this.hasPrice ? this.price : GameManager.getInstance().getDoorPrice();
 	}
 	
-	public boolean hasPrice()
-	{
+	public boolean hasPrice() {
 		return this.hasPrice;
 	}
 	
@@ -286,8 +283,8 @@ public class Room
 			jsonObject.add("fences", context.serialize(room.fences));
 			jsonObject.add("mobSpawns", context.serialize(room.mobSpawns));
 			jsonObject.add("additionalBlocks", context.serialize(room.additionalBlocks));
-			if(room.hasPrice)
-			{
+			
+			if(room.hasPrice) {
 				jsonObject.addProperty("price", room.price);
 			}
 			

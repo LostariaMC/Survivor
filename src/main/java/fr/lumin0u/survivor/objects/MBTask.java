@@ -1,8 +1,8 @@
 package fr.lumin0u.survivor.objects;
 
-import fr.lumin0u.survivor.SvAsset;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SvAsset;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -198,7 +198,7 @@ public class MBTask extends BukkitRunnable
 				if(w != null && !(w instanceof SuperWeapon) && (!(w instanceof Knife) || this.shownWeapon.isKnife()))
 				{
 					sp.removeWeapon(this.shownWeapon.isKnife() ? sp.getKnife() : w);
-					sp.getPlayer().getInventory().remove(((Weapon) (this.shownWeapon.isKnife() ? sp.getKnife() : w)).getType().getMaterial());
+					sp.toBukkit().getInventory().remove(((Weapon) (this.shownWeapon.isKnife() ? sp.getKnife() : w)).getType().getMaterial());
 					this.shownWeapon.getNewWeapon(sp).giveItem();
 					isItemGiven = true;
 					this.removeAll();

@@ -2,7 +2,7 @@ package fr.lumin0u.survivor.weapons.guns;
 
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.WeaponOwner;
-import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.IGun;
 import fr.lumin0u.survivor.weapons.RepeatingType;
 import fr.lumin0u.survivor.weapons.Weapon;
@@ -14,15 +14,21 @@ import java.util.List;
 
 public abstract class Gun extends Weapon implements IGun
 {
+	protected final TFSound sound;
 	protected double dmg;
 	protected double range;
 	protected double accuracy;
 	
 	public Gun(WeaponOwner owner, WeaponType wt) {
+		this(owner, wt, TFSound.GUN_SHOT);
+	}
+	
+	public Gun(WeaponOwner owner, WeaponType wt, TFSound sound) {
 		super(owner, wt);
 		this.dmg = wt.get("dmg");
 		this.range = wt.get("range");
 		this.accuracy = wt.get("accuracy");
+		this.sound = sound;
 	}
 	
 	@Override
@@ -35,7 +41,6 @@ public abstract class Gun extends Weapon implements IGun
 		if(!isUseable())
 			return;
 		
-		MCUtils.playSound(this.owner.getShootLocation(), this.wt.getSound());
 		handleTrigger(false);
 		
 		if(this.owner.hasDoubleCoup())
@@ -45,8 +50,10 @@ public abstract class Gun extends Weapon implements IGun
 	private void handleTrigger(boolean freeAmmo) {
 		shoot();
 		
-		if(!freeAmmo)
+		if(!freeAmmo) {
+			sound.play(owner.getShootLocation());
 			this.useAmmo();
+		}
 		
 		if(wt.getRepeatingType() == RepeatingType.BURSTS)
 		{
@@ -54,8 +61,10 @@ public abstract class Gun extends Weapon implements IGun
 			{
 				Bukkit.getScheduler().runTaskLater(Survivor.getInstance(), () -> {
 					shoot();
-					if(!freeAmmo)
+					if(!freeAmmo) {
+						sound.play(owner.getShootLocation());
 						this.useAmmo();
+					}
 				}, i * (long) wt.get("shotsDelay"));
 			}
 		}

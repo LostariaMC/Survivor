@@ -16,7 +16,7 @@ public enum DamageTarget
 	{
 		return switch(this)
 		{
-			case PLAYERS -> new ArrayList<>(gm.getPlayers());
+			case PLAYERS -> new ArrayList<>(gm.getOnlinePlayers());
 			case ZOMBIES -> new ArrayList<>(gm.getMobs());
 			case ALL -> Stream.concat(gm.getPlayers().stream(), gm.getMobs().stream()).toList();
 		};

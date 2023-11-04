@@ -1,6 +1,5 @@
 package fr.lumin0u.survivor.config.commands;
 
-import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.commands.SvArgCommand;
 import fr.lumin0u.survivor.config.Action;
@@ -8,11 +7,11 @@ import fr.lumin0u.survivor.config.ConfigUtil;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.objects.Room;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,7 @@ public class AddMobSpawnCommand extends SvArgCommand
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
-		MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+		MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
 		if(config == null)
 		{
 			player.sendMessage("§cVous n'avez pas commencé de configuration (voir /sv startConfig)");
@@ -46,13 +45,13 @@ public class AddMobSpawnCommand extends SvArgCommand
 			@Override
 			public void redo() {
 				room.getMobSpawnsUnsafe().add(location.toVector());
-				Survivor.getInstance().getMapConfigRenderer(player.getUniqueId()).update();
+				Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).update();
 			}
 			
 			@Override
 			public void undo() {
 				room.getMobSpawnsUnsafe().remove(location.toVector());
-				Survivor.getInstance().getMapConfigRenderer(player.getUniqueId()).update();
+				Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).update();
 			}
 		}, "annuler")));
 	}
@@ -60,7 +59,7 @@ public class AddMobSpawnCommand extends SvArgCommand
 	@Override
 	public List<String> getPossibleArgs(CommandSender executer, String[] args) {
 		Player player = (Player) executer;
-		MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+		MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
 		if(config != null)
 		{
 			return config.getRooms().stream().map(room -> room.getName().replace(" ", "_")).collect(Collectors.toList());

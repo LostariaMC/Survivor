@@ -1,6 +1,7 @@
 package fr.lumin0u.survivor.weapons.guns.shotguns;
 
 import fr.lumin0u.survivor.player.WeaponOwner;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.Gun;
 
@@ -41,6 +42,7 @@ public abstract class Shotgun extends Gun
 	
 	@Override
 	public void shoot() {
+		TFSound.SHOTGUN_SHOT.play(owner.getShootLocation());
 		for(int i = 0; i < shots; ++i) {
 			super.shoot();
 		}

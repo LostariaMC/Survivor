@@ -1,6 +1,5 @@
 package fr.lumin0u.survivor.utils;
 
-import fr.lumin0u.survivor.utils.TransparentUtils.CollisionResult;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;

@@ -51,7 +51,7 @@ public class LancePatate extends SuperWeapon
 				
 				if(this.i >= r.getPoints().size() - 1)
 				{
-					MCUtils.explosion(owner, LancePatate.this, 20.0D, (Location) r.getPoints().get(r.getPoints().size() - 2), 20.0D, "guns.grenade", 0.5D, owner.getTargetType());
+					MCUtils.explosion(owner, LancePatate.this, 20.0D, (Location) r.getPoints().get(r.getPoints().size() - 2), 20.0D, 0.5D, owner.getTargetType());
 					this.cancel();
 				}
 				

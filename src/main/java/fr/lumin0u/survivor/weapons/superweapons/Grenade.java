@@ -20,6 +20,6 @@ public class Grenade extends AbstractGrenade implements SupplyWeapon
 	public void explode(Location loc)
 	{
 		GameManager gm = GameManager.getInstance();
-		MCUtils.explosion(owner, this, Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) * 1.05D, loc, 10.0D, "guns.grenade", 1.0D, owner.getTargetType());
+		MCUtils.explosion(owner, this, Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) * 1.05D, loc, 10.0D, 1.0D, owner.getTargetType());
 	}
 }

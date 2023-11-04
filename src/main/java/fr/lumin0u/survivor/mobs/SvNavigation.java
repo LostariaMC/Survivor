@@ -1,4 +1,4 @@
-package fr.lumin0u.survivor.mobs.mob;
+package fr.lumin0u.survivor.mobs;
 
 import net.minecraft.core.BlockPosition;
 import net.minecraft.world.entity.EntityInsentient;

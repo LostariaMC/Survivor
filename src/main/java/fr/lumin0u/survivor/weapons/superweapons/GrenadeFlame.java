@@ -22,7 +22,7 @@ public class GrenadeFlame extends AbstractGrenade implements SupplyWeapon
 	public void explode(Location loc)
 	{
 		MCUtils.explosionParticles(loc, 10.0F, 500, Particle.FLAME);
-		MCUtils.explosion(owner, this, 4.0D, loc, 3.0D, "guns.grenade", 0.0D, owner.getTargetType());
+		MCUtils.explosion(owner, this, 4.0D, loc, 3.0D, 0.0D, owner.getTargetType());
 		
 		GameManager gm = GameManager.getInstance();
 		for(SvDamageable m : owner.getTargetType().getDamageables(gm))

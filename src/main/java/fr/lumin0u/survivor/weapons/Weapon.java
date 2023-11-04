@@ -5,6 +5,7 @@ import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.perks.Perk;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import org.bukkit.enchantments.Enchantment;
@@ -53,6 +54,7 @@ public abstract class Weapon implements IWeapon
 		meta.setDisplayName((this instanceof SuperWeapon ? "§d" : "§9") + wt.getName());
 		meta.setLore(this.getLore());
 		meta.setUnbreakable(true);
+		meta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS);
 		this.item.setItemMeta(meta);
 		if(owner.getWeaponTypes().contains(wt))
 		{
@@ -60,7 +62,7 @@ public abstract class Weapon implements IWeapon
 		}
 		
 		owner.addWeapon(this);
-		if(owner instanceof SvPlayer)
+		/*if(owner instanceof SvPlayer)
 		{
 			new BukkitRunnable()
 			{
@@ -69,7 +71,7 @@ public abstract class Weapon implements IWeapon
 				{
 					if(owner.canUseWeapon() && !owner.hasItem(Weapon.this))
 					{
-						if(!((SvPlayer) owner).getPlayer().getItemOnCursor().getType().equals(wt.getMaterial()))
+						if(!((SvPlayer) owner).toBukkit().getItemOnCursor().getType().equals(wt.getMaterial()))
 						{
 							owner.removeWeapon(Weapon.this);
 							this.cancel();
@@ -77,7 +79,7 @@ public abstract class Weapon implements IWeapon
 					}
 				}
 			}.runTaskTimer(Survivor.getInstance(), 1L, 1L);
-		}
+		}*/
 	}
 	
 	public ItemStack getItem()
@@ -125,9 +127,10 @@ public abstract class Weapon implements IWeapon
 			isReloading = true;
 			
 			final int modifiedReloadTime = owner.hasSpeedReload() ? (int) ((double) this.reloadTime / 1.6) : this.reloadTime;
-			if(owner instanceof SvPlayer)
-			{
+			if(owner instanceof SvPlayer) {
+				TFSound.RELOAD.playTo((SvPlayer) owner);
 				showCooldown(modifiedReloadTime);
+				owner.giveWeaponItem(Weapon.this);
 			}
 			
 			new BukkitRunnable()
@@ -147,6 +150,7 @@ public abstract class Weapon implements IWeapon
 						setClip(Math.min(getAmmo() + clip, clipSize));
 						setAmmo(Math.max(0, getAmmo() - (clipSize - clip)));
 						item.setAmount(1);
+						owner.giveWeaponItem(Weapon.this);
 						return;
 					}
 					
@@ -171,7 +175,7 @@ public abstract class Weapon implements IWeapon
 	public void showCooldown(int ticks)
 	{
 		if(owner instanceof SvPlayer)
-			((SvPlayer) owner).getPlayer().setCooldown(wt.getMaterial(), ticks);
+			((SvPlayer) owner).toBukkit().setCooldown(wt.getMaterial(), ticks);
 	}
 	
 	public WeaponOwner getOwner()
@@ -433,7 +437,7 @@ public abstract class Weapon implements IWeapon
 		return this.getClass().getSimpleName() + " [level=" + this.level + ", ammo=" + this.ammo + ", clip=" + this.clip + "]";
 	}
 	
-	public boolean aiHelp_MayShot(Enemy mob, SvPlayer target)
+	public boolean aiHelp_MayShoot(Enemy mob, SvPlayer target)
 	{
 		return true;
 	}

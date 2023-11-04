@@ -7,6 +7,7 @@ import fr.lumin0u.survivor.config.ConfigUtil;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,7 +33,7 @@ public class AddMagicBoxLocCommand extends SvArgCommand implements Listener {
     public void execute(CommandSender sender, String[] args) {
         
         Player player = (Player) sender;
-        MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+        MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
         if(config == null)
         {
             player.sendMessage("§cVous n'avez pas commencé de configuration (voir /sv startConfig)");
@@ -52,7 +53,7 @@ public class AddMagicBoxLocCommand extends SvArgCommand implements Listener {
     public void onPlaceBlock(BlockPlaceEvent e) {
         if (e.getItemInHand().isSimilar(magicBoxItem)) {
             
-            MapConfig config = Survivor.getInstance().getMapConfig(e.getPlayer().getUniqueId());
+            MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(e.getPlayer()));
             
             Vector position = e.getBlock().getLocation().toVector();
             
@@ -78,7 +79,7 @@ public class AddMagicBoxLocCommand extends SvArgCommand implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         
         Player player = e.getPlayer();
-        MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+        MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
         
         if(config != null && config.magicBoxes.remove(e.getBlock().getLocation().toVector())) {
     
@@ -88,14 +89,14 @@ public class AddMagicBoxLocCommand extends SvArgCommand implements Listener {
                 @Override
                 public void redo() {
                     config.magicBoxes.remove(location.toVector());
-                    Survivor.getInstance().getMapConfigRenderer(e.getPlayer().getUniqueId()).update();
+                    Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(e.getPlayer())).update();
                     e.getBlock().setType(Material.AIR);
                 }
                 
                 @Override
                 public void undo() {
                     config.magicBoxes.add(location.toVector());
-                    Survivor.getInstance().getMapConfigRenderer(e.getPlayer().getUniqueId()).update();
+                    Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(e.getPlayer())).update();
                     e.getBlock().setType(Material.ENDER_CHEST);
                 }
             }, "annuler");

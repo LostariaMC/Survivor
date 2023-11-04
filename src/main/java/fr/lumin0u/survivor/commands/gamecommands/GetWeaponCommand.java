@@ -2,6 +2,7 @@ package fr.lumin0u.survivor.commands.gamecommands;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.commands.AbstractGameCommand;
+import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.command.CommandSender;
@@ -19,7 +20,7 @@ public class GetWeaponCommand extends AbstractGameCommand
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player)sender;
         if (GameManager.getInstance() != null) {
-            Weapon w = WeaponType.byName(args[0].replaceAll("_", " ")).getNewWeapon(GameManager.getInstance().getSvPlayer(p));
+            Weapon w = WeaponType.byName(args[0].replaceAll("_", " ")).getNewWeapon(SvPlayer.of(p));
             w.giveItem();
             p.sendMessage(w.getType().getName());
         }

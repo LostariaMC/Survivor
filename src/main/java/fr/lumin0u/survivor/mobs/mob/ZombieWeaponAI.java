@@ -33,13 +33,13 @@ public class ZombieWeaponAI implements Runnable
 	public void run()
 	{
 		boolean targetFound = mob.getTarget() != null
-				&& isInSight(mob.getEntity(), mob.getTarget().getPlayer().getEyeLocation())
-				&& isInFOV(mob.getEntity(), mob.getTarget().getPlayer().getEyeLocation());
+				&& isInSight(mob.getEntity(), mob.getTarget().toBukkit().getEyeLocation())
+				&& isInFOV(mob.getEntity(), mob.getTarget().toBukkit().getEyeLocation());
 		
 		if(targetFound)
 			locationsBuffer.add(mob.getTarget().getBodyHitbox().midpoint().toLocation(mob.getEntity().getWorld()));
 		
-		if(reload <= 0 && weapon.isUseable() && weapon.aiHelp_MayShot(mob, mob.getTarget()))
+		if(reload <= 0 && weapon.isUseable() && weapon.aiHelp_MayShoot(mob, mob.getTarget()))
 		{
 			if(targetFound)
 			{

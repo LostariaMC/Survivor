@@ -6,6 +6,7 @@ import fr.lumin0u.survivor.config.Action;
 import fr.lumin0u.survivor.config.ConfigUtil;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public class AddRoomCommand extends SvArgCommand
 	public void execute(CommandSender sender, String[] args) {
 		
 		Player player = (Player) sender;
-		MapConfig config = Survivor.getInstance().getMapConfig(player.getUniqueId());
+		MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
 		if(config == null)
 		{
 			player.sendMessage("§cVous n'avez pas commencé de configuration (voir /sv startConfig)");
@@ -43,13 +44,13 @@ public class AddRoomCommand extends SvArgCommand
 			@Override
 			public void redo() {
                 config.addRoom(name);
-				Survivor.getInstance().getMapConfigRenderer(player.getUniqueId()).update();
+				Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).update();
             }
 			
 			@Override
 			public void undo() {
                 config.getRooms().removeIf(room -> room.getName().equals(name));
-				Survivor.getInstance().getMapConfigRenderer(player.getUniqueId()).update();
+				Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).update();
             }
 		}, "annuler");
 		player.sendMessage(MCUtils.buildTextComponent(" ", "§aSalle ajoutée", extra));

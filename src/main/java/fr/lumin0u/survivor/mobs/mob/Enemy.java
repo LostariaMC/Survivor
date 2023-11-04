@@ -13,6 +13,7 @@ import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.perks.Perk;
 import net.minecraft.world.entity.Entity;
@@ -30,8 +31,8 @@ import org.bukkit.util.Consumer;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public abstract class Enemy implements SvDamageable, WeaponOwner
@@ -49,12 +50,17 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	protected double health;
 	protected boolean dead;
 	protected GameManager gm;
+	protected final TFSound hurtSound;
+	protected final TFSound deathSound;
+	protected Weapon weapon;
 	
-	public Enemy(EntityType type, final Location spawnLoc, final double maxHealth, double walkSpeed)
+	public Enemy(EntityType type, final Location spawnLoc, final double maxHealth, double walkSpeed, TFSound hurtSound, TFSound deathSound)
 	{
 		this.entType = type;
 		this.health = maxHealth;
 		this.maxHealth = maxHealth;
+		this.hurtSound = hurtSound;
+		this.deathSound = deathSound;
 		this.reward = 10;
 		this.gm = GameManager.getInstance();
 		this.gm.getMobs().add(this);
@@ -218,12 +224,11 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 		if(headshot)
 		{
 			dmg *= 1.5D;
-			if(this instanceof fr.lumin0u.survivor.mobs.mob.Zombie && ((fr.lumin0u.survivor.mobs.mob.Zombie)this).hasHead())
+			if(this instanceof Zombie && ((Zombie)this).hasHead())
 			{
-				((fr.lumin0u.survivor.mobs.mob.Zombie)this).setHasHead(false);
-				if(damager instanceof SvPlayer)
-				{
-					((SvPlayer)damager).addMoney( + (int) ((double) this.reward / 4.0D * coinsMultiplier));
+				((Zombie)this).setHasHead(false);
+				if(damager instanceof SvPlayer) {
+					((SvPlayer)damager).addMoney((double) reward / 4.0D * coinsMultiplier);
 				}
 				
 				for(i = 0; i < 30; ++i)
@@ -235,6 +240,8 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 		
 		if(!(this.health - dmg <= 0.0D) && (damager == null || this instanceof Boss || !damager.doInstantKill()))
 		{
+			hurtSound.play(getFeets());
+			
 			this.health -= dmg;
 			if(damager != null)
 			{
@@ -251,9 +258,10 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 		}
 		else
 		{
+			deathSound.play(getFeets());
+			
 			this.kill(damager, coinsMultiplier);
 		}
-		
 	}
 	
 	public void kill(SvPlayer killer)
@@ -267,7 +275,7 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 		this.dead = true;
 		if(killer instanceof SvPlayer)
 		{
-			((SvPlayer) killer).addMoney( + (int) ((double) this.reward * coinsMultiplier));
+			((SvPlayer) killer).addMoney((double) this.reward * coinsMultiplier);
 			((SvPlayer) killer).killZombie();
 		}
 		
@@ -378,12 +386,10 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 		return ent.getLocation();
 	}
 	
-	protected List<Weapon> weapons = new ArrayList<>();
-	
 	@Override
 	public List<Weapon> getWeapons()
 	{
-		return weapons;
+		return weapon == null ? List.of() : List.of(weapon);
 	}
 	
 	@Override
@@ -438,15 +444,16 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	@Override
 	public void addWeapon(Weapon w)
 	{
-		weapons.clear();
-		WeaponOwner.super.addWeapon(w);
+		weapon = w;
 	}
 	
 	@Override
 	public void removeWeapon(Weapon w)
 	{
-		ent.getEquipment().setItemInHand(null);
-		WeaponOwner.super.removeWeapon(w);
+		if(Objects.equals(w, weapon)) {
+			weapon = null;
+			ent.getEquipment().setItemInHand(null);
+		}
 	}
 	
 	@Override

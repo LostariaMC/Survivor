@@ -1,6 +1,5 @@
 package fr.lumin0u.survivor.weapons.superweapons;
 
-import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.TransparentUtils;
@@ -33,7 +32,7 @@ public class Turret extends SuperWeapon implements SupplyWeapon
 		if(!(owner instanceof SvPlayer))
 			return;
 		
-		Iterator<Block> sight = new BlockIterator(((SvPlayer) owner).getPlayer(), 3);
+		Iterator<Block> sight = new BlockIterator(((SvPlayer) owner).toBukkit(), 3);
 		
 		Block last = owner.getShootLocation().getBlock();
 		while(sight.hasNext())

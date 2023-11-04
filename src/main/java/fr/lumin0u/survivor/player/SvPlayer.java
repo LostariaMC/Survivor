@@ -5,12 +5,15 @@ import com.comphenix.protocol.events.PacketContainer;
 import fr.lumin0u.survivor.Difficulty;
 import fr.lumin0u.survivor.*;
 import fr.lumin0u.survivor.utils.AABB;
+import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.knives.Knife;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
+import fr.worsewarn.cosmox.game.teams.Team;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
@@ -22,7 +25,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -37,17 +39,16 @@ import java.util.*;
 public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 {
 	private Knife knife;
-	private List<Weapon> weapons;
-	private List<SvAsset> assets;
+	private final List<Weapon> weapons;
+	private final List<SvAsset> assets;
 	private Object actionBar;
 	private LifeState lifeState;
-	private int money;
+	private double money;
 	private double reviveTime;
 	private long deathDate;
 	private long instantKillStartDate;
 	private WeaponType supply;
-	@NotNull
-	private fr.lumin0u.survivor.Difficulty diffVote = Difficulty.NOT_SET;
+	private Difficulty diffVote = Difficulty.NOT_SET;
 	private final BadgesData badgesData;
 	private int fireTime;
 	private WeaponOwner fireSource;
@@ -59,9 +60,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	private static final long INSTANT_KILL_TIME = 20000L;
 	private static final long ON_GROUND_TIME = 750L;
 	
-	public SvPlayer(Player player)
+	public SvPlayer(UUID uid)
 	{
-		super(player);
+		super(uid);
 		
 		this.weapons = new ArrayList<>();
 		this.assets = new ArrayList<>();
@@ -79,6 +80,10 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		lifeState = LifeState.DEAD;
 	}
 	
+	public boolean isSpectator() {
+		return toCosmox().getTeam() == Team.SPEC;
+	}
+	
 	private void startLifeRunnable() {
 		new BukkitRunnable()
 		{
@@ -93,9 +98,10 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				if(GameManager.getInstance() == null)
 					return;
 				
-				Player bukkitPlayer = SvPlayer.this.getPlayer();
-				if(bukkitPlayer != null)
+				if(isOnline())
 				{
+					Player bukkitPlayer = toBukkit();
+					
 					this.regen = Math.max(0, this.regen - 1);
 					if(this.lastHealth > bukkitPlayer.getHealth())
 					{
@@ -131,29 +137,28 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							packet.getIntegers().write(0, (int) bukkitPlayer.getMaxHealth());
 							
 							
-							MCUtils.sendPacket(bukkitPlayer, packet);
+							sendPacket(packet);
 						}
 						
 						this.regen = 20;
 					}
 					
-					if(lifeState.onGround() && SvPlayer.this.deathDate + ON_GROUND_TIME - Survivor.getCurrentTick() > 0)
+					if(isOnGround() && deathDate + ON_GROUND_TIME - Survivor.getCurrentTick() > 0)
 					{
-						MCUtils.sendActionBar(bukkitPlayer, "§cMort dans §6" + (SvPlayer.this.deathDate + ON_GROUND_TIME - Survivor.getCurrentTick()) / 20 + " §csecondes");
+						MCUtils.sendActionBar(bukkitPlayer, "§cMort dans §6" + (deathDate + ON_GROUND_TIME - Survivor.getCurrentTick()) / 20 + " §csecondes");
 					}
 					
-					else if(SvPlayer.this.actionBar instanceof String && lifeState.alive())
+					else if(actionBar instanceof String && isAlive())
 					{
-						MCUtils.sendActionBar(bukkitPlayer, (String) SvPlayer.this.actionBar);
+						MCUtils.sendActionBar(bukkitPlayer, (String) actionBar);
 						--this.turns;
 						if(this.turns == 0)
 						{
 							this.turns = 10;
-							SvPlayer.this.setActionBar((Weapon) null);
+							setActionBar(null);
 						}
-						
 					}
-					else if(lifeState.alive())
+					else if(isAlive())
 					{
 						Weapon weaponInHand = SvPlayer.this.getWeaponInHand();
 						SvPlayer.this.actionBar = weaponInHand;
@@ -164,16 +169,14 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						
 						if(GameManager.getInstance().isStarted())
 						{
-							if(SvPlayer.this.actionBar instanceof Weapon)
-							{
-								MCUtils.sendActionBar(bukkitPlayer, ((Weapon) SvPlayer.this.actionBar).getActionBar());
+							if(actionBar instanceof Weapon) {
+								MCUtils.sendActionBar(bukkitPlayer, ((Weapon) actionBar).getActionBar());
 							}
-							else if(SvPlayer.this.actionBar != null)
-							{
-								MCUtils.sendActionBar(bukkitPlayer, SvPlayer.this.actionBar.toString());
+							else if(actionBar != null) {
+								MCUtils.sendActionBar(bukkitPlayer, actionBar.toString());
 							}
 							
-							if(SvPlayer.this.actionBar == null)
+							if(actionBar == null)
 							{
 								MCUtils.sendActionBar(bukkitPlayer, "");
 							}
@@ -282,25 +285,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		}
 	}
 	
-	//	public void onDisconnect()
-	//	{
-	//		if(this.isOnGround())
-	//		{
-	//			this.death();
-	//		}
-	//
-	//	}
-	
-	public OfflinePlayer getOfflinePlayer()
-	{
-		return Bukkit.getOfflinePlayer(this.uid);
-	}
-	
-	public Player getPlayer()
-	{
-		return Bukkit.getPlayer(this.uid);
-	}
-	
 	public UUID getPlayerUid()
 	{
 		return this.uid;
@@ -309,7 +293,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	@Override
 	public List<Weapon> getWeapons()
 	{
-		return this.weapons;
+		return new ArrayList<>(this.weapons);
 	}
 	
 	@Override
@@ -347,13 +331,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	public void setActionBar(Weapon actionBar)
 	{
 		this.actionBar = actionBar;
-		if(this.getPlayer() != null && actionBar != null)
+		if(this.toBukkit() != null && actionBar != null)
 		{
-			MCUtils.sendActionBar(this.getPlayer(), actionBar.getActionBar());
+			MCUtils.sendActionBar(this.toBukkit(), actionBar.getActionBar());
 		}
-		else if(this.getPlayer() != null)
+		else if(this.toBukkit() != null)
 		{
-			MCUtils.sendActionBar(this.getPlayer(), "");
+			MCUtils.sendActionBar(this.toBukkit(), "");
 		}
 		
 	}
@@ -373,15 +357,15 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	}
 	
 	public boolean isAlive() {
-		return lifeState.alive();
+		return lifeState == LifeState.ALIVE && !isSpectator();
 	}
 	
 	public boolean isOnGround() {
-		return lifeState.onGround();
+		return lifeState == LifeState.ON_GROUND && !isSpectator();
 	}
 	
 	public boolean isDead() {
-		return lifeState.dead();
+		return lifeState == LifeState.DEAD || isSpectator();
 	}
 	
 	public void respawn()
@@ -389,9 +373,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		this.lifeState = LifeState.ALIVE;
 		if(isOnline())
 		{
-			getPlayer().teleport(GameManager.getInstance().getSpawnpoint());
-			getPlayer().setGameMode(GameMode.ADVENTURE);
-			getPlayer().setGlowing(false);
+			toBukkit().teleport(GameManager.getInstance().getSpawnpoint());
+			toBukkit().setGameMode(GameMode.ADVENTURE);
+			toBukkit().setGlowing(false);
 			cleanInventory();
 		}
 		
@@ -402,11 +386,11 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	{
 		Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + this.getName() + "§c est à terre !");
 		
-		MCUtils.playSound(this.getPlayer().getLocation(), Sound.BLOCK_ANVIL_BREAK, 1000.0F);
+		TFSound.PLAYER_FALL.play(getFeets());
 		this.lifeState = LifeState.ON_GROUND;
 		
 		badgesData.hadBeenOnGround = true;
-		Player player = this.getPlayer();
+		Player player = this.toBukkit();
 		player.setGlowing(true);
 		MCUtils.sendTitle(player, 10, 40, 20, "§cVous êtes à terre");
 		
@@ -432,16 +416,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		this.reviveTime = 1000.0D;
 		boolean everyoneIsDead = true;
 		
-		for(SvPlayer sp : GameManager.getInstance().getPlayers())
-		{
-			if(sp.isAlive() && sp.getPlayer() != null)
-			{
+		for(SvPlayer sp : GameManager.getInstance().getPlayers()) {
+			if(sp.isAlive() && sp.toBukkit() != null) {
 				everyoneIsDead = false;
 			}
 		}
 		
-		if(everyoneIsDead)
-		{
+		if(everyoneIsDead) {
 			GameManager.getInstance().endGame();
 		}
 		else
@@ -455,40 +436,41 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				{
 					StatsManager.increaseStat(uid, "deaths", 1, true);
 					Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + SvPlayer.this.getName() + "§c est mort !");
+					TFSound.PLAYER_DEATH.play(getFeets());
 					
-					getPlayer().setGlowing(false);
+					toBukkit().setGlowing(false);
 					lifeState = LifeState.DEAD;
 					as1.remove();
 					as2.remove();
 					as3.remove();
-					if(!SvPlayer.this.getOfflinePlayer().isOnline())
+					if(!SvPlayer.this.toBukkitOffline().isOnline())
 					{
 						return;
 					}
 					
-					MCUtils.sendTitle(getPlayer(), 10, 40, 20, "§cVous êtes mort");
-					SvPlayer.this.getPlayer().setGameMode(GameMode.SPECTATOR);
+					MCUtils.sendTitle(toBukkit(), 10, 40, 20, "§cVous êtes mort");
+					SvPlayer.this.toBukkit().setGameMode(GameMode.SPECTATOR);
 					
-					if(!SvPlayer.this.assets.contains(SvAsset.PIERRE_TOMBALE))
+					if(!assets.contains(SvAsset.PIERRE_TOMBALE))
 					{
-						SvPlayer.this.assets.clear();
-						SvPlayer.this.weapons.clear();
+						assets.clear();
+						weapons.clear();
 						WeaponType.LITTLE_KNIFE.getNewWeapon(SvPlayer.this).giveItem();
 						WeaponType.M1911.getNewWeapon(SvPlayer.this).giveItem();
-						SvPlayer.this.money = (int) ((double) SvPlayer.this.money * 0.75D);
+						money = (int) ((double) money * 0.75);
 						
-						if(SvPlayer.this.getOfflinePlayer().isOnline())
+						if(isOnline())
 						{
-							getPlayer().setMaxHealth(GameManager.getInstance().getDifficulty().getMaxHealth());
-							getPlayer().setWalkSpeed(0.2F);
+							toBukkit().setMaxHealth(GameManager.getInstance().getDifficulty().getMaxHealth());
+							toBukkit().setWalkSpeed(0.2F);
 							
-							getPlayer().sendMessage(SurvivorGame.prefix + "§cVous n'aviez pas l'atout §7Pierre tombale§c, vous avez donc perdu vos armes et vos atouts");
+							toBukkit().sendMessage(SurvivorGame.prefix + "§cVous n'aviez pas l'atout §7Pierre tombale§c, vous avez donc perdu vos armes et vos atouts");
 						}
 					}
 					else
 					{
-						SvPlayer.this.assets.remove(SvAsset.PIERRE_TOMBALE);
-						getPlayer().sendMessage(SurvivorGame.prefix + "§cVous aviez l'atout §7Pierre tombale§c, vous n'avez donc pas perdu vos armes ni vos atouts, excepté l'atout pierre tombale");
+						assets.remove(SvAsset.PIERRE_TOMBALE);
+						toBukkit().sendMessage(SurvivorGame.prefix + "§cVous aviez l'atout §7Pierre tombale§c, vous n'avez donc pas perdu vos armes ni vos atouts, excepté l'atout pierre tombale");
 					}
 					
 					LainBodies.wakeUp(SvPlayer.this.uid);
@@ -499,7 +481,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				@Override
 				public void run()
 				{
-					if(lifeState.alive())
+					if(isAlive())
 					{
 						cancel();
 						return;
@@ -515,27 +497,25 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						if(!GameManager.getInstance().isInWave())
 						{
 							lifeState = LifeState.ALIVE;
-							getPlayer().setGameMode(GameMode.ADVENTURE);
-							getPlayer().teleport(GameManager.getInstance().getSpawnpoint());
+							toBukkit().setGameMode(GameMode.ADVENTURE);
+							toBukkit().teleport(GameManager.getInstance().getSpawnpoint());
 							as1.remove();
 							as2.remove();
 							as3.remove();
 							this.cancel();
 							cleanInventory();
 							LainBodies.wakeUp(SvPlayer.this.uid);
-							getPlayer().setGlowing(false);
+							toBukkit().setGlowing(false);
 						}
 						
 						reviveTime += 4;
 						
 						List<SvPlayer> savers = new ArrayList<>();
 						
-						for(SvPlayer sp : GameManager.getInstance().getPlayers())
-						{
-							if(sp.getPlayer() != null && sp.getPlayer().isSneaking() && sp.getPlayer().getLocation().distance(deathLoc) < 5.0D && sp.isAlive())
-							{
+						for(SvPlayer sp : GameManager.getInstance().getOnlinePlayers()) {
+							if(sp.toBukkit().isSneaking() && sp.toBukkit().getLocation().distance(deathLoc) < 5 && sp.isAlive()) {
 								savers.add(sp);
-								reviveTime -= (sp.getAtouts().contains(SvAsset.QUICK_REVIVE) ? 25.0D : 10.0D);
+								reviveTime -= (sp.getAtouts().contains(SvAsset.QUICK_REVIVE) ? 25 : 10);
 							}
 						}
 						
@@ -543,7 +523,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						
 						if(Survivor.getCurrentTick() - deathDate > ON_GROUND_TIME && dyingAlone)
 						{
-							if(!lifeState.dead())
+							if(!isDead())
 							{
 								this.playDead();
 								cancel();
@@ -554,11 +534,11 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							if(Survivor.getCurrentTick() - SvPlayer.this.deathDate > ON_GROUND_TIME && !hardlyDead)
 							{
 								hardlyDead = true;
-								getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0));
-								getPlayer().sendMessage(SurvivorGame.prefix + "§aEn voyant vos alliés vous sauver, vous vous raccrochez à la vie");
+								toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0));
+								toBukkit().sendMessage(SurvivorGame.prefix + "§aEn voyant vos alliés vous sauver, vous vous raccrochez à la vie");
 							}
 							
-							getPlayer().setHealth(getPlayer().getMaxHealth());
+							toBukkit().setHealth(toBukkit().getMaxHealth());
 							
 							if(reviveTime > 1000.0D)
 							{
@@ -581,9 +561,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							{
 								Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + getName() + "§a a été réanimé !");
 								lifeState = LifeState.ALIVE;
-								getPlayer().teleport(deathLoc);
-								getPlayer().setGameMode(GameMode.ADVENTURE);
-								getPlayer().setGlowing(false);
+								toBukkit().teleport(deathLoc);
+								toBukkit().setGameMode(GameMode.ADVENTURE);
+								toBukkit().setGlowing(false);
 								deathDate = 0L;
 								cancel();
 								LainBodies.wakeUp(uid);
@@ -598,19 +578,21 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		}
 	}
 	
-	public int getMoney()
+	public double getMoney()
 	{
 		return this.money;
 	}
 	
-	public void setMoney(int money)
+	public void setMoney(double money)
 	{
-		if(money != this.money)
-			this.actionBar = "§a" + (money - this.money > 0 ? "+" : "-") + "§6" + Math.abs(money - this.money) + "$";
+		if(money != this.money) {
+			String moneyChange = Math.abs(money - this.money) < 1 ? "%.2f".formatted(Math.abs(money - this.money)) : (int) Math.ceil(Math.abs(money - this.money)) + "";
+			this.actionBar = "§a" + (money - this.money > 0 ? "+" : "-") + "§6" + moneyChange + "$";
+		}
 		this.money = money;
 	}
 	
-	public void addMoney(int money)
+	public void addMoney(double money)
 	{
 		setMoney(this.money + money);
 	}
@@ -622,12 +604,12 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public AABB bodyCub()
 	{
-		return new AABB(this.getPlayer().getLocation().clone().add(-0.48D, 0.0D, -0.48D), this.getPlayer().getLocation().clone().add(0.48D, 1.5D, 0.48D));
+		return new AABB(this.toBukkit().getLocation().clone().add(-0.48D, 0.0D, -0.48D), this.toBukkit().getLocation().clone().add(0.48D, 1.5D, 0.48D));
 	}
 	
 	public AABB headCub()
 	{
-		return new AABB(this.getPlayer().getLocation().clone().add(-0.4D, 1.5D, -0.4D), this.getPlayer().getLocation().clone().add(0.4D, 1.9D, 0.4D));
+		return new AABB(this.toBukkit().getLocation().clone().add(-0.4D, 1.5D, -0.4D), this.toBukkit().getLocation().clone().add(0.4D, 1.9D, 0.4D));
 	}
 	
 	public double getReviveTime()
@@ -646,9 +628,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		
 		BossBar bossBar = Bukkit.createBossBar("§c§lInstant Kill", BarColor.RED, BarStyle.SOLID);
 		
-		bossBar.addPlayer(getPlayer());
+		bossBar.addPlayer(toBukkit());
 		
-		final Player player = this.getPlayer();
+		final Player player = this.toBukkit();
 		
 		new BukkitRunnable()
 		{
@@ -676,7 +658,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	@Override
 	public Location getShootLocation()
 	{
-		return getPlayer().getEyeLocation();
+		return toBukkit().getEyeLocation();
 	}
 	
 	public WeaponType getSupply()
@@ -708,81 +690,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		return inv;
 	}
 	
-	public Inventory openDiffInventory()
-	{
-		Inventory inv = Bukkit.createInventory((InventoryHolder) null, 18, "Difficulté");
-		int start = 4 - (int) Math.ceil((double) (fr.lumin0u.survivor.Difficulty.values().length / 2));
-		
-		int i;
-		fr.lumin0u.survivor.Difficulty diff;
-		for(i = 0; i < fr.lumin0u.survivor.Difficulty.values().length; ++i)
-		{
-			if(start == 4 && fr.lumin0u.survivor.Difficulty.values().length % 2 == 0)
-			{
-				++start;
-			}
-			
-			diff = fr.lumin0u.survivor.Difficulty.values()[i];
-			ItemStack glass = diff.getItemRep();
-			ItemMeta meta = glass.getItemMeta();
-			meta.setDisplayName(meta.getDisplayName());
-			glass.setItemMeta(meta);
-			inv.setItem(start++, glass);
-		}
-		
-		start = 4 - (int) Math.ceil((double) (fr.lumin0u.survivor.Difficulty.values().length / 2)) + 9;
-		
-		for(i = 0; i < fr.lumin0u.survivor.Difficulty.values().length; ++i)
-		{
-			if(start == 13 && fr.lumin0u.survivor.Difficulty.values().length % 2 == 0)
-			{
-				++start;
-			}
-			
-			diff = fr.lumin0u.survivor.Difficulty.values()[i];
-			
-			Material material = null;
-			String itemName = null;
-			
-			if(this.diffVote != Difficulty.NOT_SET && this.diffVote.equals(diff))
-			{
-				if(GameManager.getInstance().getDifficulty().equals(diff))
-				{
-					material = Material.GREEN_STAINED_GLASS_PANE;
-					itemName = "§2Votre choix/global";
-				}
-				else
-				{
-					material = Material.CYAN_STAINED_GLASS_PANE;
-					itemName = "§bChoix global";
-				}
-			}
-			
-			else if(GameManager.getInstance().getDifficulty().equals(diff))
-			{
-				material = Material.YELLOW_STAINED_GLASS_PANE;
-				itemName = "§eVotre choix";
-			}
-			
-			if(material != null)
-			{
-				ItemStack glass = new ItemStack(material);
-				ItemMeta meta = glass.getItemMeta();
-				meta.setDisplayName(itemName);
-				glass.setItemMeta(meta);
-				inv.setItem(start, glass);
-			}
-			
-			++start;
-		}
-		
-		getPlayer().openInventory(inv);
-		return inv;
-	}
-	
 	public Weapon getWeaponInHand()
 	{
-		return getWeapon(getPlayer().getInventory().getItemInMainHand());
+		return getWeapon(toBukkit().getInventory().getItemInMainHand());
 	}
 	
 	public Weapon getWeapon(ItemStack item)
@@ -811,7 +721,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	{
 		List<Weapon> orderedWeapons = new ArrayList<>();
 		
-		PlayerInventory inv = this.getPlayer().getInventory();
+		PlayerInventory inv = this.toBukkit().getInventory();
 		
 		for(int i = 0; i < inv.getSize(); i++)
 		{
@@ -850,7 +760,10 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			++c;
 		}
 		
-		this.getPlayer().updateInventory();
+		if(GameManager.getInstance().getWave() < 10) {
+			ItemStack itemA = new ItemBuilder(Material.CARROT).setDisplayName("§6Approvisionnement").build();
+			toBukkit().getInventory().setItem(4, itemA);
+		}
 	}
 	
 	public BadgesData getBadgesData()
@@ -860,16 +773,16 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public Location checkNotOnBeacon()
 	{
-		if(getPlayer().getLocation().getY() % 1 != 0)
+		if(toBukkit().getLocation().getY() % 1 != 0)
 			return null;
 		
-		BoundingBox bb = getPlayer().getBoundingBox();
+		BoundingBox bb = toBukkit().getBoundingBox();
 		bb.shift(0, -0.01, 0);
 		
-		double tpY = getPlayer().getLocation().getY() - 0.01;
+		double tpY = toBukkit().getLocation().getY() - 0.01;
 		boolean any = false;
 		
-		World world = getPlayer().getWorld();
+		World world = toBukkit().getWorld();
 		
 		Block[] blocks = new Block[] {
 				new Location(world, bb.getMinX(), bb.getMinY(), bb.getMinZ()).getBlock(),
@@ -886,7 +799,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				any = true;
 		}
 		
-		Location tp = getPlayer().getLocation();
+		Location tp = toBukkit().getLocation();
 		if(any && tp.getY() != tpY)
 		{
 			tp.setY(tpY);
@@ -898,19 +811,19 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public Inventory getInventory()
 	{
-		return getPlayer().getInventory();
+		return toBukkit().getInventory();
 	}
 	
 	@Override
 	public boolean canUseWeapon()
 	{
-		return getOfflinePlayer().isOnline() && lifeState.alive();
+		return isAlive();
 	}
 	
 	@Override
 	public ItemStack getItemInHand()
 	{
-		return getPlayer().getInventory().getItemInMainHand();
+		return toBukkit().getInventory().getItemInMainHand();
 	}
 	
 	@Override
@@ -928,8 +841,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	@Override
 	public void removeWeapon(Weapon w)
 	{
-		WeaponOwner.super.removeWeapon(w);
+		weapons.remove(w);
 		getInventory().remove(w.getItem());
+	}
+	
+	@Override
+	public void addWeapon(Weapon weapon) {
+		weapons.add(weapon);
 	}
 	
 	@Override
@@ -952,25 +870,25 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			inv.addItem(w.getItem());
 		}
 		
-		getPlayer().updateInventory();
+		toBukkit().updateInventory();
 	}
 	
 	@Override
 	public AABB getHeadHitbox()
 	{
-		return new AABB(getPlayer().getLocation().add(-0.25, 1.4, -0.25), getPlayer().getLocation().add(0.25, 1.8, 0.25));
+		return new AABB(toBukkit().getLocation().add(-0.25, 1.4, -0.25), toBukkit().getLocation().add(0.25, 1.8, 0.25));
 	}
 	
 	@Override
 	public AABB getBodyHitbox()
 	{
-		return new AABB(getPlayer().getLocation().add(-0.3, 0, -0.3), getPlayer().getLocation().add(0.3, 1.4, 0.3));
+		return new AABB(toBukkit().getLocation().add(-0.3, 0, -0.3), toBukkit().getLocation().add(0.3, 1.4, 0.3));
 	}
 	
 	@Override
 	public Location getFeets()
 	{
-		return getPlayer().getLocation();
+		return toBukkit().getLocation();
 	}
 	
 	@Override
@@ -990,7 +908,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	@Override
 	public void setFrozenTime(long frozenTime)
 	{
-		getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) frozenTime, 4));
+		toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) frozenTime, 4));
 	}
 	
 	@Override
@@ -1004,9 +922,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		if(weapon != null)
 			dmg *= weapon.getDamageMultiplier(this);
 		
-		if(lifeState.alive())
+		if(isAlive())
 		{
-			Player p = getPlayer();
+			Player p = toBukkit();
 			if(p.getHealth() <= dmg)
 			{
 				fallOnGround();
@@ -1055,15 +973,5 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		ALIVE,
 		ON_GROUND,
 		DEAD;
-		
-		public boolean alive() {
-			return this == ALIVE;
-		}
-		public boolean onGround() {
-			return this == ON_GROUND;
-		}
-		public boolean dead() {
-			return this == DEAD;
-		}
 	}
 }

@@ -1,6 +1,7 @@
 package fr.lumin0u.survivor.weapons.guns;
 
 import fr.lumin0u.survivor.player.WeaponOwner;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.IRailGun;
 import fr.lumin0u.survivor.weapons.Upgradeable;
 import fr.lumin0u.survivor.weapons.WeaponType;
@@ -10,7 +11,7 @@ public class RailGun extends Gun implements Upgradeable, IRailGun
 {
 	public RailGun(WeaponOwner owner)
 	{
-		super(owner, WeaponType.RAILGUN);
+		super(owner, WeaponType.RAILGUN, TFSound.RAILGUN_SHOT);
 	}
 	
 	@Override

@@ -3,9 +3,9 @@ package fr.lumin0u.survivor.objects;
 import fr.lumin0u.survivor.Difficulty;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
-import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.mobs.mob.boss.Boss;
+import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
@@ -72,9 +72,9 @@ public enum Bonus
 			{
 				++this.i;
 				
-				for(SvPlayer p : GameManager.getInstance().getPlayers())
+				for(SvPlayer p : GameManager.getInstance().getOnlinePlayers())
 				{
-					if(p.getPlayer().getGameMode().equals(GameMode.ADVENTURE) && p.getPlayer().getLocation().distance(it.getLocation()) < 2.5D)
+					if(p.toBukkit().getGameMode().equals(GameMode.ADVENTURE) && p.toBukkit().getLocation().distance(it.getLocation()) < 2.5D)
 					{
 						Bonus.this.onPickup(p);
 						this.i = 1200;
@@ -98,9 +98,9 @@ public enum Bonus
 		GameManager gm = GameManager.getInstance();
 		if(!this.equals(AIRSTRIKE))
 		{
-			for(SvPlayer pl : gm.getPlayers())
+			for(SvPlayer pl : gm.getOnlinePlayers())
 			{
-				MCUtils.sendTitle(pl.getPlayer(), 5, 40, 10, this.name);
+				MCUtils.sendTitle(pl.toBukkit(), 5, 40, 10, this.name);
 			}
 		}
 		
@@ -124,7 +124,7 @@ public enum Bonus
 						
 						for(Enemy enemy : new ArrayList<>(damagee))
 						{
-							if(!(enemy.getEntity().getLocation().distance(picker.getPlayer().getLocation()) > (double) this.distance))
+							if(!(enemy.getEntity().getLocation().distance(picker.toBukkit().getLocation()) > (double) this.distance))
 							{
 								if(!(enemy instanceof Boss))
 								{
@@ -142,9 +142,9 @@ public enum Bonus
 						this.distance += 2;
 					}
 				}.runTaskTimer(Survivor.getInstance(), 0L, 1L);
-				for(SvPlayer sp : gm.getPlayers())
-				{
-					sp.addMoney(damagee.stream().mapToInt(Enemy::getReward).sum() / 3);
+				
+				for(SvPlayer sp : gm.getPlayers()) {
+					sp.addMoney(damagee.stream().mapToDouble(Enemy::getReward).sum() / 3);
 				}
 			}
 			case INSTANT_KILL -> {
@@ -155,19 +155,16 @@ public enum Bonus
 			}
 			case CARPENTER -> {
 				int count = 0;
-				for(Room r : gm.getRooms())
-				{
-					for(Location fence : r.getFences())
-					{
-						if(fence.getBlock().getBlockData() instanceof Gate)
-						{
-							Room.placeFence(fence);
+				for(Room r : gm.getRooms()) {
+					for(Location fence : r.getFences()) {
+						if(fence.getBlock().getBlockData() instanceof Gate) {
+							r.placeFence(fence);
 							count++;
 						}
 					}
 				}
 				
-				picker.addMoney((int) ((double) count * 0.2 * gm.getWave()));
+				picker.addMoney((double) count * 0.2 * gm.getWave());
 			}
 			case MUNMAX -> {
 				for(SvPlayer sp : gm.getPlayers())

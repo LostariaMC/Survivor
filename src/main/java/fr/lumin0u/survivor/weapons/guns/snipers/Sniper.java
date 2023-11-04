@@ -38,27 +38,23 @@ public abstract class Sniper extends Gun
 		if(!this.scopeActive && owner instanceof SvPlayer)
 			scope();
 		else if(owner instanceof SvPlayer)
-			unscope();
-	}
-	
-	public void onScroll()
-	{
-		if(owner instanceof SvPlayer && scopeActive)
-			unscope();
+			unScope();
 	}
 	
 	private void scope()
 	{
 		this.scopeActive = true;
-		((SvPlayer) owner).getPlayer().getInventory().setHelmet(new ItemStack(Material.PUMPKIN));
-		((SvPlayer) owner).getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 99999, 10, false, false));
+		((SvPlayer) owner).toBukkit().getInventory().setHelmet(new ItemStack(Material.PUMPKIN));
+		((SvPlayer) owner).toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 99999, 10, false, false));
 	}
 	
-	private void unscope()
+	public void unScope()
 	{
-		this.scopeActive = false;
-		((SvPlayer) owner).getPlayer().getInventory().setHelmet(new ItemStack(Material.AIR));
-		((SvPlayer) owner).getPlayer().removePotionEffect(PotionEffectType.SLOW);
+		if(scopeActive && owner instanceof SvPlayer sp) {
+			scopeActive = false;
+			sp.toBukkit().getInventory().setHelmet(new ItemStack(Material.AIR));
+			sp.toBukkit().removePotionEffect(PotionEffectType.SLOW);
+		}
 	}
 	
 	@Override

@@ -1,10 +1,11 @@
 package fr.lumin0u.survivor.mobs.mob.boss;
 
-import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.mobs.mob.ZombieWeaponAI;
+import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.guns.Gun;
 import fr.lumin0u.survivor.weapons.knives.Knife;
+import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import org.bukkit.Location;
 
 import java.util.Objects;
@@ -39,6 +40,7 @@ public class CopyCatBoss extends Boss
 				{
 					weapon = target.getWeapons().stream()
 							.filter(Objects::nonNull)
+							.filter(w -> !(w instanceof SuperWeapon))
 							.filter(w -> !(w instanceof Knife)).findAny();
 				}
 				if(weapon.isPresent())

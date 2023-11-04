@@ -2,8 +2,8 @@ package fr.lumin0u.survivor.mobs.mob.boss;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
-import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.mobs.mob.ZombieWithHead;
+import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.weapons.Weapon;
 import org.bukkit.Location;
 import org.bukkit.Material;
