@@ -419,7 +419,7 @@ public class PlayerEvents implements PacketListener, Listener
 				e.getTo().setZ(e.getFrom().getZ());
 			}
 			
-			if(sp.isDead()) {
+			if(!sp.isDead()) {
 				Location tp = sp.checkNotOnBeacon();
 				if(tp != null)
 					e.setTo(tp);
