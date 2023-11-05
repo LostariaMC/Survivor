@@ -1,7 +1,5 @@
 package fr.lumin0u.survivor.player;
 
-import com.comphenix.protocol.PacketType.Play;
-import com.comphenix.protocol.events.PacketContainer;
 import fr.lumin0u.survivor.Difficulty;
 import fr.lumin0u.survivor.*;
 import fr.lumin0u.survivor.utils.AABB;
@@ -130,14 +128,15 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						bukkitPlayer.setHealth(Math.min(bukkitPlayer.getMaxHealth(), bukkitPlayer.getHealth() + GameManager.getInstance().getDifficulty().regenHpPerSecond()));
 						if(Math.floor(lastHealth) < Math.floor(bukkitPlayer.getHealth()))
 						{
-							PacketContainer packet = new PacketContainer(Play.Server.UPDATE_HEALTH);
+							/*PacketContainer packet = new PacketContainer(Play.Server.UPDATE_HEALTH);
 							packet.getFloat()
 									.write(0, (float) ((int) bukkitPlayer.getHealth()))
 									.write(1, 0f);
 							packet.getIntegers().write(0, (int) bukkitPlayer.getMaxHealth());
 							
 							
-							sendPacket(packet);
+							sendPacket(packet);*/
+							bukkitPlayer.sendHealthUpdate();
 						}
 						
 						this.regen = 20;
@@ -940,7 +939,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 					MCUtils.damageAnimation(p);
 					p.setHealth(p.getHealth() - dmg * (headshot ? 1.5 : 1));
 					p.setVelocity(p.getVelocity().multiply(0.5).add(kb == null ? new Vector() : kb));
-					//TODO ((CraftPlayer)p).updateScaledHealth();
+					p.sendHealthUpdate();
 				}
 				
 				return false;
