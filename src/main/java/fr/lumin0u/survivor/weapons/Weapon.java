@@ -30,16 +30,12 @@ public abstract class Weapon implements IWeapon
 	protected int clipSize;
 	protected int reloadTime;
 	protected WeaponType wt;
-	private long timeLastClick;
-	private long lastShotDate;
-	private long shootingTime;
 	
 	private Perk perk;
 	
 	public BukkitRunnable rClickingTask;
 	
-	public Weapon(final WeaponOwner owner, final WeaponType wt)
-	{
+	public Weapon(final WeaponOwner owner, final WeaponType wt) {
 		this.owner = owner;
 		this.wt = wt;
 		this.isReloading = false;
@@ -54,10 +50,9 @@ public abstract class Weapon implements IWeapon
 		meta.setDisplayName((this instanceof SuperWeapon ? "§d" : "§9") + wt.getName());
 		meta.setLore(this.getLore());
 		meta.setUnbreakable(true);
-		meta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS);
+		meta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
 		this.item.setItemMeta(meta);
-		if(owner.getWeaponTypes().contains(wt))
-		{
+		if(owner.getWeaponTypes().contains(wt)) {
 			owner.getWeaponsByType(this.getClass()).forEach(owner::removeWeapon);
 		}
 		
@@ -82,44 +77,35 @@ public abstract class Weapon implements IWeapon
 		}*/
 	}
 	
-	public ItemStack getItem()
-	{
+	public ItemStack getItem() {
 		return this.item.clone();
 	}
 	
-	public int getAmmo()
-	{
+	public int getAmmo() {
 		return this.ammo;
 	}
 	
-	public void setAmmo(int ammo)
-	{
+	public void setAmmo(int ammo) {
 		this.ammo = ammo;
 	}
 	
-	public int getClip()
-	{
+	public int getClip() {
 		return this.clip;
 	}
 	
-	public void setClip(int clip)
-	{
+	public void setClip(int clip) {
 		this.clip = clip;
 	}
 	
-	public void useAmmo()
-	{
+	public void useAmmo() {
 		--this.clip;
-		if(this.clip <= 0)
-		{
+		if(this.clip <= 0) {
 			this.reload();
 		}
 	}
 	
-	public void reload()
-	{
-		if(ammo > 0 && owner.hasItem(this))
-		{
+	public void reload() {
+		if(ammo > 0 && owner.hasItem(this)) {
 			isReloading = true;
 			
 			final int modifiedReloadTime = owner.hasSpeedReload() ? (int) ((double) this.reloadTime / 1.6) : this.reloadTime;
@@ -134,66 +120,57 @@ public abstract class Weapon implements IWeapon
 				int time = 0;
 				
 				@Override
-				public void run()
-				{
+				public void run() {
 					isReloading = true;
 					
 					boolean ownerOffline = owner instanceof SvPlayer sp && !sp.isOnline();
 					
-					if(this.time >= modifiedReloadTime || ownerOffline)
-					{
+					if(this.time >= modifiedReloadTime || ownerOffline) {
 						isReloading = false;
 						this.cancel();
 						int clip = getClip();
 						setClip(Math.min(getAmmo() + clip, clipSize));
 						setAmmo(Math.max(0, getAmmo() - (clipSize - clip)));
 						item.setAmount(1);
-						if(!ownerOffline)
+						if(!ownerOffline) {
 							owner.giveWeaponItem(Weapon.this);
+						}
 						return;
 					}
 					
-					if(time == 0)
-					{
+					if(time == 0) {
 						showCooldown(modifiedReloadTime - time);
 					}
 					
-					if(owner.getItemInHand().isSimilar(item))
-					{
+					if(owner.getItemInHand().isSimilar(item)) {
 						time++;
 					}
-					else
-					{
-						showCooldown(modifiedReloadTime - time);
+					else {
+						showCooldown(600);
 					}
 				}
 			}.runTaskTimer(Survivor.getInstance(), 1L, 1L);
 		}
 	}
 	
-	public void showCooldown(int ticks)
-	{
+	public void showCooldown(int ticks) {
 		if(owner instanceof SvPlayer)
 			((SvPlayer) owner).toBukkit().setCooldown(wt.getMaterial(), ticks);
 	}
 	
-	public WeaponOwner getOwner()
-	{
+	public WeaponOwner getOwner() {
 		return this.owner;
 	}
 	
-	public boolean isReloading()
-	{
+	public boolean isReloading() {
 		return this.isReloading;
 	}
 	
-	public WeaponType getType()
-	{
+	public WeaponType getType() {
 		return this.wt;
 	}
 	
-	public List<String> getLore()
-	{
+	public List<String> getLore() {
 		List<String> lore = new ArrayList<>();
 		lore.add("§6Munitions max : §a" + this.maxAmmo + (!isUpgradeable() ? "" : " §8\u279D " + getMaxAmmoAtLevel(level + 1)));
 		lore.add("§6Taille d'un chargeur : §a" + this.clipSize + (!isUpgradeable() ? "" : " §8\u279D " + getClipSizeAtLevel(level + 1)));
@@ -204,8 +181,7 @@ public abstract class Weapon implements IWeapon
 		return lore;
 	}
 	
-	public String getActionBar()
-	{
+	public String getActionBar() {
 		return "§9" + this.wt.getName() + (this.level > 0 ? " §5" + this.level + "§9" : "") + " §6" + this.clip + "§7/§6" + this.ammo;
 	}
 	
@@ -225,198 +201,107 @@ public abstract class Weapon implements IWeapon
 		}
 	}*/
 	
-	protected int getMaxAmmoAtLevel(int level)
-	{
+	protected int getMaxAmmoAtLevel(int level) {
 		return (int) ((double) wt.getMaxAmmo() * Math.pow(1.05D, level));
 	}
 	
-	protected int getClipSizeAtLevel(int level)
-	{
+	protected int getClipSizeAtLevel(int level) {
 		return (int) ((double) wt.getClipSize() * Math.pow(1.05D, level));
 	}
 	
-	protected int getReloadTimeAtLevel(int level)
-	{
+	protected int getReloadTimeAtLevel(int level) {
 		return (int) ((double) wt.getReloadTime() * Math.pow(0.97D, level));
 	}
 	
-	protected void upgrade()
-	{
+	protected void upgrade() {
 		++this.level;
 		this.maxAmmo = getMaxAmmoAtLevel(this.level);
 		this.clipSize = getClipSizeAtLevel(this.level);
 		this.reloadTime = getReloadTimeAtLevel(this.level);
 		ItemMeta meta = this.item.getItemMeta();
-		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		meta.setLore(this.getLore());
 		this.item.setItemMeta(meta);
 		this.item.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
 	}
 	
-	protected int getNextLevelPrice()
-	{
+	protected int getNextLevelPrice() {
 		return (int) ((double) (this.level + 1) * Math.pow(1.13D, (double) this.level)) * 750;
 	}
 	
-	public int getLevel()
-	{
+	public int getLevel() {
 		return this.level;
 	}
 	
-	public void giveItem()
-	{
+	public void giveItem() {
 		ItemMeta meta = this.item.getItemMeta();
 		meta.setLore(this.getLore());
 		this.item.setItemMeta(meta);
 		
 		owner.giveWeaponItem(this);
-		
-//		if(owner instanceof SvPlayer)
-//		{
-//			Inventory inv = ((SvPlayer) owner).getInventory();
-//			int place = inv.first(this.item.getType());
-//			inv.remove(this.item.getType());
-//
-//			if(this.wt.getPlace() != -1)
-//			{
-//				inv.setItem(this.wt.getPlace(), this.item.clone());
-//			}
-//			else if(place != -1)
-//			{
-//				inv.setItem(place, this.item.clone());
-//			}
-//			else
-//			{
-//				inv.addItem(this.item.clone());
-//			}
-//
-//			((SvPlayer) owner).getPlayer().updateInventory();
-//		}
-//
-//		else
-//			owner
 	}
 	
-	public int getMaxAmmo()
-	{
+	public int getMaxAmmo() {
 		return this.maxAmmo;
 	}
 	
-	public int getClipSize()
-	{
+	public int getClipSize() {
 		return this.clipSize;
 	}
 	
-	/*public final void impulseRightClick()
-	{
-		if(this.owner.canUseWeapon())
-		{
-			switch(this.wt.getRepeatingType())
-			{
-				case NONE:
-					this.rightClick();
-					break;
-				case SEMIAUTOMATIC:
-				case BURSTS:
-					int lag = owner instanceof SvPlayer ? ((SvPlayer) owner).getPlayer().getPing() : 0;
-					
-					boolean wasClicking = System.currentTimeMillis() - this.timeLastClick < (long) (215 + lag);
-					
-					this.timeLastClick = System.currentTimeMillis();
-					if(!wasClicking && System.currentTimeMillis() - this.lastShotDate > this.wt.getRpm() * 50L)
-					{
-						if(this.clip > 0 && !this.isReloading)
-						{
-							if(wt.getRepeatingType() == RepeatingType.SEMIAUTOMATIC)
-							{
-								this.lastShotDate = System.currentTimeMillis();
-								this.rightClick();
-							}
-							else
-							{
-								if(this.rClickingTask == null)
-								{
-									this.rClickingTask = new BukkitRunnable()
-									{
-										int shots = 0;
-										
-										@Override
-										public void run()
-										{
-											lastShotDate = System.currentTimeMillis();
-											rightClick();
-											shots++;
-											if(shots >= (int) wt.get("shots"))
-											{
-												cancel();
-												rClickingTask = null;
-											}
-										}
-									};
-									rClickingTask.runTaskTimer(Survivor.getInstance(), 0L, (Integer) this.wt.get("shotsDelay"));
-								}
-							}
-						}
-						else if(owner instanceof SvPlayer)
-						{
-							((SvPlayer) owner).getPlayer().playSound(((SvPlayer) owner).getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 1.0F);
-						}
-					}
-					break;
-				case AUTOMATIC:
-					if(this.rClickingTask == null)
-					{
-						this.shootingTime = 0L;
-						this.timeLastClick = 0L;
-						this.rClickingTask = new BukkitRunnable()
-						{
-							@Override
-							public void run()
-							{
-								if(Weapon.this.clip > 0 && !Weapon.this.isReloading && Weapon.this.timeLastClick + Math.max(3L, Weapon.this.wt.getRpm()) > Weapon.this.shootingTime)
-								{
-									Weapon.this.rightClick();
-									Weapon.this.shootingTime = Weapon.this.shootingTime + Weapon.this.wt.getRpm();
-								}
-								else
-								{
-									Weapon.this.rClickingTask = null;
-									this.cancel();
-								}
-							}
-						};
-						this.rClickingTask.runTaskTimer(Survivor.getInstance(), 0L, this.wt.getRpm());
-					}
-					else
-					{
-						this.timeLastClick = this.shootingTime;
-					}
-					break;
+	private long lastClickDate;
+	private long lastShotDate;
+	
+	public final void impulseRightClick() {
+		int rpm = getType().getRpm();
+		
+		switch(getType().getRepeatingType()) {
+			case NONE ->
+					rightClick();
+			case SEMIAUTOMATIC, BURSTS -> {
+				if(System.currentTimeMillis() - lastClickDate > 215 && Survivor.getCurrentTick() - lastShotDate >= rpm) {
+					rightClick();
+					if(!isReloading())
+						showCooldown(Math.max(4, rpm));
+					lastShotDate = Survivor.getCurrentTick();
+				}
 			}
-			
+			case AUTOMATIC -> {
+				if(rClickingTask == null) {
+					Runnable doShot = this::rightClick;
+					
+					rightClick();
+					
+					rClickingTask = new BukkitRunnable()
+					{
+						@Override
+						public void run() {
+							if(Weapon.this.equals(owner.getWeaponInHand()) && getClip() > 0 && isUseable() && System.currentTimeMillis() - lastClickDate < 150) {
+								rightClick();
+							}
+							else {
+								rClickingTask = null;
+								cancel();
+							}
+						}
+					};
+					
+					rClickingTask.runTaskTimer(Survivor.getInstance(), rpm, rpm);
+				}
+			}
 		}
-	}*/
+		
+		lastClickDate = System.currentTimeMillis();
+	}
 	
-	/*public final void impulseLeftClick()
-	{
-		if(this.owner.canUseWeapon())
-		{
-			this.leftClick();
-		}
-	}*/
-	
-	public int getAmmoBoxRecovery()
-	{
+	public int getAmmoBoxRecovery() {
 		return clipSize;
 	}
 	
-	public boolean isUpgradeable()
-	{
+	public boolean isUpgradeable() {
 		return this instanceof Upgradeable;
 	}
 	
-	public void click(ClickType clickType)
-	{
+	public void click(ClickType clickType) {
 		if(clickType == ClickType.RIGHT)
 			rightClick();
 		else if(clickType == ClickType.LEFT)
@@ -431,18 +316,15 @@ public abstract class Weapon implements IWeapon
 	
 	public abstract void leftClick();
 	
-	public String toString()
-	{
+	public String toString() {
 		return this.getClass().getSimpleName() + " [level=" + this.level + ", ammo=" + this.ammo + ", clip=" + this.clip + "]";
 	}
 	
-	public boolean aiHelp_MayShoot(Enemy mob, SvPlayer target)
-	{
+	public boolean aiHelp_MayShoot(Enemy mob, SvPlayer target) {
 		return true;
 	}
 	
-	public double getDamageMultiplier(SvDamageable victim)
-	{
+	public double getDamageMultiplier(SvDamageable victim) {
 		if(victim instanceof SvPlayer)
 			return 0.1;
 		else
@@ -453,13 +335,11 @@ public abstract class Weapon implements IWeapon
 		return !isReloading && clip > 0;
 	}
 	
-	public boolean hasPerk(Perk perk)
-	{
+	public boolean hasPerk(Perk perk) {
 		return perk == null || perk.equals(this.perk);
 	}
 	
-	public Perk getPerk()
-	{
+	public Perk getPerk() {
 		return perk;
 	}
 	

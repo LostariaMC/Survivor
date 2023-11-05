@@ -11,8 +11,7 @@ import java.util.stream.Collectors;
 
 public interface WeaponOwner extends SvDamageable
 {
-	public default List<WeaponType> getWeaponTypes()
-	{
+	public default List<WeaponType> getWeaponTypes() {
 		return getWeapons().stream().map(Weapon::getType).collect(Collectors.toList());
 	}
 	
@@ -22,15 +21,15 @@ public interface WeaponOwner extends SvDamageable
 	
 	public void removeWeapon(Weapon weapon);
 	
-	public default <T extends Weapon> List<T> getWeaponsByType(Class<T> clazz)
-	{
+	public default <T extends Weapon> List<T> getWeaponsByType(Class<T> clazz) {
 		return (List<T>) getWeapons().stream().filter(clazz::isInstance).collect(Collectors.toList());
 	}
 	
+	public Weapon getWeaponInHand();
+	
 	public ItemStack findItem(Weapon weapon);
 	
-	public default boolean hasItem(Weapon weapon)
-	{
+	public default boolean hasItem(Weapon weapon) {
 		return findItem(weapon) != null;
 	}
 	

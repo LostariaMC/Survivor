@@ -58,11 +58,11 @@ public enum WeaponType
 	FREEZER(Freezer.class, RepeatingType.AUTOMATIC, "Freezer", Material.SHEARS, 0, 30, 1/*, new McSound("guns.hurlhiv", 20)*/, 1, true, 8, 4, Arrays.asList("dmg", "range", "accuracy", "particle"), Arrays.asList(2.8D, 10.0D, 1.0D, Particle.CLOUD)),
 	BARBECUE(Barbecue.class, RepeatingType.AUTOMATIC, "Lance Flammes", Material.BLAZE_ROD, 0, 20, 1/*, new McSound("guns.flamme14", 20)*/, 1, true, 8, 10, Arrays.asList("dmg", "range", "accuracy", "particle"), Arrays.asList(3.0D, 10.0D, 1.0D, Particle.FLAME)),
 	
-	GRENADE(Grenade.class, RepeatingType.NONE, "Grenade", Material.CLAY_BALL, 0, 3, 64, 1, false, 6, 15, List.of(), List.of()),
-	GRENADEFRAG(GrenadeFrag.class, RepeatingType.NONE, "Grenade Frag", Material.SLIME_BALL, 0, 2, 64, 1, false, 6, 15, List.of(), List.of()),
-	GRENADEFLAME(GrenadeFlame.class, RepeatingType.NONE, "Grenade Incendiaire", Material.MAGMA_CREAM, 0, 3, 64, 1, false, 6, 15, List.of(), List.of()),
-	TURRET(Turret.class, RepeatingType.NONE, "Tourelle", Material.GOLD_NUGGET, 0, 1, 64, 465278045, false, 6, 1, List.of(), List.of()),
-	AMMO_BOX(AmmoBox.class, RepeatingType.NONE, "Boite de munitions", Material.CAKE, 0, 1, 53, 1, false, 6, 23, List.of(), List.of()),
+	GRENADE(Grenade.class, RepeatingType.SEMIAUTOMATIC, "Grenade", Material.CLAY_BALL, 0, 3, 64, 1, false, 6, 1, List.of(), List.of()),
+	GRENADEFRAG(GrenadeFrag.class, RepeatingType.SEMIAUTOMATIC, "Grenade Frag", Material.SLIME_BALL, 0, 2, 64, 1, false, 6, 1, List.of(), List.of()),
+	GRENADEFLAME(GrenadeFlame.class, RepeatingType.SEMIAUTOMATIC, "Grenade Incendiaire", Material.MAGMA_CREAM, 0, 3, 64, 1, false, 6, 1, List.of(), List.of()),
+	TURRET(Turret.class, RepeatingType.SEMIAUTOMATIC, "Tourelle", Material.GOLD_NUGGET, 0, 1, 64, 465278045, false, 6, 1, List.of(), List.of()),
+	AMMO_BOX(AmmoBox.class, RepeatingType.SEMIAUTOMATIC, "Boite de munitions", Material.CAKE, 0, 1, 53, 1, false, 6, 1, List.of(), List.of()),
 	
 	HUNTING_GUN(ZombieHuntingGun.class, RepeatingType.SEMIAUTOMATIC, "Fusil de Chasse", Material.WOODEN_AXE, 10, 1, 60/*, new McSound("guns.mosin", 30)*/, 1, false, -1, 10, Arrays.asList("dmg", "range", "accuracy"), Arrays.asList(15D, 40.0D, 0.65D)),
 	GRAPPLING_HOOK(GrapplingHook.class, RepeatingType.SEMIAUTOMATIC, "Grappin", Material.FISHING_ROD, 1, 1, 0/*, new McSound("random.bow", 0.5F, 10)*/, 1, false, -1, 10, Arrays.asList("dmg", "range", "accuracy"), Arrays.asList(0.0D, 5.0D, 0.0D)),

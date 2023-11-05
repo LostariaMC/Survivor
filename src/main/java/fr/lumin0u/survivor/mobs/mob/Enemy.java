@@ -461,4 +461,9 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	{
 		return DamageTarget.PLAYERS;
 	}
+	
+	@Override
+	public Weapon getWeaponInHand() {
+		return weapon;
+	}
 }

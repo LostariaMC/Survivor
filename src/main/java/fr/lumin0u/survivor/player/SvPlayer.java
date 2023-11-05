@@ -51,9 +51,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	private WeaponOwner fireSource;
 	private Weapon fireSourceWeapon;
 	
-	private long lastClickDate;
-	private long lastShotDate;
-	
 	private static final long INSTANT_KILL_DURATION = 400;
 	private static final long ON_GROUND_TIME = 750L;
 	
@@ -221,53 +218,11 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		
 		Weapon weapon = getWeaponInHand();
 		
-		if(weapon != null && canUseWeapon())
-		{
+		if(weapon != null && canUseWeapon()) {
 			int rpm = weapon.getType().getRpm();
 			
-			switch(weapon.getType().getRepeatingType())
-			{
-				case NONE -> weapon.rightClick();
-				case SEMIAUTOMATIC, BURSTS -> {
-					if(System.currentTimeMillis() - lastClickDate > 215 && Survivor.getCurrentTick() - lastShotDate >= rpm)
-					{
-						weapon.rightClick();
-						if(!weapon.isReloading())
-							weapon.showCooldown(Math.max(4, rpm));
-						lastShotDate = Survivor.getCurrentTick();
-					}
-				}
-				case AUTOMATIC -> {
-					if(weapon.rClickingTask == null)
-					{
-						Runnable doShot = weapon::rightClick;
-						
-						doShot.run();
-						
-						weapon.rClickingTask = new BukkitRunnable()
-						{
-							@Override
-							public void run()
-							{
-								if(weapon.equals(getWeaponInHand()) && weapon.getClip() > 0 && weapon.isUseable() && System.currentTimeMillis() - lastClickDate < 150)
-								{
-									doShot.run();
-								}
-								else
-								{
-									weapon.rClickingTask = null;
-									this.cancel();
-								}
-							}
-						};
-						
-						weapon.rClickingTask.runTaskTimer(Survivor.getInstance(), rpm, rpm);
-					}
-				}
-			}
+			weapon.impulseRightClick();
 		}
-		
-		lastClickDate = System.currentTimeMillis();
 	}
 	
 	public void onLeftClick() {
@@ -379,7 +334,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		final ArmorStand as1 = MCUtils.oneConsistentFlyingText(player.getEyeLocation(), "§4JE SUIS EN TRAIN DE MOURIR");
 		final ArmorStand as2;
 		
-		if(Calendar.getInstance().get(Calendar.DATE) == 1 && Calendar.getInstance().get(Calendar.MONTH) == Calendar.APRIL)
+		if(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == 1 && Calendar.getInstance().get(Calendar.MONTH) == Calendar.APRIL)
 		{
 			as2 = MCUtils.oneConsistentFlyingText(player.getEyeLocation().add(0.0D, -0.3D, 0.0D), "§aSAUVE MOI EN FAISANT ALT+F4");
 		}
@@ -422,13 +377,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 					as1.remove();
 					as2.remove();
 					as3.remove();
-					if(!SvPlayer.this.toBukkitOffline().isOnline())
+					if(!isOnline())
 					{
 						return;
 					}
 					
 					MCUtils.sendTitle(toBukkit(), 10, 40, 20, "§cVous êtes mort");
-					SvPlayer.this.toBukkit().setGameMode(GameMode.SPECTATOR);
+					toBukkit().setGameMode(GameMode.SPECTATOR);
 					
 					if(!assets.contains(SvAsset.PIERRE_TOMBALE))
 					{
@@ -655,6 +610,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		toBukkit().openInventory(inv);
 	}
 	
+	@Override
 	public Weapon getWeaponInHand()
 	{
 		return getWeapon(toBukkit().getInventory().getItemInMainHand());
