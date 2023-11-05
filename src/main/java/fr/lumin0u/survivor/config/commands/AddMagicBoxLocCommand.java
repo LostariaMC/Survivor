@@ -8,7 +8,6 @@ import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -57,21 +56,19 @@ public class AddMagicBoxLocCommand extends SvArgCommand implements Listener {
             
             Vector position = e.getBlock().getLocation().toVector();
             
-            TextComponent extra = ConfigUtil.getAdditionAndDo(config, e.getBlock().getLocation(), new Action() {
+            e.getPlayer().sendMessage(MCUtils.buildTextComponent(" ", "§aEmplacement ajouté", ConfigUtil.getAdditionAndDo(config, e.getBlock().getLocation(), new Action() {
                 @Override
                 public void redo() {
                     config.magicBoxes.add(position);
                     e.getBlock().setType(Material.ENDER_CHEST);
                 }
-    
+                
                 @Override
                 public void undo() {
                     config.magicBoxes.remove(position);
                     e.getBlock().setType(Material.AIR);
                 }
-            }, "annuler");
-            
-            e.getPlayer().sendMessage(MCUtils.buildTextComponent(" ", "§aEmplacement ajouté", extra));
+            }, "annuler")));
         }
     }
     
@@ -85,7 +82,7 @@ public class AddMagicBoxLocCommand extends SvArgCommand implements Listener {
     
             Location location = e.getBlock().getLocation();
     
-            TextComponent extra = ConfigUtil.getAdditionAndDo(config, location, new Action() {
+            e.getPlayer().sendMessage(MCUtils.buildTextComponent(" ", "§aEmplacement de boite magique retiré", ConfigUtil.getAdditionAndDo(config, location, new Action() {
                 @Override
                 public void redo() {
                     config.magicBoxes.remove(location.toVector());
@@ -99,9 +96,7 @@ public class AddMagicBoxLocCommand extends SvArgCommand implements Listener {
                     Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(e.getPlayer())).update();
                     e.getBlock().setType(Material.ENDER_CHEST);
                 }
-            }, "annuler");
-    
-            e.getPlayer().sendMessage(MCUtils.buildTextComponent(" ", "§aEmplacement de boite magique retiré", extra));
+            }, "annuler")));
         }
     }
 }

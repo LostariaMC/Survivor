@@ -33,7 +33,6 @@ public class StatsManager
 		return getStatDouble(playerUid, name) != 0.0D;
 	}
 	
-	@Deprecated
 	public static void setStat(UUID playerUid, String name, double value)
 	{
 		stats.putIfAbsent(playerUid, new HashMap<>());

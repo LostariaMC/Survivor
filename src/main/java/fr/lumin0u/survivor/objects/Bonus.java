@@ -32,8 +32,8 @@ public enum Bonus
 	CARPENTER("§6Charpentier", Material.OAK_FENCE),
 	AIRSTRIKE("§dAirstrike", Material.REDSTONE);
 	
-	private String name;
-	private Material mat;
+	private final String name;
+	private final Material mat;
 	
 	public static double probability(Difficulty difficulty)
 	{

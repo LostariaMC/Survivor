@@ -30,9 +30,9 @@ public class LevelUpCommand extends AbstractGameCommand
 					Method upgrade = Weapon.class.getDeclaredMethod("upgrade");
 					upgrade.setAccessible(true);
 					upgrade.invoke(w);
-				} catch(ReflectiveOperationException var9)
+				} catch(ReflectiveOperationException e)
 				{
-					var9.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 			

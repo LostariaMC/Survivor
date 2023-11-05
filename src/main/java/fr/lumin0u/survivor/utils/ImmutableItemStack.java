@@ -22,10 +22,12 @@ public class ImmutableItemStack extends ItemStack
 		super(type, amount);
 	}
 	
+	@Deprecated
 	public ImmutableItemStack(@NotNull Material type, int amount, short damage) {
 		super(type, amount, damage);
 	}
 	
+	@Deprecated
 	public ImmutableItemStack(@NotNull Material type, int amount, short damage, @Nullable Byte data) {
 		super(type, amount, damage, data);
 	}
@@ -46,6 +48,7 @@ public class ImmutableItemStack extends ItemStack
 	}
 	
 	@Override
+	@Deprecated
 	public void setData(@Nullable MaterialData data) {
 		throwImmutable();
 	}
@@ -56,6 +59,7 @@ public class ImmutableItemStack extends ItemStack
 	}
 	
 	@Override
+	@Deprecated
 	public void setDurability(short durability) {
 		throwImmutable();
 	}

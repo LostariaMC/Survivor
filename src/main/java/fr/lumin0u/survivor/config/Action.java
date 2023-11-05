@@ -1,5 +1,7 @@
 package fr.lumin0u.survivor.config;
 
+import java.util.List;
+
 public abstract class Action
 {
 	public abstract void redo();
@@ -8,15 +10,33 @@ public abstract class Action
 	
 	public static Action inverted(Action action)
 	{
-		return new Action()
-		{
+		return Action.of(action::undo, action::redo);
+	}
+	
+	public static Action of(Runnable redo, Runnable undo) {
+		return new Action() {
 			@Override
 			public void redo() {
-				action.undo();
+				redo.run();
 			}
+			
 			@Override
 			public void undo() {
-				action.redo();
+				undo.run();
+			}
+		};
+	}
+	
+	public static <T> Action ofAdd(List<T> list, T obj) {
+		return new Action() {
+			@Override
+			public void redo() {
+				list.add(obj);
+			}
+			
+			@Override
+			public void undo() {
+				list.remove(obj);
 			}
 		};
 	}

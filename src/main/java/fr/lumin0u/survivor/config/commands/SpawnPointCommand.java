@@ -7,7 +7,6 @@ import fr.lumin0u.survivor.config.ConfigUtil;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,21 +32,19 @@ public class SpawnPointCommand extends SvArgCommand
 		
 		Vector previous = config.spawnpoint;
 		
-		TextComponent extra = ConfigUtil.getAdditionAndDo(config, location, new Action()
+		player.sendMessage(MCUtils.buildTextComponent(" ", "§aPoint d'apparition défini", ConfigUtil.getAdditionAndDo(config, location, new Action()
 		{
 			@Override
 			public void redo() {
-                config.spawnpoint = location.toVector();
+				config.spawnpoint = location.toVector();
 				Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).update();
-            }
+			}
 			
 			@Override
 			public void undo() {
-                config.spawnpoint = previous;
+				config.spawnpoint = previous;
 				Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).update();
-            }
-		}, "annuler");
-		
-		player.sendMessage(MCUtils.buildTextComponent(" ", "§aPoint d'apparition défini", extra));
+			}
+		}, "annuler")));
 	}
 }

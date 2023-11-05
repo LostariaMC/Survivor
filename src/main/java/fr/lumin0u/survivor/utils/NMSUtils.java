@@ -81,9 +81,8 @@ public class NMSUtils
 			return new FieldInstance<>(f);
 		} catch(ReflectiveOperationException e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 	
 	public static <T> T getFieldValue(String field, Object instance)
@@ -144,7 +143,6 @@ public class NMSUtils
 					return (T) field.get(instance);
 				} catch(IllegalAccessException e)
 				{
-					e.printStackTrace();
 					throw new RuntimeException(e);
 				}
 			}
@@ -155,7 +153,6 @@ public class NMSUtils
 					field.set(instance, value);
 				} catch(IllegalAccessException e)
 				{
-					e.printStackTrace();
 					throw new RuntimeException(e);
 				}
 			}

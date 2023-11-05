@@ -154,11 +154,10 @@ public class SurvivorCommand implements TabExecutor, CommandExecutor
 						}
 					}
 				}
-			} catch(Exception var11)
+			} catch(Exception e)
 			{
-				var11.printStackTrace();
 				sender.sendMessage("§cUne erreur est survenue lors de l'éxécution de cette commande");
-				return true;
+				throw new RuntimeException(e);
 			}
 			
 			sender.sendMessage("§cCette commande semble ne pas exister... §7(voir /sv help)");

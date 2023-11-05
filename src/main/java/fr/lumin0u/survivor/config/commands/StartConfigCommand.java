@@ -7,11 +7,10 @@ import fr.lumin0u.survivor.config.MapConfigCreation;
 import fr.lumin0u.survivor.config.MapConfigRenderer;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ClickEvent.Action;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.ClickEvent.Action;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -30,6 +29,14 @@ public class StartConfigCommand extends SvArgCommand
 	public void execute(CommandSender sender, String[] args) {
 		if(args[0].equalsIgnoreCase("confirm"))
 		{
+			MapConfigCreation configCreation = Survivor.getInstance().getInCreationMapConfigs().get(WrappedPlayer.of(sender));
+			
+			if(args.length > 1 && args[1].equalsIgnoreCase("save") && configCreation != null) {
+				configCreation.config().save(Survivor.getInstance().getMapConfigName(WrappedPlayer.of(sender)));
+				
+				sender.sendMessage("§aConfiguration sauvegardée");
+			}
+			
 			if(confirmQueue.containsKey((Player) sender))
 			{
 				startConfig((Player) sender, confirmQueue.remove((Player) sender));
@@ -44,11 +51,13 @@ public class StartConfigCommand extends SvArgCommand
 			confirmQueue.put((Player) sender, args[0]);
 			sender.sendMessage("§cVous étiez déjà en train de configurer une map !");
 			
-			TextComponent confirm = new TextComponent("§6[cliquez ici]");
-			confirm.setClickEvent(new ClickEvent(Action.RUN_COMMAND, "/sv startConfig confirm"));
-			confirm.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] {new TextComponent("/sv startConfig confirm")}));
+			sender.sendMessage(MCUtils.buildTextComponent(" ", "§7Pour §cécraser §7l'ancienne configuration et commencer la nouvelle", Component.text("§6[cliquez ici]")
+					.clickEvent(ClickEvent.clickEvent(Action.RUN_COMMAND, "/sv startConfig confirm"))
+					.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("§cCommencer la configuration")))));
 			
-			sender.sendMessage(MCUtils.buildTextComponent(" ", "§7Pour écraser l'ancienne configuration et commencer la nouvelle", confirm));
+			sender.sendMessage(MCUtils.buildTextComponent(" ", "§7Pour §asauvegarder l'ancienne configuration et commencer la nouvelle", Component.text("§6[cliquez ici]")
+					.clickEvent(ClickEvent.clickEvent(Action.RUN_COMMAND, "/sv startConfig confirm save"))
+					.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("§cCommencer la configuration")))));
 		}
 		else
 		{
@@ -58,7 +67,7 @@ public class StartConfigCommand extends SvArgCommand
 	
 	public static void startConfig(Player player, String mapName)
 	{
-		if(Survivor.getInstance().getInCreationMapConfigs().containsKey(player.getUniqueId()))
+		if(Survivor.getInstance().getInCreationMapConfigs().containsKey(WrappedPlayer.of(player)))
 		{
 			Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).stop();
 		}

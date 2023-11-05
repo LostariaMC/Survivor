@@ -7,12 +7,8 @@ import fr.lumin0u.survivor.config.ConfigUtil;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddRoomCommand extends SvArgCommand
 {
@@ -39,25 +35,19 @@ public class AddRoomCommand extends SvArgCommand
 		
 		String name = String.join(" ", args).replaceAll("_", " ");
 		
-		TextComponent extra = ConfigUtil.getAdditionAndDo(config, new Action()
+		player.sendMessage(MCUtils.buildTextComponent(" ", "§aSalle ajoutée", ConfigUtil.getAdditionAndDo(config, new Action()
 		{
 			@Override
 			public void redo() {
-                config.addRoom(name);
+				config.addRoom(name);
 				Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).update();
-            }
+			}
 			
 			@Override
 			public void undo() {
-                config.getRooms().removeIf(room -> room.getName().equals(name));
+				config.getRooms().removeIf(room -> room.getName().equals(name));
 				Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).update();
-            }
-		}, "annuler");
-		player.sendMessage(MCUtils.buildTextComponent(" ", "§aSalle ajoutée", extra));
-	}
-	
-	@Override
-	public List<String> getPossibleArgs(CommandSender executer, String[] args) {
-		return new ArrayList<>();
+			}
+		}, "annuler")));
 	}
 }

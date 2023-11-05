@@ -6,10 +6,9 @@ import fr.lumin0u.survivor.config.Action;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,8 +23,7 @@ public class CancelCommand extends SvArgCommand
 		
 		Player player = (Player) sender;
 		MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
-		if(config == null)
-		{
+		if(config == null) {
 			player.sendMessage("§cVous n'avez pas commencé de configuration (voir /sv startConfig)");
 			return;
 		}
@@ -34,30 +32,24 @@ public class CancelCommand extends SvArgCommand
 		
 		boolean isRedo = args.length != 1 && args[0].equalsIgnoreCase("redo");
 		
-		if(config.getAction(id) != null)
-		{
+		if(config.getAction(id) != null) {
 			Action action = config.removeAction(id);
-			if(isRedo)
-			{
+			if(isRedo) {
 				action.redo();
 				player.sendMessage("§7Opération réitérée");
 			}
-			else
-			{
+			else {
 				action.undo();
 				
 				int newId = config.addAction(action);
 				
-				TextComponent redoText = new TextComponent("§8[refaire]");
-				redoText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sv cancel %d redo".formatted(newId)));
-				redoText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] {new TextComponent("Annuler l'annulation")}));
-				
-				player.sendMessage(MCUtils.buildTextComponent(" ", "§7Opération annulée", redoText));
+				player.sendMessage(MCUtils.buildTextComponent(" ", "§7Opération annulée", Component.text("§8[refaire]")
+						.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/sv cancel %d redo".formatted(newId)))
+						.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Annuler l'annulation")))));
 			}
 		}
-		else
-		{
-			player.sendMessage("§7Cette opération a déjà été " + (isRedo ? "réitérée" : "annulée"));
+		else {
+			player.sendMessage("§7Cette opération n'existe pas ou a déjà été " + (isRedo ? "réitérée" : "annulée"));
 		}
 	}
 }

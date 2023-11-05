@@ -184,7 +184,6 @@ public class GameManager
 				p.getInventory().clear();
 				ItemStack itemA = new ItemBuilder(Material.CARROT).setDisplayName("§6Approvisionnement").build();
 				p.getInventory().setItem(4, itemA);
-				p.updateInventory();
 				p.sendMessage(SurvivorGame.prefix + "§cVous recevrez votre approvisionnement à partir de la vague 10");
 				
 				SvPlayer sp = SvPlayer.of(p);

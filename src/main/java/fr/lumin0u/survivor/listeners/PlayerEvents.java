@@ -60,21 +60,17 @@ import java.util.function.Predicate;
 
 public class PlayerEvents implements PacketListener, Listener
 {
-	private boolean cancelAnimation = false;
 	public static final Predicate<Block> IS_PACK_A_PUNCH = (block) -> block.getType().equals(Material.HOPPER) && ((Hopper) block.getBlockData()).getFacing() != BlockFace.DOWN;
 	
 	@EventHandler
 	public void onAnimation(PlayerAnimationEvent e) {
 		if(GameManager.getInstance() != null)
 		{
-			if(!this.cancelAnimation)
+			SvPlayer sp = SvPlayer.of(e.getPlayer());
+			GameManager gm = GameManager.getInstance();
+			if(e.getAnimationType().equals(PlayerAnimationType.ARM_SWING) && !sp.isSpectator())
 			{
-				SvPlayer sp = SvPlayer.of(e.getPlayer());
-				GameManager gm = GameManager.getInstance();
-				if(e.getAnimationType().equals(PlayerAnimationType.ARM_SWING) && !sp.isSpectator())
-				{
-					sp.onLeftClick();
-				}
+				sp.onLeftClick();
 			}
 		}
 	}
@@ -455,7 +451,6 @@ public class PlayerEvents implements PacketListener, Listener
 		{
 			Player player = e.getPlayer();
 			player.getInventory().clear();
-			player.updateInventory();
 			player.setWalkSpeed(0.2F);
 			
 			GameManager gm = GameManager.getInstance();

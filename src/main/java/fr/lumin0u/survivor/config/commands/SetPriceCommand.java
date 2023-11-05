@@ -8,7 +8,6 @@ import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.objects.Room;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -26,38 +25,33 @@ public class SetPriceCommand extends SvArgCommand
 		
 		Player player = (Player) sender;
 		MapConfig config = Survivor.getInstance().getMapConfig(WrappedPlayer.of(player));
-		if(config == null)
-		{
+		if(config == null) {
 			player.sendMessage("§cVous n'avez pas commencé de configuration (voir /sv startConfig)");
 			return;
 		}
 		
-		if(config.getRoom(args[0]) == null)
-		{
+		if(config.getRoom(args[0]) == null) {
 			player.sendMessage("§cCette salle n'existe pas");
 			return;
 		}
 		
 		int price;
 		
-		try
-		{
+		try {
 			price = Integer.parseInt(args[1]);
 			
-			if(price < 0)
-			{
+			if(price < 0) {
 				player.sendMessage("§cLe prix n'est pas valide");
 				return;
 			}
-		} catch(NumberFormatException e)
-		{
+		} catch(NumberFormatException e) {
 			player.sendMessage("§cLe prix n'est pas valide");
 			return;
 		}
 		
 		Room room = config.getRoom(args[0]);
 		
-		TextComponent extra = ConfigUtil.getAdditionAndDo(config, new Action()
+		player.sendMessage(MCUtils.buildTextComponent(" ", "§7Prix défini à §e" + price + "§6$ §7pour la salle §f" + room.getName(), ConfigUtil.getAdditionAndDo(config, new Action()
 		{
 			final boolean hadPrice = room.hasPrice();
 			final int lastPrice = hadPrice ? room.getPrice() : 0;
@@ -76,9 +70,7 @@ public class SetPriceCommand extends SvArgCommand
 					room.removePrice();
 				Survivor.getInstance().getMapConfigRenderer(WrappedPlayer.of(player)).update();
 			}
-		}, "annuler");
-		
-		player.sendMessage(MCUtils.buildTextComponent(" ", "§7Prix défini à §e" + price + "§6$ §7pour la salle §f" + room.getName(), extra));
+		}, "annuler")));
 	}
 	
 	@Override

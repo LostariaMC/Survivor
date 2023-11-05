@@ -16,10 +16,10 @@ import fr.lumin0u.survivor.weapons.Weapon;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextComponent.Builder;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.Title.Times;
 import net.kyori.adventure.util.Ticks;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -110,11 +110,10 @@ public class MCUtils
 			{
 				return loc.split("!").length < 7 ? new Location(Bukkit.getWorld(loc.split("!")[0]), Double.parseDouble(loc.split("!")[1]), Double.parseDouble(loc.split("!")[2]), Double.parseDouble(loc.split("!")[3]), Float.parseFloat(loc.split("!")[4]), Float.parseFloat(loc.split("!")[5])) : (new Location(Bukkit.getWorld(loc.split("!")[0]), Double.parseDouble(loc.split("!")[1]), Double.parseDouble(loc.split("!")[2]), Double.parseDouble(loc.split("!")[3]))).setDirection(new Vector(Double.parseDouble(loc.split("!")[4]), Double.parseDouble(loc.split("!")[5]), Double.parseDouble(loc.split("!")[6])));
 			}
-		} catch(Exception var2)
+		} catch(Exception e)
 		{
 			debug("§cErreur lors de la transformation en Location : §r" + loc);
-			var2.printStackTrace();
-			return null;
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -212,9 +211,9 @@ public class MCUtils
 					WrappedPlayer.of(pl).sendPacket(packetAnimation);
 				}
 			}
-		} catch(Exception var7)
+		} catch(Exception e)
 		{
-			var7.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -280,18 +279,18 @@ public class MCUtils
 			try
 			{
 				check.createNewFile();
-			} catch(IOException var5)
+			} catch(IOException e)
 			{
-				var5.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 		
 		try
 		{
 			file = YamlConfiguration.loadConfiguration(check);
-		} catch(NullPointerException var4)
+		} catch(NullPointerException e)
 		{
-			var4.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		
 		return file;
@@ -504,31 +503,31 @@ public class MCUtils
 		return new ItemBuilder(material).setDisplayName(displayName).setLore(lore).build();
 	}
 	
-	private static BaseComponent baseComponentOf(Object o)
+	private static Component componentOf(Object o)
 	{
-		if(o instanceof BaseComponent)
-			return (BaseComponent) o;
-		else if(o instanceof String)
-			return new net.md_5.bungee.api.chat.TextComponent((String) o);
+		if(o instanceof Component)
+			return (Component) o;
+		else if(o instanceof String s)
+			return Component.text(s);
 		else
-			throw new IllegalArgumentException("Must be either BaseComponent or String");
+			throw new IllegalArgumentException("Must be either Component or String");
 	}
 	
-	public static BaseComponent buildTextComponent(String delimiter, Object... components)
+	public static TextComponent buildTextComponent(Object delimiter, Object... components)
 	{
-		BaseComponent mainComponent = new net.md_5.bungee.api.chat.TextComponent("");
+		Builder builder = Component.text();
 		
 		boolean first = true;
 		
 		for(Object component : components)
 		{
 			if(!first)
-				mainComponent.addExtra(new net.md_5.bungee.api.chat.TextComponent(delimiter));
-			mainComponent.addExtra(baseComponentOf(component));
+				builder.append(componentOf(delimiter));
+			builder.append(componentOf(component));
 			first = false;
 		}
 		
-		return mainComponent;
+		return builder.build();
 	}
 	
 	public static String pointingArrow(Location from, Location to)

@@ -163,9 +163,8 @@ public enum WeaponType
 	public <T extends Weapon> T getNewWeapon(WeaponOwner owner) {
 		try {
 			return ((Class<T>) this.weapon).getDeclaredConstructor(WeaponOwner.class).newInstance(owner);
-		} catch(ReflectiveOperationException var3) {
-			var3.printStackTrace();
-			return null;
+		} catch(ReflectiveOperationException | ClassCastException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
