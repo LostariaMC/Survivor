@@ -102,10 +102,6 @@ public abstract class Weapon implements IWeapon
 		return this.clip;
 	}
 	
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
 	public void setClip(int clip)
 	{
 		this.clip = clip;
@@ -142,7 +138,9 @@ public abstract class Weapon implements IWeapon
 				{
 					isReloading = true;
 					
-					if(this.time >= modifiedReloadTime)
+					boolean ownerOffline = owner instanceof SvPlayer sp && !sp.isOnline();
+					
+					if(this.time >= modifiedReloadTime || ownerOffline)
 					{
 						isReloading = false;
 						this.cancel();
@@ -150,7 +148,8 @@ public abstract class Weapon implements IWeapon
 						setClip(Math.min(getAmmo() + clip, clipSize));
 						setAmmo(Math.max(0, getAmmo() - (clipSize - clip)));
 						item.setAmount(1);
-						owner.giveWeaponItem(Weapon.this);
+						if(!ownerOffline)
+							owner.giveWeaponItem(Weapon.this);
 						return;
 					}
 					
