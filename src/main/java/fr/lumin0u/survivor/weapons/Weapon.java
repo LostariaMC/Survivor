@@ -8,6 +8,8 @@ import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.perks.Perk;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
@@ -47,7 +49,7 @@ public abstract class Weapon implements IWeapon
 		this.level = 0;
 		this.item = new ItemStack(wt.getMaterial());
 		ItemMeta meta = this.item.getItemMeta();
-		meta.setDisplayName((this instanceof SuperWeapon ? "§d" : "§9") + wt.getName());
+		meta.displayName(Component.text(wt.getName()).color(this instanceof SuperWeapon ? NamedTextColor.LIGHT_PURPLE : NamedTextColor.BLUE));
 		meta.setLore(this.getLore());
 		meta.setUnbreakable(true);
 		meta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
@@ -118,6 +120,7 @@ public abstract class Weapon implements IWeapon
 			new BukkitRunnable()
 			{
 				int time = 0;
+				boolean wasInHand = true;
 				
 				@Override
 				public void run() {
@@ -138,15 +141,16 @@ public abstract class Weapon implements IWeapon
 						return;
 					}
 					
-					if(time == 0) {
-						showCooldown(modifiedReloadTime - time);
-					}
-					
 					if(owner.getItemInHand().isSimilar(item)) {
 						time++;
+						if(!wasInHand) {
+							showCooldown(modifiedReloadTime - time);
+							wasInHand = true;
+						}
 					}
-					else {
-						showCooldown(600);
+					else if(wasInHand) {
+						showCooldown(60000);
+						wasInHand = false;
 					}
 				}
 			}.runTaskTimer(Survivor.getInstance(), 1L, 1L);
@@ -158,6 +162,7 @@ public abstract class Weapon implements IWeapon
 			((SvPlayer) owner).toBukkit().setCooldown(wt.getMaterial(), ticks);
 	}
 	
+	@Override
 	public WeaponOwner getOwner() {
 		return this.owner;
 	}
@@ -172,10 +177,10 @@ public abstract class Weapon implements IWeapon
 	
 	public List<String> getLore() {
 		List<String> lore = new ArrayList<>();
-		lore.add("§6Munitions max : §a" + this.maxAmmo + (!isUpgradeable() ? "" : " §8\u279D " + getMaxAmmoAtLevel(level + 1)));
-		lore.add("§6Taille d'un chargeur : §a" + this.clipSize + (!isUpgradeable() ? "" : " §8\u279D " + getClipSizeAtLevel(level + 1)));
-		lore.add("§6Temps de reload : §a" + String.format("%.2f", (double) this.reloadTime / 20.0D) + (!isUpgradeable() ? "" : " §8\u279D " + String.format("%.2f", (double) getReloadTimeAtLevel(level + 1) / 20)));
-		lore.add("§6Niveau : §a" + this.level + (!isUpgradeable() ? "" : " §8\u279D " + (this.level + 1)));
+		lore.add("§6Munitions max : §a" + this.maxAmmo + (!isUpgradeable() ? "" : " §8➝ " + getMaxAmmoAtLevel(level + 1)));
+		lore.add("§6Taille d'un chargeur : §a" + this.clipSize + (!isUpgradeable() ? "" : " §8➝ " + getClipSizeAtLevel(level + 1)));
+		lore.add("§6Temps de reload : §a" + String.format("%.2f", (double) this.reloadTime / 20.0D) + (!isUpgradeable() ? "" : " §8➝ " + String.format("%.2f", (double) getReloadTimeAtLevel(level + 1) / 20)));
+		lore.add("§6Niveau : §a" + this.level + (!isUpgradeable() ? "" : " §8➝ " + (this.level + 1)));
 		if(perk != null)
 			lore.add("§6Perk : " + perk.getDisplayName());
 		return lore;
@@ -225,7 +230,7 @@ public abstract class Weapon implements IWeapon
 	}
 	
 	protected int getNextLevelPrice() {
-		return (int) ((double) (this.level + 1) * Math.pow(1.13D, (double) this.level)) * 750;
+		return (int) ((double) (level + 1) * Math.pow(1.13D, level)) * 750;
 	}
 	
 	public int getLevel() {
@@ -267,8 +272,6 @@ public abstract class Weapon implements IWeapon
 			}
 			case AUTOMATIC -> {
 				if(rClickingTask == null) {
-					Runnable doShot = this::rightClick;
-					
 					rightClick();
 					
 					rClickingTask = new BukkitRunnable()
