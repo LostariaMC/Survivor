@@ -18,6 +18,7 @@ import fr.lumin0u.survivor.utils.Utils;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.worsewarn.cosmox.API;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
+import fr.worsewarn.cosmox.game.GameVariables;
 import fr.worsewarn.cosmox.game.Phase;
 import fr.worsewarn.cosmox.game.teams.Team;
 import fr.worsewarn.cosmox.tools.map.GameMap;
@@ -139,12 +140,18 @@ public class GameManager
 		new BukkitRunnable()
 		{
 			private final List<SvPlayer> seen = new ArrayList<>();
+			int t = 0;
 			
 			@Override
 			public void run() {
 				for(SvPlayer player : getPlayers()) {
 					Surviboard.updatePlayerLine(player);
 				}
+				if(t%2 == 0) {
+					getOnlinePlayers().forEach(sp -> sp.toCosmox().addStatistic(GameVariables.TIME_PLAYED, 1));
+				}
+				
+				t++;
 			}
 		}.runTaskTimer(Survivor.getInstance(), 10L, 10L);
 	}
@@ -628,10 +635,9 @@ public class GameManager
 		Bukkit.broadcastMessage(SurvivorGame.prefix + "§cVous avez perdu, tout le monde est mort ...");
 		
 		for(SvPlayer sp : getOnlinePlayers()) {
-			sp.toBukkit().sendMessage("§6Ennemis tués : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalKills"));
-			sp.toBukkit().sendMessage("§6Dégats infligés : §e" + StatsManager.getStatInt(sp.getPlayerUid(), "totalDamage"));
-			
 			bossBar.bossBar.removeAll();
+			
+			sp.toCosmox().addStatistic(GameVariables.GAMES_PLAYED, 1);
 		}
 		
 		API.instance().getManager().setPhase(Phase.END);

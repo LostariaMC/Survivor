@@ -7,10 +7,8 @@ import com.comphenix.protocol.wrappers.EnumWrappers.ChatType;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import fr.lumin0u.survivor.DamageTarget;
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.StatsManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.SvDamageable;
-import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
@@ -247,8 +245,6 @@ public class MCUtils
 			{
 				double damage = (1 - Utils.square(mo.getFeets().distance(l) / radius)) * centerDamage;
 				double m = Math.min(1, Math.max(0, 1 - TransparentUtils.solidBetween(l, mo.getFeets()) / 4));
-				if(damager instanceof SvPlayer)
-					StatsManager.increaseWeaponHits(weapon);
 				mo.damage(damage * m, damager, weapon, false, explosionVector(mo.getFeets(), l, radius).multiply(m * kb));
 			}
 		}

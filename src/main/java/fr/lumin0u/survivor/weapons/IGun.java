@@ -1,11 +1,9 @@
 package fr.lumin0u.survivor.weapons;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.StatsManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvDamageable;
-import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.Ray;
 import fr.lumin0u.survivor.weapons.perks.Perk;
@@ -83,11 +81,6 @@ public interface IGun extends IWeapon
 							{
 								if(ent.getBodyHitbox().contains(point) || ent.getHeadHitbox().contains(point))
 								{
-									if(shooter instanceof SvPlayer)
-									{
-										StatsManager.increaseWeaponHits(weapon);
-									}
-									
 									if(ent instanceof Enemy)
 										((Enemy)ent).damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D), weapon instanceof Turret ? 0.7D : 1.0D);
 									else

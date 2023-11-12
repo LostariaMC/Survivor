@@ -2,10 +2,8 @@ package fr.lumin0u.survivor.weapons;
 
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.StatsManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.SvDamageable;
-import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.Ray;
 import org.bukkit.Color;
@@ -67,8 +65,6 @@ public interface IRailGun extends IGun
 							{
 								if(!this.hit.contains(ent))
 								{
-									if(shooter instanceof SvPlayer)
-										StatsManager.increaseWeaponHits(weapon);
 									ent.damage(dmg, shooter, weapon, false, ray.getIncrease().normalize().multiply(0.05D));
 									this.hit.add(ent);
 								}

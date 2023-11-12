@@ -2,6 +2,7 @@ package fr.lumin0u.survivor;
 
 import fr.lumin0u.survivor.utils.ImmutableItemStack;
 import fr.lumin0u.survivor.utils.ItemBuilder;
+import fr.lumin0u.survivor.utils.SvStatistics;
 import fr.worsewarn.cosmox.api.statistics.Statistic;
 import fr.worsewarn.cosmox.game.Game;
 import fr.worsewarn.cosmox.game.GameVariables;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class SurvivorGame
 {
-	public static String prefix = "§7(chargement du prefix...) ";
+	public static String prefix = "§fSurvivor (!) ";
 	public static final ImmutableItemStack DIFF_VOTE_ITEM = new ItemBuilder(Material.SKELETON_SKULL).setDisplayName("§eChoix de la difficulté").setLore("§7Si l'host choisit une difficulté,", "§7votre vote ne sera pas pris", "§7en compte").buildImmutable();
 	
 	/*
@@ -49,8 +50,9 @@ public class SurvivorGame
 		List<Statistic> statistics = new ArrayList<>(Arrays.asList(
 				new Statistic("Temps de jeu", GameVariables.TIME_PLAYED, true),
 				new Statistic("Parties jouées", GameVariables.GAMES_PLAYED),
-				new Statistic("Kills", GameVariables.KILLS, true, true),
-				new Statistic("Victoires", GameVariables.WIN)
+				new Statistic("Zombies tués", GameVariables.KILLS, true, true),
+				new Statistic("Chutes au sol", SvStatistics.DOWNFALLS, true, true),
+				new Statistic("Morts", GameVariables.DEATHS, true, true)
 		));
 		
 		/*statistics.addAll(Arrays.stream(WeaponType.values())

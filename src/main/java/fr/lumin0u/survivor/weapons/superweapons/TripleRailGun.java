@@ -28,6 +28,7 @@ public class TripleRailGun extends SuperGun implements IRailGun
 			@Override
 			public void run()
 			{
+				TFSound.RAILGUN_SHOT.play(owner.getShootLocation());
 				shoot();
 				
 				++i;

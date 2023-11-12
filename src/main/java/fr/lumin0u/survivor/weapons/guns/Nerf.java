@@ -1,10 +1,8 @@
 package fr.lumin0u.survivor.weapons.guns;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.StatsManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.SvDamageable;
-import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.GravityRay;
 import fr.lumin0u.survivor.weapons.Upgradeable;
@@ -59,11 +57,6 @@ public class Nerf extends Gun implements Upgradeable
 					{
 						if(ent.getBodyHitbox().contains(point) || ent.getHeadHitbox().contains(point))
 						{
-							if(owner instanceof SvPlayer)
-							{
-								StatsManager.increaseWeaponHits(Nerf.this);
-							}
-							
 							ent.damage(dmg, owner, Nerf.this, ent.getHeadHitbox().contains(point), r.getIncrease().normalize().multiply(0.15D));
 							this.cancel();
 							return;

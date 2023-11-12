@@ -2,15 +2,13 @@ package fr.lumin0u.survivor.player;
 
 import fr.lumin0u.survivor.Difficulty;
 import fr.lumin0u.survivor.*;
-import fr.lumin0u.survivor.utils.AABB;
-import fr.lumin0u.survivor.utils.ItemBuilder;
-import fr.lumin0u.survivor.utils.MCUtils;
-import fr.lumin0u.survivor.utils.TFSound;
+import fr.lumin0u.survivor.utils.*;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.knives.Knife;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
+import fr.worsewarn.cosmox.game.GameVariables;
 import fr.worsewarn.cosmox.game.teams.Team;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
@@ -346,8 +344,10 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		final ArmorStand as3 = MCUtils.oneConsistentFlyingText(player.getEyeLocation().add(0.0D, -0.6D, 0.0D), "§4· · · · · ·");
 		player.setVelocity(new Vector(0, 0, 0));
 		LainBodies.lie(player);
-		StatsManager.increaseStat(this.uid, "fallDowns", 1, true);
-		this.reviveTime = 1000.0D;
+		
+		toCosmox().addStatistic(SvStatistics.DOWNFALLS, 1);
+		
+		reviveTime = 1000.0D;
 		boolean everyoneIsDead = true;
 		
 		for(SvPlayer sp : GameManager.getInstance().getPlayers()) {
@@ -368,22 +368,21 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			{
 				private void playDead()
 				{
-					StatsManager.increaseStat(uid, "deaths", 1, true);
-					Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + SvPlayer.this.getName() + "§c est mort !");
+					toCosmox().addStatistic(GameVariables.DEATHS, 1);
+					Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + getName() + "§c est mort !");
 					TFSound.PLAYER_DEATH.play(getFeets());
-					
-					toBukkit().setGlowing(false);
 					lifeState = LifeState.DEAD;
 					as1.remove();
 					as2.remove();
 					as3.remove();
-					if(!isOnline())
-					{
-						return;
-					}
 					
-					MCUtils.sendTitle(toBukkit(), 10, 40, 20, "§cVous êtes mort");
-					toBukkit().setGameMode(GameMode.SPECTATOR);
+					if(isOnline()) {
+						
+						toBukkit().setGlowing(false);
+						
+						MCUtils.sendTitle(toBukkit(), 10, 40, 20, "§cVous êtes mort");
+						toBukkit().setGameMode(GameMode.SPECTATOR);
+					}
 					
 					if(!assets.contains(SvAsset.PIERRE_TOMBALE))
 					{
@@ -404,7 +403,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 					else
 					{
 						assets.remove(SvAsset.PIERRE_TOMBALE);
-						toBukkit().sendMessage(SurvivorGame.prefix + "§cVous aviez l'atout §7Pierre tombale§c, vous n'avez donc pas perdu vos armes ni vos atouts, excepté l'atout pierre tombale");
+						if(isOnline()) {
+							toBukkit().sendMessage(SurvivorGame.prefix + "§cVous aviez l'atout §7Pierre tombale§c, vous n'avez donc pas perdu vos armes ni vos atouts, excepté l'atout pierre tombale");
+						}
 					}
 					
 					LainBodies.wakeUp(SvPlayer.this.uid);
@@ -504,6 +505,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 								as1.remove();
 								as2.remove();
 								as3.remove();
+								savers.forEach(sp -> sp.toCosmox().addStatistic(SvStatistics.REANIMATIONS, 1));
 							}
 						}
 					}
@@ -623,7 +625,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public void killZombie()
 	{
-		StatsManager.increaseStat(this.uid, "totalKills", 1, false);
+		toCosmox().addStatistic(GameVariables.KILLS, 1);
 	}
 	
 	public @NotNull Difficulty getDiffVote()
@@ -767,6 +769,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	@Override
 	public void giveWeaponItem(Weapon w)
 	{
+		if(!isOnline())
+			return;
+		
 		Inventory inv = getInventory();
 		int place = inv.first(w.getItem().getType());
 		inv.remove(w.getItem().getType());

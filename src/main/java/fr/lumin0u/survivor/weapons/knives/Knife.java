@@ -1,7 +1,6 @@
 package fr.lumin0u.survivor.weapons.knives;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.StatsManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
@@ -62,8 +61,6 @@ public abstract class Knife extends Weapon
 				{
 					if(m.getBodyHitbox().contains(point) || m.getHeadHitbox().multiply(1.3D).contains(point))
 					{
-						if(owner instanceof SvPlayer)
-							StatsManager.increaseWeaponHits(this);
 						m.damage(dmg, owner, this, m.getHeadHitbox().contains(point), r.getIncrease().normalize().multiply(0.1D));
 						return;
 					}

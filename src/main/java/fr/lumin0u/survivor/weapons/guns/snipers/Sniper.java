@@ -1,7 +1,6 @@
 package fr.lumin0u.survivor.weapons.guns.snipers;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.StatsManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvDamageable;
@@ -105,11 +104,6 @@ public abstract class Sniper extends Gun
 							{
 								if(ent.getBodyHitbox().contains(point) || ent.getHeadHitbox().contains(point))
 								{
-									if(owner instanceof SvPlayer)
-									{
-										StatsManager.increaseWeaponHits(Sniper.this);
-									}
-									
 									if(ent instanceof Enemy)
 										((Enemy)ent).damage(dmg, owner, Sniper.this, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D), 1);
 									else

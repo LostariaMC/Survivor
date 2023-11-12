@@ -3,7 +3,6 @@ package fr.lumin0u.survivor.mobs.mob;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import fr.lumin0u.survivor.DamageTarget;
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.StatsManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.mobs.mob.boss.Boss;
@@ -209,10 +208,6 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 		if(weapon != null)
 		{
 			dmg *= weapon.getDamageMultiplier(this);
-			if(damager instanceof SvPlayer)
-			{
-				StatsManager.increaseWeaponDamage(weapon, dmg);
-			}
 		}
 		
 		if(damager != null && damager.doInstantKill())
