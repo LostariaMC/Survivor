@@ -488,7 +488,7 @@ public class GameManager
 			}
 			
 			if(wave % 10 == 0) {
-				for(int i = 0; i < getOnlinePlayers().size() / 4 + 1; i++) {
+				for(int i = 0; i < getOnlinePlayers().size() / 3 + 1; i++) {
 					Location bossSpawn = spawns.get((new Random()).nextInt(spawns.size()));
 					
 					double bossHealth = this.wave * 60 - 20;
@@ -507,6 +507,7 @@ public class GameManager
 				
 				for(int i = mod > j ? -1 : 0; i < ennemies / spawns.size(); ++i) {
 					double health = Math.max(0, Waves.getEnnemiesLife(this.wave, this.difficulty) + Math.random() * 6 - 3);
+					health *= Math.sqrt(getOnlinePlayers().size());
 					double walkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
 					Zombie m;
 					if((new Random()).nextInt(20) == 1 && this.wave > 3) {
@@ -548,6 +549,7 @@ public class GameManager
 						}
 						
 						double health = Math.max(0, Waves.getEnnemiesLife(wave, difficulty) + Math.random() * 6 - 3);
+						health *= Math.sqrt(getOnlinePlayers().size());
 						float walkSpeed = (float) Waves.getEnnemiesSpeed(wave, difficulty);
 						world.strikeLightningEffect(nextLoc);
 						
