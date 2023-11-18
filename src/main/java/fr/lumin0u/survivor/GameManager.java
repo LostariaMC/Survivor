@@ -488,11 +488,12 @@ public class GameManager
 			}
 			
 			if(wave % 10 == 0) {
+				double bossHealth = this.wave * 60 - 20;
+				double bossWalkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
+				
 				for(int i = 0; i < getOnlinePlayers().size() / 3 + 1; i++) {
 					Location bossSpawn = spawns.get((new Random()).nextInt(spawns.size()));
 					
-					double bossHealth = this.wave * 60 - 20;
-					double bossWalkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
 					Boss boss = Boss.createRandom(bossSpawn, bossHealth, bossWalkSpeed * 1.1D);
 					boss.setReward(this.wave * this.wave * 10);
 				}
@@ -501,26 +502,28 @@ public class GameManager
 			int mod = ennemies % spawns.size();
 			int spawnsSize = spawns.size();
 			
+			double health = Math.max(0, Waves.getEnnemiesLife(this.wave, this.difficulty) + Math.random() * 6 - 3);
+			health *= Math.sqrt(getOnlinePlayers().size());
+			double walkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
+			
 			for(int j = 0; j < spawnsSize; ++j) {
 				Location spawn = spawns.get(j);
 				List<Zombie> zombies = new ArrayList<>();
 				
 				for(int i = mod > j ? -1 : 0; i < ennemies / spawns.size(); ++i) {
-					double health = Math.max(0, Waves.getEnnemiesLife(this.wave, this.difficulty) + Math.random() * 6 - 3);
-					health *= Math.sqrt(getOnlinePlayers().size());
-					double walkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
+					double myHealth = health + Math.random() * 6 - 3;
 					Zombie m;
 					if((new Random()).nextInt(20) == 1 && this.wave > 3) {
-						m = new BabyZombie(spawn, health / 2.0D, walkSpeed * 1.3D);
+						m = new BabyZombie(spawn, myHealth / 2.0D, walkSpeed * 1.3D);
 					}
 					else if((new Random()).nextInt(15) == 1 && this.wave > 2) {
-						m = new ZombieShooter(spawn, health / 2.0D, walkSpeed);
+						m = new ZombieShooter(spawn, myHealth / 2.0D, walkSpeed);
 					}
 					else if((new Random()).nextInt(15) == 1 && this.wave > 4) {
-						m = new ZombieGrappler(spawn, health, walkSpeed);
+						m = new ZombieGrappler(spawn, myHealth, walkSpeed);
 					}
 					else {
-						m = new Zombie(spawn, health, walkSpeed);
+						m = new Zombie(spawn, myHealth, walkSpeed);
 					}
 					
 					zombies.add(m);
