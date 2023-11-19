@@ -20,7 +20,7 @@ public class GetWeaponCommand extends AbstractGameCommand
     public void execute(CommandSender sender, String[] args) {
         Player p = (Player)sender;
         if (GameManager.getInstance() != null) {
-            Weapon w = WeaponType.byName(args[0].replaceAll("_", " ")).getNewWeapon(SvPlayer.of(p));
+            Weapon w = WeaponType.byName(args[0].replaceAll("_", " ")).giveNewWeapon(SvPlayer.of(p));
             w.giveItem();
             p.sendMessage(w.getType().getName());
         }

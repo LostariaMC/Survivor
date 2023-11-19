@@ -160,7 +160,7 @@ public enum WeaponType
 		return this.weapon;
 	}
 	
-	public <T extends Weapon> T getNewWeapon(WeaponOwner owner) {
+	public <T extends Weapon> T giveNewWeapon(WeaponOwner owner) {
 		try {
 			return ((Class<T>) this.weapon).getDeclaredConstructor(WeaponOwner.class).newInstance(owner);
 		} catch(ReflectiveOperationException | ClassCastException e) {

@@ -199,14 +199,14 @@ public class MBTask extends BukkitRunnable
 				{
 					sp.removeWeapon(this.shownWeapon.isKnife() ? sp.getKnife() : w);
 					sp.toBukkit().getInventory().remove(((Weapon) (this.shownWeapon.isKnife() ? sp.getKnife() : w)).getType().getMaterial());
-					this.shownWeapon.getNewWeapon(sp).giveItem();
+					this.shownWeapon.giveNewWeapon(sp).giveItem();
 					isItemGiven = true;
 					this.removeAll();
 				}
 			}
 			else
 			{
-				this.shownWeapon.getNewWeapon(sp).giveItem();
+				this.shownWeapon.giveNewWeapon(sp).giveItem();
 				isItemGiven = true;
 				this.removeAll();
 			}

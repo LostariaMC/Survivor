@@ -175,7 +175,7 @@ public enum Bonus
 					}
 				}
 			}
-			case AIRSTRIKE -> WeaponType.AIRSTRIKE.getNewWeapon(picker).giveItem();
+			case AIRSTRIKE -> WeaponType.AIRSTRIKE.giveNewWeapon(picker).giveItem();
 		}
 		
 	}

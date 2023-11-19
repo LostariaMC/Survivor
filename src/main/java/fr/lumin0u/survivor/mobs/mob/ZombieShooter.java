@@ -14,7 +14,7 @@ public class ZombieShooter extends Zombie
 	{
 		super(spawnLoc, maxHealth, walkSpeed);
 		
-		ZombieHuntingGun weapon = WeaponType.HUNTING_GUN.getNewWeapon(this);
+		ZombieHuntingGun weapon = WeaponType.HUNTING_GUN.giveNewWeapon(this);
 		weapon.giveItem();
 		ai = new ZombieWeaponAI(weapon, true);
 		

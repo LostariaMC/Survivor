@@ -45,7 +45,7 @@ public class CopyCatBoss extends Boss
 				}
 				if(weapon.isPresent())
 				{
-					Weapon w = weapon.get().getType().getNewWeapon(this);
+					Weapon w = weapon.get().getType().giveNewWeapon(this);
 					w.giveItem();
 					ai = new ZombieWeaponAI(w, true);
 				}

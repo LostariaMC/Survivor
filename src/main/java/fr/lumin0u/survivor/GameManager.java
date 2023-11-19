@@ -194,8 +194,8 @@ public class GameManager
 				p.sendMessage(SurvivorGame.prefix + "§cVous recevrez votre approvisionnement à partir de la vague 10");
 				
 				SvPlayer sp = SvPlayer.of(p);
-				WeaponType.LITTLE_KNIFE.getNewWeapon(sp).giveItem();
-				WeaponType.M1911.getNewWeapon(sp).giveItem();
+				WeaponType.LITTLE_KNIFE.giveNewWeapon(sp).giveItem();
+				WeaponType.M1911.giveNewWeapon(sp).giveItem();
 				p.teleport(spawnpoint);
 				p.setGameMode(GameMode.ADVENTURE);
 				p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 1.0F);
@@ -373,7 +373,7 @@ public class GameManager
 				sp.toBukkit().getInventory().remove(Material.CARROT);
 			
 			if(this.wave >= 9) {
-				sp.getSupply().getNewWeapon(sp).giveItem();
+				sp.getSupply().giveNewWeapon(sp).giveItem();
 			}
 			
 			if(this.wave != 0) {

@@ -12,7 +12,7 @@ public class ZombieGrappler extends Zombie
 	{
 		super(spawnLoc, maxHealth, walkSpeed);
 		
-		GrapplingHook weapon = WeaponType.GRAPPLING_HOOK.getNewWeapon(this);
+		GrapplingHook weapon = WeaponType.GRAPPLING_HOOK.giveNewWeapon(this);
 		weapon.giveItem();
 		ai = new ZombieWeaponAI(weapon, true);
 		

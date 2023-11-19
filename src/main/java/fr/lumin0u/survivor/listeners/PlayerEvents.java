@@ -312,14 +312,14 @@ public class PlayerEvents implements PacketListener, Listener
 									{
 										player.removeWeapon(w);
 										player.toBukkit().getInventory().remove(w.getType().getMaterial());
-										wt.getNewWeapon(player).giveItem();
+										wt.giveNewWeapon(player).giveItem();
 										player.addMoney(-wt.getPrice());
 									}
 								}
 							}
 							else
 							{
-								wt.getNewWeapon(player).giveItem();
+								wt.giveNewWeapon(player).giveItem();
 								player.addMoney(-wt.getPrice());
 							}
 						}
