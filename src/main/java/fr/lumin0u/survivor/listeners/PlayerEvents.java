@@ -462,6 +462,14 @@ public class PlayerEvents implements PacketListener, Listener
 			
 			boolean inWave = gm.isInWave();
 			
+			if(sp.getWeapons().isEmpty()) {
+				WeaponType.LITTLE_KNIFE.giveNewWeapon(sp);
+				WeaponType.M1911.giveNewWeapon(sp);
+				
+				double n = gm.getWave();
+				sp.addMoney(12.5 * n * n + 87.5 * n); // = \sum_{k=0}^{n} 75 + 25*k
+			}
+			
 			sp.getWeapons().forEach(sp::giveWeaponItem);
 			
 			if(inWave)
