@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Room
@@ -150,7 +151,13 @@ public class Room
 			
 			for(Door d : getDoors())
 			{
-				d.remove();
+				if(GameManager.getInstance().getRooms().stream()
+						.filter(Predicate.not(Room::isBought))
+						.filter(Predicate.not(this::equals))
+						.flatMap(room -> room.getDoors().stream())
+						.noneMatch(door -> door.getBarsUnsafe().equals(d.getBarsUnsafe()))) {
+					d.remove();
+				}
 			}
 			
 			GameManager.getInstance().augmentPrice();
