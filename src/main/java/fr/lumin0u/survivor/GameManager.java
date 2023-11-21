@@ -441,6 +441,12 @@ public class GameManager
 		}
 	}
 	
+	private double ennemyHealth;
+	
+	public double getApproxEnnemyHealth() {
+		return ennemyHealth;
+	}
+	
 	public void nextWave() {
 		++wave;
 		
@@ -504,6 +510,7 @@ public class GameManager
 			
 			double health = Math.max(0, Waves.getEnnemiesLife(this.wave, this.difficulty) + Math.random() * 6 - 3);
 			health *= Math.sqrt(getOnlinePlayers().size());
+			ennemyHealth = health;
 			double walkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
 			
 			for(int j = 0; j < spawnsSize; ++j) {
@@ -539,6 +546,9 @@ public class GameManager
 		}
 		else {
 			this.totalWolves = ennemies;
+			
+			double health = Math.max(0, Waves.getEnnemiesLife(wave, difficulty) * Math.sqrt(getOnlinePlayers().size()));
+			ennemyHealth = health;
 			wolfRunnable = new BukkitRunnable()
 			{
 				int time = 0;
@@ -551,15 +561,14 @@ public class GameManager
 							this.nextLoc = Waves.aWolfSpawnLocationAround(getOnlinePlayers().stream().collect(Utils.randomCollector()).get().toBukkit());
 						}
 						
-						double health = Math.max(0, Waves.getEnnemiesLife(wave, difficulty) + Math.random() * 6 - 3);
-						health *= Math.sqrt(getOnlinePlayers().size());
+						double myHealth = health + Math.random() * 6 - 3;
 						float walkSpeed = (float) Waves.getEnnemiesSpeed(wave, difficulty);
 						world.strikeLightningEffect(nextLoc);
 						
 						int spawnCount = Math.min(new Random().nextInt((int) Math.sqrt(wave)) + 1, totalWolves - spawnedWolves);
 						
 						for(int i = 0; i < spawnCount; i++) {
-							Wolf wo = new Wolf(this.nextLoc, health * 0.4D, walkSpeed * 2.0F);
+							Wolf wo = new Wolf(this.nextLoc, myHealth * 0.4D, walkSpeed * 2.0F);
 							wo.setReward(10 + GameManager.this.wave);
 						}
 						

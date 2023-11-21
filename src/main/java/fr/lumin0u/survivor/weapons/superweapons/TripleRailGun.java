@@ -49,7 +49,7 @@ public class TripleRailGun extends SuperGun implements IRailGun
 	@Override
 	public double getDmg()
 	{
-		return Waves.getEnnemiesLife(GameManager.getInstance().getWave(), GameManager.getInstance().getDifficulty()) * 0.6D;
+		return GameManager.getInstance().getApproxEnnemyHealth() * 0.6D;
 	}
 	
 	@Override

@@ -93,7 +93,7 @@ public class AirStrike extends SuperWeapon
 				MCUtils.explosionParticles(floc, 2.0F, 6, Particle.FLAME, Particle.SMOKE_LARGE);
 				if(floc.getY() <= yStop)
 				{
-					double life = Waves.getEnnemiesLife(GameManager.getInstance().getWave(), GameManager.getInstance().getDifficulty());
+					double life = GameManager.getInstance().getApproxEnnemyHealth();
 					MCUtils.explosion(owner, AirStrike.this, life / 3, floc, 10.0D, 0.0D, owner.getTargetType());
 					this.cancel();
 					

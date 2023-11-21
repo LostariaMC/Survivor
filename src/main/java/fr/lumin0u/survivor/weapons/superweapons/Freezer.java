@@ -51,7 +51,7 @@ public class Freezer extends HeatSender
 			{
 				if((ent.getBodyHitbox().multiply((double) i / 1.5).contains(point) || ent.getHeadHitbox().multiply((double) i / 1.5).contains(point)) && !hit.contains(ent))
 				{
-					ent.damage(Waves.getEnnemiesLife(gm.getWave(), gm.getDifficulty()) / 20, owner, this, false, null);
+					ent.damage(gm.getApproxEnnemyHealth() / 10, owner, this, false, null);
 					ent.setFrozenTime(200L);
 					hit.add(ent);
 				}
