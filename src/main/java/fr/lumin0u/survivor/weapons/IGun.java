@@ -5,6 +5,7 @@ import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
+import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Ray;
 import fr.lumin0u.survivor.weapons.perks.Perk;
 import fr.lumin0u.survivor.weapons.superweapons.Turret;
@@ -66,7 +67,7 @@ public interface IGun extends IWeapon
 							if((double) this.ra.nextInt((int) (ray.getLength() * 5.0D)) > (double) this.i / 1.5D)
 							{
 								Color color;
-								if(weapon.hasPerk(Perk.FIRE_BULLET) && ra.nextInt(20) == 0)
+								if(Perk.FIRE_BULLET.testRandomDropAndHas(weapon))
 								{
 									int red = ra.nextInt(255 - 150) + 150;
 									int green = ra.nextInt(red - 150) + 150;
@@ -85,6 +86,9 @@ public interface IGun extends IWeapon
 										((Enemy)ent).damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D), weapon instanceof Turret ? 0.7D : 1.0D);
 									else
 										ent.damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D));
+									if(Perk.EXPLOSIVE_BULLETS.testRandomDropAndHas(weapon)) {
+										MCUtils.explosion(shooter, weapon, dmg, point, 2, 0, shooter.getTargetType());
+									}
 									this.cancel();
 									return;
 								}

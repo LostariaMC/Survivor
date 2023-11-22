@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 
 public class Turret extends SuperWeapon implements SupplyWeapon
 {
-	public static final Predicate<Material> placeableOn = material -> (TransparentUtils.isFullBlock(material) || material.name().matches(".*SLAB2|.*STEP|.*STAIRS")) && !material.equals(Material.BEACON);
+	public static final Predicate<Material> placeableOn = material -> (TransparentUtils.isFullBlock(material) || material.name().matches(".*SLAB2|.*STEP|.*STAIRS")) && !material.equals(Material.BEACON) && !material.equals(Material.CAKE);
 	
 	public Turret(WeaponOwner owner) {
 		super(owner, WeaponType.TURRET);

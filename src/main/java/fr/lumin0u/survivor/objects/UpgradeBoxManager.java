@@ -6,6 +6,7 @@ import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.weapons.Upgradeable;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.perks.Perk;
+import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -65,6 +66,7 @@ public class UpgradeBoxManager
 			if(!(weapon instanceof Upgradeable))
 			{
 				sp.toBukkit().closeInventory();
+				sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cCette arme n'est pas améliorable");
 				return;
 			}
@@ -76,6 +78,7 @@ public class UpgradeBoxManager
 				return;
 			}
 			
+			sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 			sp.addMoney(-((Upgradeable) weapon).getNextLevelPrice());
 			((Upgradeable) weapon).upgrade();
 			weapon.setAmmo(Math.min(weapon.getMaxAmmo(), weapon.getAmmo() + weapon.getMaxAmmo() / 4));
@@ -87,15 +90,24 @@ public class UpgradeBoxManager
 		
 		public void buyPerk()
 		{
+			if(weapon instanceof SuperWeapon)
+			{
+				sp.toBukkit().closeInventory();
+				sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cCette arme ne peut pas recevoir de perk");
+				return;
+			}
 			if(sp.getMoney() <= Perk.PRICE)
 			{
 				sp.toBukkit().closeInventory();
+				sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent");
 				return;
 			}
 			
-			Perk perk = Perk.FIRE_BULLET;
+			Perk perk = Perk.getRandomPerk();
 			
+			sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 			sp.addMoney(-Perk.PRICE);
 			weapon.setPerk(perk);
 			weapon.giveItem();

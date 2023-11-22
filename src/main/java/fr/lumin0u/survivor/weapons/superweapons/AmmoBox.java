@@ -1,14 +1,19 @@
 package fr.lumin0u.survivor.weapons.superweapons;
 
+import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.TransparentUtils;
 import fr.lumin0u.survivor.weapons.SupplyWeapon;
+import fr.lumin0u.survivor.weapons.TurretRunnable;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.RayTraceResult;
+
+import java.util.Iterator;
 
 public class AmmoBox extends SuperWeapon implements SupplyWeapon
 {
@@ -25,17 +30,22 @@ public class AmmoBox extends SuperWeapon implements SupplyWeapon
 	@Override
 	public void rightClick()
 	{
-		Location eyeLoc = owner.getShootLocation();
-		RayTraceResult collisionResult = TransparentUtils.collisionBetween(eyeLoc, eyeLoc.clone().add(eyeLoc.getDirection().multiply(3)), true);
+		if(!(owner instanceof SvPlayer))
+			return;
 		
-		if(collisionResult != null)
+		Iterator<Block> sight = new BlockIterator(((SvPlayer) owner).toBukkit(), 3);
+		
+		Block last = owner.getShootLocation().getBlock();
+		while(sight.hasNext())
 		{
-			Block placeSlot = collisionResult.getHitBlock().getRelative(collisionResult.getHitBlockFace());
-			if(Turret.placeableOn.test(placeSlot.getRelative(0, -1, 0).getType()) && placeSlot.getType().equals(Material.AIR))
+			Block current = sight.next();
+			if(Turret.placeableOn.test(last.getRelative(0, -1, 0).getType()) && last.getType().equals(Material.AIR))
 			{
 				useAmmo();
-				placeSlot.setType(Material.CAKE);
+				last.setType(Material.CAKE);
+				break;
 			}
+			last = current;
 		}
 	}
 	

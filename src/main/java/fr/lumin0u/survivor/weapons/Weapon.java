@@ -100,7 +100,8 @@ public abstract class Weapon implements IWeapon
 	}
 	
 	public void useAmmo() {
-		--this.clip;
+		if(!Perk.FREE_BULLETS.testRandomDropAndHas(this))
+			--this.clip;
 		if(this.clip <= 0) {
 			this.reload();
 		}
@@ -110,7 +111,7 @@ public abstract class Weapon implements IWeapon
 		if(ammo > 0 && owner.hasItem(this)) {
 			isReloading = true;
 			
-			final int modifiedReloadTime = owner.hasSpeedReload() ? (int) ((double) this.reloadTime / 1.6) : this.reloadTime;
+			final int modifiedReloadTime = (int) ((double) reloadTime * (owner.hasSpeedReload() ? 0.6 : 1) * (Perk.FASTER_RELOAD.testRandomDropAndHas(this) ? 0.8 : 1));
 			if(owner instanceof SvPlayer) {
 				TFSound.RELOAD.playTo((SvPlayer) owner);
 				showCooldown(modifiedReloadTime);
