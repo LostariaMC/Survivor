@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiFunction;
 
 public class Waves
 {
@@ -64,9 +65,14 @@ public class Waves
 		return 2.3D * diff.getEnnemyHealthModifier() * (double) wave;
 	}
 	
+	private static BiFunction<Double, Double, Double> speedF =
+		(w, d) -> 0.03 * w / (20 - 2 * d + w);
+	
 	public static double getEnnemiesSpeed(int wave, Difficulty diff)
 	{
-		return 0.13 + (double) diff.getNB() / 180 + ((double) wave / (10 + (double) wave)) / 100.0D;
+		double constant = 0.13 + 0.005 * (double) diff.getNB();
+		
+		return constant + speedF.apply((double) wave, (double) diff.getNB());
 	}
 	
 	public static boolean isBossWave(int wave)
