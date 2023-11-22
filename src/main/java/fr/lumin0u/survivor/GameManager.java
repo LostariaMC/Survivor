@@ -521,7 +521,7 @@ public class GameManager
 					double myHealth = health + Math.random() * 6 - 3;
 					Zombie m;
 					if((new Random()).nextInt(20) == 1 && this.wave > 3) {
-						m = new BabyZombie(spawn, myHealth / 2.0D, walkSpeed * 1.3D);
+						m = new BabyZombie(spawn, myHealth / 2.0D, walkSpeed * 1.2D);
 					}
 					else if((new Random()).nextInt(15) == 1 && this.wave > 2) {
 						m = new ZombieShooter(spawn, myHealth / 2.0D, walkSpeed);
