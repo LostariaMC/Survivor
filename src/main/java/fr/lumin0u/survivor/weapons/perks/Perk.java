@@ -15,30 +15,35 @@ public abstract class Perk
 	
 	public static final Perk FIRE_BULLET = new Perk("balles de feu", "§6balles de feu", List.of("Une chance d'enflammer", "vos ennemis"))
 	{
+		@Override
 		public boolean testRandomDrop(Random random) {
 			return random.nextInt(20) == 0;
 		}
 	};
 	public static final Perk FREE_BULLETS = new Perk("balles gratuites", "§aballes gratuites", List.of("Une chance de ne pas", "consommer de munitions"))
 	{
+		@Override
 		public boolean testRandomDrop(Random random) {
 			return random.nextInt(5) == 0;
 		}
 	};
 	public static final Perk FASTER_RELOAD = new Perk("recharge rapide", "§frecharge rapide", List.of("L'arme recharge plus vite"))
 	{
+		@Override
 		public boolean testRandomDrop(Random random) {
 			return true;
 		}
 	};
 	public static final Perk CRIT_BULLETS = new Perk("dégats critiques", "§cdégats critiques", List.of("Une chance d'infliger des", "dégats critiques"))
 	{
+		@Override
 		public boolean testRandomDrop(Random random) {
 			return random.nextInt(20) == 0;
 		}
 	};
 	public static final Perk EXPLOSIVE_BULLETS = new Perk("balles explosives", "§cballes explosives", List.of("Une chance de tirer", "une balle explosive"))
 	{
+		@Override
 		public boolean testRandomDrop(Random random) {
 			return random.nextInt(30) == 0;
 		}
