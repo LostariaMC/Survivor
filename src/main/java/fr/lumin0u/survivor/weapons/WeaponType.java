@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public enum WeaponType
 {
 	LITTLE_KNIFE(LittleKnife.class, RepeatingType.NONE, "Pelle", Material.IRON_SHOVEL, 100, 1, 5, 100, false, -1, 20, List.of("dmg"), List.of(4.2D)),
-	BUCHER_KNIFE(BucherKnife.class, RepeatingType.NONE, "Couteau de Boucher", Material.BRICK, 30, 1, 20, 300, true, -1, 40, List.of("dmg"), List.of(18.9D)),
+	BUCHER_KNIFE(BucherKnife.class, RepeatingType.NONE, "Pelle Lourde", Material.NETHERITE_SHOVEL, 30, 1, 20, 300, true, -1, 40, List.of("dmg"), List.of(18.9D)),
 	
 	M1911(M1911.class, RepeatingType.SEMIAUTOMATIC, "M1911", Material.WOODEN_PICKAXE, 80, 10, 40/*, new McSound("guns.m1911", 30)*/, 250, false, -1, 4, Arrays.asList("dmg", "range", "accuracy"), Arrays.asList(2.3D, 30.0D, 0.3D)),
 	FAMAS(Famas.class, RepeatingType.BURSTS, "Famas", Material.GOLDEN_AXE, 210, 30, 86/*, new McSound("guns.famas", 80)*/, 2500, true, -1, 15, Arrays.asList("dmg", "range", "accuracy", "shots", "shotsDelay"), Arrays.asList(5.6D, 60.0D, 0.2D, 3, 3L)),
