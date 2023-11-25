@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class SurvivorCommand implements TabExecutor, CommandExecutor
 {
@@ -76,13 +77,20 @@ public class SurvivorCommand implements TabExecutor, CommandExecutor
 		
 		if(args.length == 1)
 		{
-			List<String> commandsNames = new ArrayList<>();
-			for(SvArgCommand c : commands)
-			{
-				if(Utils.startsLikely(args[0], c.getName()) && !c.isHidden() && (!c.mustBeExecutedByAPlayer() || sender instanceof Player) && (GameManager.getInstance() != null || !(c instanceof AbstractGameCommand)))
-				{
-					commandsNames.add(c.getName());
-				}
+			Predicate<SvArgCommand> canExecute = c -> !c.isHidden() && (!c.mustBeExecutedByAPlayer() || sender instanceof Player) && (GameManager.getInstance() != null || !(c instanceof AbstractGameCommand));
+			
+			List<String> commandsNames = new ArrayList<>(commands.stream()
+					.filter(canExecute)
+					.map(SvArgCommand::getName)
+					.filter(name -> Utils.startsLikely(args[0], name))
+					.toList());
+			
+			if(commandsNames.isEmpty()) {
+				commandsNames.addAll(commands.stream()
+						.filter(canExecute)
+						.map(SvArgCommand::getName)
+						.filter(name -> name.toLowerCase().contains(args[0].toLowerCase()))
+						.toList());
 			}
 			
 			return commandsNames;
