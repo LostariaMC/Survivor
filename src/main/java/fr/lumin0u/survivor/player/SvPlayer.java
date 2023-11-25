@@ -390,7 +390,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						weapons.clear();
 						WeaponType.LITTLE_KNIFE.giveNewWeapon(SvPlayer.this).giveItem();
 						WeaponType.M1911.giveNewWeapon(SvPlayer.this).giveItem();
-						money = (int) (money * 0.75);
 						
 						if(isOnline())
 						{
