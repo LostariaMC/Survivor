@@ -46,6 +46,7 @@ public class MapConfig
 	public final List<Vector> magicBoxes = new ArrayList<>();
 	private final List<Room> rooms = new ArrayList<>();
 	public Vector spawnpoint;
+	public Vector upgradeMachine;
 	
 	@GsonIgnore
 	private final Map<Integer, Action> actions = new HashMap<>();
@@ -165,6 +166,7 @@ public class MapConfig
 			MapConfig config = new MapConfig(false);
 			
 			config.spawnpoint = context.deserialize(object.get("spawnpoint"), Vector.class);
+			config.upgradeMachine = context.deserialize(object.get("upgradeMachine"), Vector.class);
 			config.ammoBoxes.addAll(context.deserialize(object.get("ammoBoxes"), vectorListType));
 			config.magicBoxes.addAll(context.deserialize(object.get("magicBoxes"), vectorListType));
 			config.rooms.addAll(context.deserialize(object.get("rooms"), roomListType));

@@ -80,5 +80,7 @@ public class StartConfigCommand extends SvArgCommand
 		MapConfig config = MapConfig.loadConfig(mapName);
 		
 		Survivor.getInstance().getInCreationMapConfigs().put(WrappedPlayer.of(player), new MapConfigCreation(config, mapName, new MapConfigRenderer(WrappedPlayer.of(player), config)));
+		
+		player.performCommand("sv configInfo");
 	}
 }

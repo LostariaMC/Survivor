@@ -66,6 +66,15 @@ public final class ConfigUtil
 				.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/sv configInfo ammoBoxes"))
 				.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("§aAfficher")));
 		
+		TextComponent upgradeMachineClickable = config.upgradeMachine == null ?
+				Component.text("§cnon défini")
+						.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/sv setUpgradeMachine"))
+						.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("§aDéfinir")))
+				:
+				Component.text("§6[%d %d %d]".formatted((int) config.upgradeMachine.getX(), (int) config.upgradeMachine.getY(), (int) config.upgradeMachine.getZ()))
+						.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/tp %f %f %f".formatted(config.upgradeMachine.getX(), config.upgradeMachine.getY(), config.upgradeMachine.getZ())))
+						.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("§aSe téléporter à la position")));
+		
 		return Component.text()
 				.append(intro)
 				.appendNewline()
@@ -77,6 +86,9 @@ public final class ConfigUtil
 				.append(magicBoxes)
 				.appendNewline()
 				.append(ammoBoxes)
+				.appendNewline()
+				.append(Component.text("§7Machine à améliorations: "))
+				.append(upgradeMachineClickable)
 				.appendNewline()
 				.build();
 	}

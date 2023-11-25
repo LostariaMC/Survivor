@@ -1,31 +1,49 @@
 package fr.lumin0u.survivor.objects;
 
+import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.weapons.Upgradeable;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.perks.Perk;
-import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Display;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class UpgradeBoxManager
 {
-	public UpgradeBoxManager()
-	{
+	private Block machine;
+	private GameManager gm;
+	private TextDisplay nameDisplay;
 	
+	public UpgradeBoxManager(Location boxLoc, GameManager gm) {
+		this.machine = boxLoc.getBlock();
+		this.gm = gm;
 	}
 	
-	private static Map<SvPlayer, UpgradeGui> onScreen = new HashMap<>();
+	public Block getBlock() {
+		return machine;
+	}
 	
-	public static void onClickHopper(Block b, SvPlayer clicker)
+	private final Map<SvPlayer, UpgradeGui> onScreen = new HashMap<>();
+	
+	public void openGui(SvPlayer clicker)
 	{
 		Weapon weapon = clicker.getWeaponInHand();
 		
@@ -34,16 +52,27 @@ public class UpgradeBoxManager
 		onScreen.put(clicker, gui);
 	}
 	
-	public static UpgradeGui getUpgradeGui(SvPlayer sp)
+	public void onGameStart()
+	{
+		nameDisplay = (TextDisplay) machine.getWorld().spawnEntity(machine.getLocation().add(0.5, 1.3, 0.5), EntityType.TEXT_DISPLAY);
+		nameDisplay.text(Component.text("Boite à améliorations")
+				.decorate(TextDecoration.BOLD)
+				.color(TextColor.color(new Color(0xB66028).getRGB())));
+		nameDisplay.setBillboard(Display.Billboard.CENTER);
+		
+		machine.setType(Material.ENCHANTING_TABLE);
+	}
+	
+	public UpgradeGui getUpgradeGui(SvPlayer sp)
 	{
 		return onScreen.get(sp);
 	}
 	
 	public static class UpgradeGui
 	{
-		private Weapon weapon;
+		private final Weapon weapon;
+		private final SvPlayer sp;
 		private Inventory inv;
-		private SvPlayer sp;
 		
 		public UpgradeGui(Weapon weapon)
 		{
@@ -59,6 +88,13 @@ public class UpgradeBoxManager
 		public Weapon getWeapon()
 		{
 			return weapon;
+		}
+		
+		public void clickOn(ItemStack item) {
+			if(item.getType().equals(Material.COOKED_RABBIT) || item.getType().equals(Material.RABBIT))
+				upgradeWeapon();
+			if(item.getType().equals(Material.COOKIE) || item.getType().equals(Material.COOKIE))
+				buyPerk();
 		}
 		
 		public void upgradeWeapon()
@@ -90,7 +126,7 @@ public class UpgradeBoxManager
 		
 		public void buyPerk()
 		{
-			if(weapon instanceof SuperWeapon)
+			if(!weapon.acceptsPerks())
 			{
 				sp.toBukkit().closeInventory();
 				sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
@@ -121,11 +157,26 @@ public class UpgradeBoxManager
 		{
 			inv = Bukkit.createInventory(null, 3 * 9, "Améliorations");
 			
-			inv.setItem(11, new ItemBuilder(Material.COOKIE).setDisplayName("§" + (sp.getMoney() >= Perk.PRICE ? "a" : "c") + "Acheter un perk").addLore("§7Les perks confèrent des améliorations").addLore("§7particulières aux armes").addLore("§7Un perk coûte §6§l"+Perk.PRICE+"§a$").addLore("§7Vous ne pouvez mettre qu'un").addLore("§7perk par arme").build());
+			inv.setItem(11, new ItemBuilder(Material.COOKIE)
+					.setDisplayName("§" + (sp.getMoney() >= Perk.PRICE ? "a" : "c") + "Acheter un perk")
+					.addLore("§7Les perks confèrent des améliorations")
+					.addLore("§7particulières aux armes")
+					.addLore("§7Un perk coûte §6§l"+Perk.PRICE+"§a$")
+					.addLore("§cVous ne pouvez ajouter qu'un")
+					.addLore("§cseul perk par arme§7, en racheter")
+					.addLore("§7un retirera l'ancien !")
+					.build());
+			
 			inv.setItem(13, new ItemBuilder(weapon.getItem()).setAmount(1).build());
 			boolean isUpgradeable = weapon instanceof Upgradeable;
 			boolean canUpgrade = isUpgradeable && ((Upgradeable) weapon).getNextLevelPrice() <= sp.getMoney();
-			inv.setItem(15, new ItemBuilder(canUpgrade ? Material.COOKED_RABBIT : Material.RABBIT).setDisplayName((isUpgradeable ? "§" + (canUpgrade ? "a" : "c") + "Améliorer §8- §6" + ((Upgradeable) weapon).getNextLevelPrice() + "$" : "§cNon améliorable")).build());
+			
+			inv.setItem(15, new ItemBuilder(canUpgrade ? Material.COOKED_RABBIT : Material.RABBIT)
+					.setDisplayName(
+							isUpgradeable ?
+							"§" + (canUpgrade ? "a" : "c") + "Améliorer §8- §6" + ((Upgradeable) weapon).getNextLevelPrice() + "$"
+							: "§cNon améliorable")
+					.build());
 			
 			sp.toBukkit().openInventory(inv);
 		}

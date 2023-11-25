@@ -59,6 +59,7 @@ public class SurvivorCommand implements TabExecutor, CommandExecutor
 		this.registerCommand(new AddFenceCommand());
 		this.registerCommand(new GetItemWeaponToSellCommand());
 		this.registerCommand(new AddBlockCommand());
+		this.registerCommand(new SetUpgradeMachineCommand());
 	}
 	
 	public void registerCommand(SvArgCommand command) {

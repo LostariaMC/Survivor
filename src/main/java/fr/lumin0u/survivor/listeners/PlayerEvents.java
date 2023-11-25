@@ -33,7 +33,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Cake;
 import org.bukkit.block.data.type.Gate;
-import org.bukkit.block.data.type.Hopper;
 import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -60,8 +59,6 @@ import java.util.function.Predicate;
 
 public class PlayerEvents implements PacketListener, Listener
 {
-	public static final Predicate<Block> IS_PACK_A_PUNCH = (block) -> block.getType().equals(Material.HOPPER) && ((Hopper) block.getBlockData()).getFacing() != BlockFace.DOWN;
-	
 	@EventHandler
 	public void onAnimation(PlayerAnimationEvent e) {
 		if(GameManager.getInstance() != null)
@@ -118,25 +115,11 @@ public class PlayerEvents implements PacketListener, Listener
 				e.setCancelled(true);
 			}
 			
-			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getItem() != null && (e.getClickedBlock().getType().equals(Material.HOPPER) || e.getClickedBlock().getType().equals(Material.BARRIER)) && gm.isStarted() && player.isAlive())
+			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getItem() != null && e.getClickedBlock().equals(gm.getUpgradeBoxManager().getBlock()) && gm.isStarted() && player.isAlive())
 			{
-				boolean hopper = IS_PACK_A_PUNCH.test(e.getClickedBlock())
-						|| IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(1, 0, 0))
-						|| IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(-1, 0, 0))
-						|| IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(0, 0, 1))
-						|| IS_PACK_A_PUNCH.test(e.getClickedBlock().getRelative(0, 0, -1));
-				
-				if(hopper)
-				{
-					if(e.getClickedBlock().getType().equals(Material.BARRIER))
-					{
-						MCUtils.armSwingAnimation(player.toBukkit(), false);
-					}
-					
-					UpgradeBoxManager.onClickHopper(e.getClickedBlock(), player);
-					e.setCancelled(true);
-					return;
-				}
+				gm.getUpgradeBoxManager().openGui(player);
+				e.setCancelled(true);
+				return;
 			}
 			
 			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getBlockData() instanceof Gate && gm.isStarted() && player.isAlive())

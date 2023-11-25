@@ -49,12 +49,9 @@ public class InventoryEvents implements Listener
 			sp.openSupplyInventory();
 		}
 		
-		if(UpgradeBoxManager.getUpgradeGui(sp) != null && e.getCurrentItem() != null)
-		{
-			if(e.getCurrentItem().getType().equals(Material.COOKED_RABBIT) || e.getCurrentItem().getType().equals(Material.RABBIT))
-				UpgradeBoxManager.getUpgradeGui(sp).upgradeWeapon();
-			if(e.getCurrentItem().getType().equals(Material.COOKIE) || e.getCurrentItem().getType().equals(Material.COOKIE))
-				UpgradeBoxManager.getUpgradeGui(sp).buyPerk();
+		UpgradeBoxManager.UpgradeGui upgradeGui = GameManager.getInstance().getUpgradeBoxManager().getUpgradeGui(sp);
+		if(upgradeGui != null && e.getCurrentItem() != null) {
+			upgradeGui.clickOn(e.getCurrentItem());
 		}
 	}
 	

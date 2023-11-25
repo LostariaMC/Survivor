@@ -2,7 +2,10 @@ package fr.lumin0u.survivor.config;
 
 import com.comphenix.protocol.PacketType.Play.Server;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -23,6 +26,7 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Zombie;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -84,8 +88,9 @@ public class MapConfigRenderer
 	private void hideAll() {
 		doorHolograms.forEach(hologram ->
 		{
-			PacketContainer packetDestroy = new PacketContainer(Server.ENTITY_DESTROY, new PacketPlayOutEntityDestroy(hologram.getEntityId()));
-			player.sendPacket(packetDestroy);
+			player.toBukkit().hideEntity(Survivor.getInstance(), hologram);
+			/*PacketContainer packetDestroy = new PacketContainer(Server.ENTITY_DESTROY, new PacketPlayOutEntityDestroy(hologram.getEntityId()));
+			player.sendPacket(packetDestroy);*/
 		});
 		doorHolograms.clear();
 		
@@ -136,30 +141,45 @@ public class MapConfigRenderer
 		{
 			Location middle = door.getMidLoc().toLocation(player.toBukkit().getWorld());
 			
+			World world = middle.getWorld();
 			net.minecraft.world.level.World nmsWorld = NMSUtils.getHandle(middle.getWorld());
 			
-			EntityArmorStand nmsName = new EntityArmorStand(nmsWorld, middle.getX(), middle.getY() - 2, middle.getZ());
-			EntityArmorStand nmsPrice = new EntityArmorStand(nmsWorld, middle.getX(), middle.getY() - 2.2, middle.getZ());
-			ArmorStand asName = (ArmorStand) nmsName.getBukkitEntity();
-			ArmorStand asPrice = (ArmorStand) nmsPrice.getBukkitEntity();
+			ArmorStand asName = (ArmorStand) world.spawnEntity(middle.clone().add(0, -2, 0), EntityType.ARMOR_STAND);
 			asName.setVisible(false);
 			asName.setGravity(false);
 			asName.setCustomName("§a" + door.getRoom().getName());
 			asName.setCustomNameVisible(true);
+			asName.setVisibleByDefault(false);
+			
+			ArmorStand asPrice = (ArmorStand) world.spawnEntity(middle.clone().add(0, -2.2, 0), EntityType.ARMOR_STAND);
 			asPrice.setVisible(false);
 			asPrice.setGravity(false);
 			asPrice.setCustomName("§6" + (door.getRoom().hasPrice() ? door.getRoom().getPrice() : "?") + "$");
 			asPrice.setCustomNameVisible(true);
+			asPrice.setVisibleByDefault(false);
 			
-			PacketContainer asNamePacketSpawn = new PacketContainer(Server.SPAWN_ENTITY, new PacketPlayOutSpawnEntity(nmsName));
+			player.toBukkit().showEntity(Survivor.getInstance(), asName);
+			player.toBukkit().showEntity(Survivor.getInstance(), asPrice);
+			
+			/*PacketContainer asNamePacketSpawn = new PacketContainer(Server.SPAWN_ENTITY, new PacketPlayOutSpawnEntity(nmsName));
 			PacketContainer asPricePacketSpawn = new PacketContainer(Server.SPAWN_ENTITY, new PacketPlayOutSpawnEntity(nmsPrice));
 			PacketContainer asNamePacketMetadata = new PacketContainer(Server.ENTITY_METADATA);
 			asNamePacketMetadata.getIntegers().write(0, asName.getEntityId());
-			asNamePacketMetadata.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(asName).getWatchableObjects());
+			asNamePacketMetadata.getDataValueCollectionModifier().write(0, List.of(
+					new WrappedDataValue(0, Registry.get(Byte.class), 0x20),
+					new WrappedDataValue(2, Registry.getChatComponentSerializer(true), WrappedChatComponent.fromText("§a" + door.getRoom().getName())),
+					new WrappedDataValue(3, Registry.get(Boolean.class), true),
+					new WrappedDataValue(5, Registry.get(Boolean.class), true)
+					));
 			
 			PacketContainer asPricePacketMetadata = new PacketContainer(Server.ENTITY_METADATA);
 			asPricePacketMetadata.getIntegers().write(0, asPrice.getEntityId());
-			asPricePacketMetadata.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(asPrice).getWatchableObjects());
+			asPricePacketMetadata.getDataValueCollectionModifier().write(0, List.of(
+					new WrappedDataValue(0, Registry.get(Byte.class), 0x20),
+					new WrappedDataValue(2, Registry.getChatComponentSerializer(true), WrappedChatComponent.fromText("§6" + (door.getRoom().hasPrice() ? door.getRoom().getPrice() : "?") + "$")),
+					new WrappedDataValue(3, Registry.get(Boolean.class), true),
+					new WrappedDataValue(5, Registry.get(Boolean.class), true)
+			));
 			
 			player.sendPacket(asNamePacketSpawn);
 			player.sendPacket(asPricePacketSpawn);
@@ -171,7 +191,7 @@ public class MapConfigRenderer
 					player.sendPacket(asNamePacketMetadata);
 					player.sendPacket(asPricePacketMetadata);
 				}
-			}.runTaskLater(Survivor.getInstance(), 1);
+			}.runTaskLater(Survivor.getInstance(), 1);*/
 			
 			doorHolograms.add(asName);
 			doorHolograms.add(asPrice);
@@ -205,6 +225,8 @@ public class MapConfigRenderer
 	public void update() {
 		hideAll();
 		showAll();
+		if(player.isOnline())
+			player.toBukkit().sendMessage(ConfigUtil.toPlayerExplanation(config, player.toBukkit().getWorld()));
 	}
 	
 	public static void stopAll() {

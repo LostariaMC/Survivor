@@ -6,6 +6,7 @@ import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.TFSound;
+import fr.lumin0u.survivor.weapons.knives.Knife;
 import fr.lumin0u.survivor.weapons.perks.Perk;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import net.kyori.adventure.text.Component;
@@ -99,6 +100,10 @@ public abstract class Weapon implements IWeapon
 		this.clip = clip;
 	}
 	
+	public boolean acceptsPerks() {
+		return !(this instanceof SuperWeapon) && !(this instanceof Knife);
+	}
+	
 	public void useAmmo() {
 		if(!Perk.FREE_BULLETS.testRandomDropAndHas(this))
 			--this.clip;
@@ -108,7 +113,10 @@ public abstract class Weapon implements IWeapon
 	}
 	
 	public void reload() {
-		if(ammo > 0 && owner.hasItem(this)) {
+		if(!owner.hasItem(this)) {
+			owner.giveWeaponItem(this);
+		}
+		if(ammo > 0) {
 			isReloading = true;
 			
 			final int modifiedReloadTime = (int) ((double) reloadTime * (owner.hasSpeedReload() ? 0.6 : 1) * (Perk.FASTER_RELOAD.testRandomDropAndHas(this) ? 0.8 : 1));

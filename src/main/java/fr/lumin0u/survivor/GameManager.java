@@ -11,6 +11,7 @@ import fr.lumin0u.survivor.mobs.mob.boss.Boss;
 import fr.lumin0u.survivor.objects.Door;
 import fr.lumin0u.survivor.objects.MagicBoxManager;
 import fr.lumin0u.survivor.objects.Room;
+import fr.lumin0u.survivor.objects.UpgradeBoxManager;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -50,6 +51,7 @@ public class GameManager
 	private int wave;
 	private boolean inWave;
 	private final MagicBoxManager magicBoxManager;
+	private final UpgradeBoxManager upgradeBoxManager;
 	private List<Location> ammoBoxes;
 	@NotNull
 	private Difficulty difficulty = Difficulty.NOT_SET;
@@ -100,6 +102,7 @@ public class GameManager
 		spawnpoint = config.spawnpoint.toLocation(world);
 		ammoBoxes = config.ammoBoxes.stream().map(v -> v.toLocation(world)).toList();
 		magicBoxManager = new MagicBoxManager(config.magicBoxes.stream().map(v -> v.toLocation(world)).toList(), this);
+		upgradeBoxManager = new UpgradeBoxManager(config.upgradeMachine.toLocation(world), this);
 		
 		rooms = new ArrayList<>(config.getRooms());
 		totalFenceCount = rooms.stream().mapToInt(room -> room.getFences().size()).sum();
@@ -169,6 +172,7 @@ public class GameManager
 			Bukkit.broadcastMessage(SurvivorGame.prefix + "§6La partie commence !");
 			endWave();
 			magicBoxManager.onGameStart();
+			upgradeBoxManager.onGameStart();
 			
 			for(LivingEntity ent : world.getEntitiesByClass(LivingEntity.class)) {
 				if(!(ent instanceof Player)) {
@@ -676,6 +680,10 @@ public class GameManager
 	
 	public MagicBoxManager getMagicBoxManager() {
 		return this.magicBoxManager;
+	}
+	
+	public UpgradeBoxManager getUpgradeBoxManager() {
+		return upgradeBoxManager;
 	}
 	
 	public List<Location> getAmmoBoxes() {
