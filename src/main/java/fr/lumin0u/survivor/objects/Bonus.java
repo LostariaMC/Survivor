@@ -143,8 +143,10 @@ public enum Bonus
 					}
 				}.runTaskTimer(Survivor.getInstance(), 0L, 1L);
 				
-				for(SvPlayer sp : gm.getPlayers()) {
-					sp.addMoney(damagee.stream().mapToDouble(Enemy::getReward).sum() / 3);
+				double reward = damagee.stream().mapToDouble(Enemy::getReward).sum() / 2;
+				reward /= gm.getOnlinePlayers().size();
+				for(SvPlayer sp : gm.getOnlinePlayers()) {
+					sp.addMoney(reward);
 				}
 			}
 			case INSTANT_KILL -> {
