@@ -148,7 +148,7 @@ public enum Bonus
 				}
 			}
 			case INSTANT_KILL -> {
-				for(SvPlayer sp : gm.getPlayers())
+				for(SvPlayer sp : gm.getOnlinePlayers())
 				{
 					sp.startInstantKill();
 				}
