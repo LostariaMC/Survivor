@@ -509,7 +509,7 @@ public class GameManager
 			int spawnsSize = spawns.size();
 			
 			double health = Math.max(0, Waves.getEnnemiesLife(this.wave, this.difficulty) + Math.random() * 6 - 3);
-			health *= Math.sqrt(getOnlinePlayers().size());
+			health *= ((double) getOnlinePlayers().size() / 2 + 0.5);
 			ennemyHealth = health;
 			double walkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
 			
@@ -547,7 +547,7 @@ public class GameManager
 		else {
 			this.totalWolves = ennemies;
 			
-			double health = Math.max(0, Waves.getEnnemiesLife(wave, difficulty) * Math.sqrt(getOnlinePlayers().size()));
+			double health = Waves.getEnnemiesLife(wave, difficulty) * ((double) getOnlinePlayers().size() / 2 + 0.5);
 			ennemyHealth = health;
 			wolfRunnable = new BukkitRunnable()
 			{
