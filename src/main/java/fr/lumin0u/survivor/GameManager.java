@@ -416,6 +416,8 @@ public class GameManager
 			wolfRunnable.cancel();
 		
 		new ArrayList<>(getInstance().getMobs()).forEach(m -> m.kill(null));
+		
+		endWave();
 	}
 	
 	public void addVoteSkipper(SvPlayer voter) {
