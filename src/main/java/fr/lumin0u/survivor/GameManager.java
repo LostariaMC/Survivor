@@ -152,6 +152,7 @@ public class GameManager
 					Surviboard.updatePlayerLine(player);
 				}
 				if(t%2 == 0) {
+					Surviboard.updateTimer(Survivor.getCurrentTick());
 					getOnlinePlayers().forEach(sp -> sp.toCosmox().addStatistic(GameVariables.TIME_PLAYED, 1));
 				}
 				
@@ -674,7 +675,7 @@ public class GameManager
 		if(seconds >= 3600)
 			s.append(seconds / 3600).append("h ");
 		if(seconds >= 60)
-			s.append((seconds / 60) % 3600).append("m ");
+			s.append((seconds % 3600) / 60).append("m ");
 		
 		s.append(seconds % 60).append("s");
 		

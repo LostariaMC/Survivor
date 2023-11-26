@@ -13,6 +13,8 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.Objects;
 
+import static fr.worsewarn.cosmox.game.GameVariables.KILLS;
+
 public class Surviboard
 {
 	private static final Comparator<Object> HASH_COMPARATOR = (o1, o2) -> Integer.compare(Objects.hashCode(o1), Objects.hashCode(o2));
@@ -43,7 +45,18 @@ public class Surviboard
 	}
 	
 	public static void updateScoreboardScore(SvPlayer player) {
-		player.toCosmox().setScoreboardScore((int) player.getMoney());
+		player.toCosmox().setScoreboardScore(player.toCosmox().getStatistic(KILLS));
+	}
+	
+	public static void updateTimer(int ticks) {
+		int seconds = ticks / 20;
+		String timer = seconds > 3600 ? "%dh%02d:%02d".formatted(seconds / 3600, (seconds % 3600) / 60, seconds % 60) : "%02d:%02d".formatted(seconds / 60, seconds % 60);
+		
+		Bukkit.getOnlinePlayers().stream()
+				.map(WrappedPlayer::of)
+				.forEach(player -> {
+					player.toCosmox().getScoreboard().updateTitle("§f§lSURVIVOR - §f" + timer);
+				});
 	}
 	
 	private static String getWaveLine(GameManager gm) {
