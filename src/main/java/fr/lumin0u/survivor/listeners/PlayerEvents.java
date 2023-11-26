@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
 import fr.lumin0u.survivor.*;
+import fr.lumin0u.survivor.config.commands.LeaveConfigCommand;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.mobs.mob.boss.PoisonousBoss;
 import fr.lumin0u.survivor.objects.Door;
@@ -21,6 +22,7 @@ import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.snipers.Sniper;
+import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.game.events.PlayerJoinGameEvent;
 import fr.worsewarn.cosmox.game.teams.Team;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -475,6 +477,11 @@ public class PlayerEvents implements PacketListener, Listener
 	
 	@EventHandler
 	public void onDisconnect(PlayerQuitEvent e) {
+		
+		if(Survivor.getInstance().getInCreationMapConfigs().containsKey(WrappedPlayer.of(e.getPlayer()))) {
+			LeaveConfigCommand.leaveConfig(e.getPlayer());
+		}
+		
 		if(GameManager.getInstance() != null)
 		{
 			GameManager gm = GameManager.getInstance();

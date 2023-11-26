@@ -86,12 +86,7 @@ public class MapConfigRenderer
 	}
 	
 	private void hideAll() {
-		doorHolograms.forEach(hologram ->
-		{
-			player.toBukkit().hideEntity(Survivor.getInstance(), hologram);
-			/*PacketContainer packetDestroy = new PacketContainer(Server.ENTITY_DESTROY, new PacketPlayOutEntityDestroy(hologram.getEntityId()));
-			player.sendPacket(packetDestroy);*/
-		});
+		doorHolograms.forEach(org.bukkit.entity.Entity::remove);
 		doorHolograms.clear();
 		
 		zombies.forEach(zombie ->
