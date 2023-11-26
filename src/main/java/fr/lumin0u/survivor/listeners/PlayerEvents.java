@@ -14,7 +14,6 @@ import fr.lumin0u.survivor.mobs.mob.boss.PoisonousBoss;
 import fr.lumin0u.survivor.objects.Door;
 import fr.lumin0u.survivor.objects.MagicBoxManager;
 import fr.lumin0u.survivor.objects.Room;
-import fr.lumin0u.survivor.objects.UpgradeBoxManager;
 import fr.lumin0u.survivor.player.LainBodies;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -57,7 +56,6 @@ import org.bukkit.util.BlockIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class PlayerEvents implements PacketListener, Listener
 {
@@ -499,7 +497,7 @@ public class PlayerEvents implements PacketListener, Listener
 			}
 		}
 		
-		LainBodies.onDisconnect(e.getPlayer().getEntityId());
+		LainBodies.onDisconnect(WrappedPlayer.of(e.getPlayer()));
 	}
 	
 	@EventHandler

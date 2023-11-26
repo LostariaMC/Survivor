@@ -377,7 +377,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 					as3.remove();
 					
 					if(isOnline()) {
-						
 						toBukkit().setGlowing(false);
 						
 						MCUtils.sendTitle(toBukkit(), 10, 40, 20, "§cVous êtes mort");
@@ -426,13 +425,16 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						lifeState = LifeState.DEAD;
 						LainBodies.wakeUp(uid);
 					}
+					else if(GameManager.getInstance().isGameEnded()) {
+						playDead();
+						cancel();
+					}
 					else
 					{
 						if(!GameManager.getInstance().isInWave())
 						{
 							lifeState = LifeState.ALIVE;
 							toBukkit().setGameMode(GameMode.ADVENTURE);
-							toBukkit().teleport(GameManager.getInstance().getSpawnpoint());
 							as1.remove();
 							as2.remove();
 							as3.remove();
@@ -449,7 +451,8 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						for(SvPlayer sp : GameManager.getInstance().getOnlinePlayers()) {
 							if(sp.toBukkit().isSneaking() && sp.toBukkit().getLocation().distance(deathLoc) < 5 && sp.isAlive()) {
 								savers.add(sp);
-								reviveTime -= (sp.getAtouts().contains(SvAsset.QUICK_REVIVE) ? 25 : 10);
+								int difficultyV = GameManager.getInstance().getDifficulty().getNB();
+								reviveTime -= (sp.getAtouts().contains(SvAsset.QUICK_REVIVE) ? 28 : 15) - difficultyV;
 							}
 						}
 						
@@ -495,7 +498,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							{
 								Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + getName() + "§a a été réanimé !");
 								lifeState = LifeState.ALIVE;
-								toBukkit().teleport(deathLoc);
 								toBukkit().setGameMode(GameMode.ADVENTURE);
 								toBukkit().setGlowing(false);
 								deathDate = 0L;

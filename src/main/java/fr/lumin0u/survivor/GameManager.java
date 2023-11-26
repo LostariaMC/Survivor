@@ -66,6 +66,7 @@ public class GameManager
 	private BukkitRunnable wolfRunnable;
 	private final List<SvPlayer> voteSkippers = new ArrayList<>();
 	private final GameBossBar bossBar;
+	private boolean gameEnded;
 	
 	private int totalFenceCount;
 	
@@ -654,6 +655,8 @@ public class GameManager
 	public void endGame() {
 		Bukkit.broadcastMessage(SurvivorGame.prefix + "§cVous avez perdu, tout le monde est mort ...");
 		
+		gameEnded = true;
+		
 		for(SvPlayer sp : getOnlinePlayers()) {
 			bossBar.bossBar.removeAll();
 			
@@ -760,5 +763,9 @@ public class GameManager
 				bossBar.setProgress(1 - (double) getTimeUntilNextWave() / max);
 			}
 		}
+	}
+	
+	public boolean isGameEnded() {
+		return gameEnded;
 	}
 }
