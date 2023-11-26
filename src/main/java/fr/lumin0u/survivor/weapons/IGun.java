@@ -34,8 +34,14 @@ public interface IGun extends IWeapon
 		rawShoot(shooter, (Weapon) this, ray, getDmg());
 	}
 	
-	public static void rawShoot(WeaponOwner shooter, Weapon weapon, Ray ray, double dmg) {
+	public static void rawShoot(WeaponOwner shooter, Weapon weapon, Ray ray, double baseDmg) {
 		final int rSize = ray.getPoints().size();
+		boolean fireBullet = Perk.FIRE_BULLET.testRandomDropAndHas(weapon);
+		boolean explosiveBullet = Perk.EXPLOSIVE_BULLETS.testRandomDropAndHas(weapon);
+		boolean critBullet = Perk.CRIT_BULLETS.testRandomDropAndHas(weapon);
+		
+		double dmg = critBullet ? baseDmg * 3.5 : baseDmg;
+		
 		new BukkitRunnable()
 		{
 			int i = 0;
@@ -67,11 +73,21 @@ public interface IGun extends IWeapon
 							if((double) this.ra.nextInt((int) (ray.getLength() * 5.0D)) > (double) this.i / 1.5D)
 							{
 								Color color;
-								if(Perk.FIRE_BULLET.testRandomDropAndHas(weapon))
+								if(fireBullet)
 								{
 									int red = ra.nextInt(255 - 150) + 150;
 									int green = ra.nextInt(red - 150) + 150;
 									color = Color.fromRGB(red, green, 75);
+								}
+								else if(critBullet)
+								{
+									int red = ra.nextInt(255 - 150) + 200;
+									int green = ra.nextInt(red - 150) + 100;
+									color = Color.fromRGB(red, green, 75);
+								}
+								else if(explosiveBullet)
+								{
+									color = Color.fromRGB(25, 25, 25);
 								}
 								else
 									color = Color.fromRGB(75, 75, 75);
@@ -82,12 +98,17 @@ public interface IGun extends IWeapon
 							{
 								if(ent.getBodyHitbox().contains(point) || ent.getHeadHitbox().contains(point))
 								{
-									if(ent instanceof Enemy)
+									if(ent instanceof Enemy) {
 										((Enemy)ent).damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D), weapon instanceof Turret ? 0.7D : 1.0D);
-									else
+									}
+									else {
 										ent.damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D));
-									if(Perk.EXPLOSIVE_BULLETS.testRandomDropAndHas(weapon)) {
-										MCUtils.explosion(shooter, weapon, dmg, point, 2, 0, shooter.getTargetType());
+									}
+									if(explosiveBullet) {
+										MCUtils.explosion(shooter, weapon, dmg * 2, point, 2, 0, shooter.getTargetType());
+									}
+									if(fireBullet) {
+										ent.setFireTime(60, shooter, weapon);
 									}
 									this.cancel();
 									return;

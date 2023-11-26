@@ -5,7 +5,9 @@ import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
+import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Ray;
+import fr.lumin0u.survivor.weapons.perks.Perk;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -27,7 +29,12 @@ public interface IRailGun extends IGun
 		WeaponOwner shooter = getOwner();
 		Weapon weapon = (Weapon) this;
 		Ray ray = new Ray(shooter.getShootLocation(), shooter.getShootLocation().getDirection().multiply(0.2D), getRange(), getAccuracy());
-		double dmg = getDmg();
+		
+		boolean fireBullet = Perk.FIRE_BULLET.testRandomDropAndHas(weapon);
+		boolean explosiveBullet = Perk.EXPLOSIVE_BULLETS.testRandomDropAndHas(weapon);
+		boolean critBullet = Perk.CRIT_BULLETS.testRandomDropAndHas(weapon);
+		
+		double dmg = critBullet ? getDmg() * 3.5 : getDmg();
 		
 		double ballSpeed = 600.0D;
 		final Random ra = new Random();
@@ -67,6 +74,13 @@ public interface IRailGun extends IGun
 								{
 									ent.damage(dmg, shooter, weapon, false, ray.getIncrease().normalize().multiply(0.05D));
 									this.hit.add(ent);
+									
+									if(explosiveBullet) {
+										MCUtils.explosion(shooter, weapon, dmg * 2, point, 2, 0, shooter.getTargetType());
+									}
+									if(fireBullet) {
+										ent.setFireTime(60, shooter, weapon);
+									}
 								}
 							}
 						}

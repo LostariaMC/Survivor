@@ -213,9 +213,6 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 		if(damager != null && damager.doInstantKill())
 			dmg *= 5;
 		
-		if(weapon != null && Perk.CRIT_BULLETS.testRandomDropAndHas(weapon))
-			dmg *= 3;
-		
 		int i;
 		if(headshot)
 		{
@@ -242,9 +239,6 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 			if(damager != null)
 			{
 				ent.setVelocity(ent.getVelocity().multiply(0.5).add(kb == null ? new Vector() : kb));
-				
-				if(weapon != null && Perk.FIRE_BULLET.testRandomDropAndHas(weapon))
-					setFireTime(50, damager, weapon);
 			}
 			
 			for(i = 0; i < 5; ++i)
