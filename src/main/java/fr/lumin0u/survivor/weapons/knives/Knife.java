@@ -79,7 +79,9 @@ public abstract class Knife extends Weapon
 	public List<String> getLore()
 	{
 		List<String> lore = new ArrayList<>();
-		lore.add("§6Dégats : §a" + this.dmg);
+		lore.add("§6Dégats : §a" + String.format("%.2f", dmg) + (!isUpgradeable() ? "" : " §8➝ " + String.format("%.2f", getDamageAtLevel(level + 1))));
+		if(isUpgradeable())
+			lore.add("§6Niveau : §a" + level + " §8➝ " + (level + 1));
 		return lore;
 	}
 	
@@ -105,5 +107,9 @@ public abstract class Knife extends Weapon
 	public void giveItem()
 	{
 		super.giveItem();
+	}
+	
+	protected double getDamageAtLevel(int level) {
+		return (double) wt.get("dmg") * Math.pow(1.14D, level);
 	}
 }
