@@ -192,7 +192,7 @@ public class MBTask extends BukkitRunnable
 				this.removeAll();
 				this.mbm.changeLoc();
 			}
-			else if(sp.getSimpleWeapons().size() >= (sp.getAtouts().contains(SvAsset.TROIS_ARME) ? 3 : 2) && !this.shownWeapon.isSuperWeaponType())
+			else if(sp.getSimpleWeapons().size() >= (sp.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2) && !this.shownWeapon.isSuperWeaponType())
 			{
 				Weapon w = sp.getWeaponInHand();
 				if(w != null && !(w instanceof SuperWeapon) && (!(w instanceof Knife) || this.shownWeapon.isKnife()))

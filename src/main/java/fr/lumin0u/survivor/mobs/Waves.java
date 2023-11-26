@@ -54,7 +54,7 @@ public class Waves
 	{
 		for(int i = nbZombies.get(diff).size(); i < wave + 5; ++i)
 		{
-			nbZombies.get(diff).add((int) ((double) wave * Math.sqrt(diff.getNB()) * 1.3 + 1.5 + Math.random() * (double) diff.getNB()));
+			nbZombies.get(diff).add((int) ((double) wave * Math.sqrt(diff.getFactor()) * 1.3 + 1.5 + Math.random() * (double) diff.getFactor()));
 		}
 		
 		return nbZombies.get(diff).get(wave);
@@ -70,9 +70,9 @@ public class Waves
 	
 	public static double getEnnemiesSpeed(int wave, Difficulty diff)
 	{
-		double constant = 0.13 + 0.005 * (double) diff.getNB();
+		double constant = 0.13 + 0.005 * (double) diff.getFactor();
 		
-		return constant + speedF.apply((double) wave, (double) diff.getNB());
+		return constant + speedF.apply((double) wave, (double) diff.getFactor());
 	}
 	
 	public static boolean isBossWave(int wave)

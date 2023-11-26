@@ -289,7 +289,7 @@ public class PlayerEvents implements PacketListener, Listener
 						((ItemFrame) e.getRightClicked()).setItem(wt.getItemToSell());
 						if(wt.getPrice() <= player.getMoney() && !player.getWeaponTypes().contains(wt))
 						{
-							if(player.getSimpleWeapons().size() >= (player.getAtouts().contains(SvAsset.TROIS_ARME) ? 3 : 2))
+							if(player.getSimpleWeapons().size() >= (player.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2))
 							{
 								for(Weapon w : new ArrayList<>(player.getSimpleWeapons()))
 								{
@@ -344,9 +344,9 @@ public class PlayerEvents implements PacketListener, Listener
 							break;
 						}
 						
-						if(asset.getPrice() <= player.getMoney() && !player.getAtouts().contains(asset) && player.getAtouts().size() < 4)
+						if(asset.getPrice() <= player.getMoney() && !player.getAssets().contains(asset) && player.getAssets().size() < 4)
 						{
-							player.getAtouts().add(asset);
+							player.getAssets().add(asset);
 							
 							player.toBukkit().sendMessage(SurvivorGame.prefix + "§6Vous avez acheté l'atout §a" + asset.getName() + " §7(il apparait dans votre inventaire, appuyer sur votre touche de drop pour vous en débarrasser)");
 							
@@ -436,7 +436,6 @@ public class PlayerEvents implements PacketListener, Listener
 		{
 			Player player = e.getPlayer();
 			player.getInventory().clear();
-			player.setWalkSpeed(0.2F);
 			
 			GameManager gm = GameManager.getInstance();
 			
@@ -465,7 +464,8 @@ public class PlayerEvents implements PacketListener, Listener
 			
 			sp.toCosmox().setTeam(Team.RANDOM);
 			
-			player.setMaxHealth(gm.getDifficulty().getMaxHealth());
+			player.setWalkSpeed(sp.getAssets().contains(SvAsset.MARATHON) ? 0.3F : 0.2F);
+			player.setMaxHealth(gm.getDifficulty().getMaxHealth() * (sp.getAssets().contains(SvAsset.MASTODONTE) ? 2 : 1));
 			
 			player.teleport(gm.getSpawnpoint());
 			player.setGameMode(inWave ? GameMode.SPECTATOR : GameMode.ADVENTURE);

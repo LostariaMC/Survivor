@@ -10,7 +10,6 @@ import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
@@ -84,7 +83,7 @@ public class InventoryEvents implements Listener
 			{
 				e.setCancelled(false);
 				e.getItemDrop().remove();
-				player.getAtouts().remove(asset);
+				player.getAssets().remove(asset);
 				
 				player.toBukkit().sendMessage(SurvivorGame.prefix + "§6Vous avez retiré l'atout §a" + asset.getName());
 				player.addMoney((double) asset.getPrice() / 2);

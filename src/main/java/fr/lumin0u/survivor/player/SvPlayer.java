@@ -451,8 +451,8 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						for(SvPlayer sp : GameManager.getInstance().getOnlinePlayers()) {
 							if(sp.toBukkit().isSneaking() && sp.toBukkit().getLocation().distance(deathLoc) < 5 && sp.isAlive()) {
 								savers.add(sp);
-								int difficultyV = GameManager.getInstance().getDifficulty().getNB();
-								reviveTime -= (sp.getAtouts().contains(SvAsset.QUICK_REVIVE) ? 28 : 15) - difficultyV;
+								int difficultyV = GameManager.getInstance().getDifficulty().ordinal();
+								reviveTime -= (sp.getAssets().contains(SvAsset.QUICK_REVIVE) ? 28 : 15) - difficultyV;
 							}
 						}
 						
@@ -534,7 +534,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		setMoney(this.money + money);
 	}
 	
-	public List<SvAsset> getAtouts()
+	public List<SvAsset> getAssets()
 	{
 		return this.assets;
 	}
@@ -660,7 +660,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			weapon.giveItem();
 		}
 		
-		if(this.getAtouts().contains(SvAsset.MASTODONTE))
+		if(this.getAssets().contains(SvAsset.MASTODONTE))
 		{
 			LeatherArmorMeta meta = (LeatherArmorMeta) (new ItemStack(Material.LEATHER_BOOTS)).getItemMeta();
 			meta.setUnbreakable(true);
@@ -676,7 +676,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		
 		int c = 0;
 		
-		for(SvAsset asset : this.getAtouts())
+		for(SvAsset asset : this.getAssets())
 		{
 			inv.setItem(9 + c, asset.getItem());
 			++c;
@@ -746,13 +746,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	@Override
 	public boolean hasDoubleCoup()
 	{
-		return getAtouts().contains(SvAsset.DOUBLE_COUP);
+		return getAssets().contains(SvAsset.DOUBLE_COUP);
 	}
 	
 	@Override
 	public boolean hasSpeedReload()
 	{
-		return getAtouts().contains(SvAsset.SPEED_RELOAD);
+		return getAssets().contains(SvAsset.SPEED_RELOAD);
 	}
 	
 	@Override

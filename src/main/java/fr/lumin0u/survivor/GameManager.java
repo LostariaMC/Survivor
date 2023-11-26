@@ -386,7 +386,7 @@ public class GameManager
 				MCUtils.sendTitle(sp.toBukkit(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
 			}
 			
-			sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getNB()) / 5, "Vague " + wave);
+			sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getFactor()) / 5, "Vague " + wave);
 			
 			
 			sp.addMoney(75 + 25 * this.wave);

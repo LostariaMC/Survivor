@@ -32,7 +32,7 @@ public enum ZombieType {
 	HUSK(EntityType.HUSK, 3, 1, 4, Husk.class) {
 		@Override
 		public double getSpawnChance(int wave, Difficulty difficulty) {
-			return wave * (double) difficulty.getNB() / 100 / 15 +
+			return wave * (double) difficulty.getFactor() / 100 / 15 +
 					(wave > 25 ? 1./15 : 0);
 		}
 	};

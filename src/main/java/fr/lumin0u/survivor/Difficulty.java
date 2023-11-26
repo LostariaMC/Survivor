@@ -13,24 +13,24 @@ public enum Difficulty
 	//SUPER_EASY("Très simple", 20.0D, 1.0D, ChatColor.AQUA, Material.PLAYER_HEAD, 0.5D, 1, 0.4D),
 	EASY("Simple", 16.0D, 0.5D, ChatColor.GREEN, Material.CREEPER_HEAD, 2, 1.0D),
 	NORMAL("Normal", 10.0D, 0.5D, ChatColor.YELLOW, Material.ZOMBIE_HEAD, 3, 1.15D),
-	CLASSIC("Classique", 6.0D, 0.5D, ChatColor.RED, Material.SKELETON_SKULL, 4, 1.4D),
+	CLASSIC("Classique", 6.0D, 0.3D, ChatColor.RED, Material.SKELETON_SKULL, 4.2, 1.4D),
 	HARDCORE("Hardcore", 4.0D, 0.2D, ChatColor.DARK_GRAY, Material.WITHER_SKELETON_SKULL, 5, 1.4D);
 	
 	private final double maxHealth;
 	private final double regenHpPerSecond;
 	private final ChatColor color;
 	private final Material skull;
-	private final int id;
+	private final double difficultyFactor;
 	private final double ennemyHealthModifier;
 	private final String displayName;
 	
-	private Difficulty(String displayName, double maxHealth, double regenHpPerSecond, ChatColor color, Material skull, int id, double ennemyHealthModifier)
+	private Difficulty(String displayName, double maxHealth, double regenHpPerSecond, ChatColor color, Material skull, double id, double ennemyHealthModifier)
 	{
 		this.maxHealth = maxHealth;
 		this.regenHpPerSecond = regenHpPerSecond;
 		this.color = color;
 		this.skull = skull;
-		this.id = id;
+		this.difficultyFactor = id;
 		this.ennemyHealthModifier = ennemyHealthModifier;
 		this.displayName = displayName;
 	}
@@ -60,9 +60,9 @@ public enum Difficulty
 		return this.color;
 	}
 	
-	public int getNB()
+	public double getFactor()
 	{
-		return this.id;
+		return this.difficultyFactor;
 	}
 	
 	public double getEnnemyHealthModifier()
