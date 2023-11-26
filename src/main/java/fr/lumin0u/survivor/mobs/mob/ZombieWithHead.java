@@ -9,9 +9,9 @@ public class ZombieWithHead extends Zombie
 {
 	private String skullOwner;
 	
-	public ZombieWithHead(Location spawnLoc, double maxHealth, double walkSpeed, String skullOwner)
+	public ZombieWithHead(ZombieType type, Location spawnLoc, double maxHealth, double walkSpeed, String skullOwner)
 	{
-		super(spawnLoc, maxHealth, walkSpeed);
+		super(type, spawnLoc, maxHealth, walkSpeed);
 		this.skullOwner = skullOwner;
 	}
 	

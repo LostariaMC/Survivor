@@ -10,7 +10,7 @@ public class ZombieGrappler extends Zombie
 {
 	public ZombieGrappler(Location spawnLoc, double maxHealth, double walkSpeed)
 	{
-		super(spawnLoc, maxHealth, walkSpeed);
+		super(ZombieType.GRAPPLER, spawnLoc, maxHealth, walkSpeed);
 		
 		GrapplingHook weapon = WeaponType.GRAPPLING_HOOK.giveNewWeapon(this);
 		weapon.giveItem();

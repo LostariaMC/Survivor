@@ -32,6 +32,8 @@ public interface TFSound
 	TFSound ZOMBIE_DEATH = new SimpleSound(Sound.ENTITY_ZOMBIE_DEATH, 0.5f, 0.8f, 1f, SoundCategory.PLAYERS);
 	TFSound BABY_ZOMBIE_HURT = new SimpleSound(Sound.ENTITY_ZOMBIE_HURT, 0.5f, 1.3f, 1.5f, SoundCategory.PLAYERS);
 	TFSound BABY_ZOMBIE_DEATH = new SimpleSound(Sound.ENTITY_ZOMBIE_DEATH, 0.5f, 1.3f, 1.5f, SoundCategory.PLAYERS);
+	TFSound HUSK_HURT = new SimpleSound(Sound.ENTITY_HUSK_HURT, 0.5f, 0.8f, 1f, SoundCategory.PLAYERS);
+	TFSound HUSK_DEATH = new SimpleSound(Sound.ENTITY_HUSK_DEATH, 0.5f, 0.8f, 1f, SoundCategory.PLAYERS);
 	
 	public void playTo(WrappedPlayer player);
 	public void play(Location location);

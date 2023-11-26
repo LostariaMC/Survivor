@@ -2,6 +2,7 @@ package fr.lumin0u.survivor.mobs.mob.boss;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.mobs.mob.ZombieType;
 import fr.lumin0u.survivor.mobs.mob.ZombieWithHead;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.weapons.Weapon;
@@ -20,7 +21,7 @@ public abstract class Boss extends ZombieWithHead
 	
 	public Boss(Location spawnLoc, double maxHealth, double walkSpeed, String skullOwner)
 	{
-		super(spawnLoc, maxHealth, walkSpeed, skullOwner);
+		super(ZombieType.NORMAL, spawnLoc, maxHealth, walkSpeed, skullOwner);
 		
 		(new BukkitRunnable()
 		{

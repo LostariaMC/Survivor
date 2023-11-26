@@ -37,7 +37,7 @@ public class SpawnMobCommand extends AbstractGameCommand
 		
 		if(args[0].equalsIgnoreCase("zombieshooter"))
 		{
-			new ZombieShooter(p.getLocation(), h, 0.15F);
+			new ZombieHunter(p.getLocation(), h, 0.15F);
 		}
 		
 		if(args[0].equalsIgnoreCase("zombiegrappler"))

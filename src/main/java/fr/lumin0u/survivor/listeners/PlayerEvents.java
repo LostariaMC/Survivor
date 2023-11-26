@@ -252,11 +252,13 @@ public class PlayerEvents implements PacketListener, Listener
 					if(e.isApplicable(mod))
 						e.setDamage(mod, 0);
 				
-				e.setDamage(DamageModifier.BASE, damager.getType().equals(EntityType.ZOMBIE) ? 2.0D : 1.0D);
-				
 				damagerMob = GameManager.getInstance().getMob(damager);
 				
-				if(damager instanceof Zombie && damagerMob instanceof PoisonousBoss) {
+				if(damagerMob != null) {
+					e.setDamage(DamageModifier.BASE, damagerMob.getDamage());
+				}
+				
+				if(damagerMob instanceof PoisonousBoss) {
 					player.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 0));
 				}
 			}

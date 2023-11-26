@@ -10,6 +10,7 @@ import net.minecraft.world.entity.ai.goal.PathfinderGoalLookAtPlayer;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalMeleeAttack;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalSelector;
 import net.minecraft.world.entity.monster.EntityZombie;
+import net.minecraft.world.entity.monster.EntityZombieHusk;
 import net.minecraft.world.entity.player.EntityHuman;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -24,6 +25,7 @@ import java.util.Collections;
 
 public class Zombie extends Enemy
 {
+	private final ZombieType zombieType;
 	private Group group;
 	private int ticksStuck;
 	private int stuckBlockX;
@@ -31,14 +33,19 @@ public class Zombie extends Enemy
 	protected ZombieWeaponAI ai;
 	private boolean hasHead = true;
 	
-	public Zombie(Location spawnLoc, double maxHealth, double walkSpeed)
-	{
-		this(spawnLoc, maxHealth, walkSpeed, TFSound.ZOMBIE_HURT, TFSound.ZOMBIE_DEATH);
+	public Zombie(Location spawnLoc, double maxHealth, double walkSpeed) {
+		this(ZombieType.NORMAL, spawnLoc, maxHealth, walkSpeed, TFSound.ZOMBIE_HURT, TFSound.ZOMBIE_DEATH);
 	}
 	
-	public Zombie(Location spawnLoc, double maxHealth, double walkSpeed, TFSound hurtSound, TFSound deathSound)
+	protected Zombie(ZombieType type, Location spawnLoc, double maxHealth, double walkSpeed)
 	{
-		super(EntityType.ZOMBIE, spawnLoc, maxHealth, walkSpeed, hurtSound, deathSound);
+		this(type, spawnLoc, maxHealth, walkSpeed, TFSound.ZOMBIE_HURT, TFSound.ZOMBIE_DEATH);
+	}
+	
+	protected Zombie(ZombieType type, Location spawnLoc, double maxHealth, double walkSpeed, TFSound hurtSound, TFSound deathSound)
+	{
+		super(type.getEntityType(), spawnLoc, maxHealth, walkSpeed, hurtSound, deathSound, type.getDamage());
+		zombieType = type;
 	}
 	
 	public Group getGroup()
@@ -113,7 +120,7 @@ public class Zombie extends Enemy
 	@Override
 	public AABB getHeadHitbox()
 	{
-		return new AABB(this.ent.getLocation().clone().add(-0.4D, 1.6D, -0.4D), this.ent.getLocation().clone().add(0.4D, 2.1D, 0.4D));
+		return new AABB(this.ent.getLocation().clone().add(-0.4D, 1.6D, -0.4D), this.ent.getLocation().clone().add(0.4D, 2.0D, 0.4D));
 	}
 	
 	public static EntityType getEntityType()

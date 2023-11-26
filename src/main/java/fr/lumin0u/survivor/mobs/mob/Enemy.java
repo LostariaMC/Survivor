@@ -52,8 +52,9 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	protected final TFSound hurtSound;
 	protected final TFSound deathSound;
 	protected Weapon weapon;
+	protected double damage;
 	
-	public Enemy(EntityType type, final Location spawnLoc, final double maxHealth, double walkSpeed, TFSound hurtSound, TFSound deathSound)
+	public Enemy(EntityType type, final Location spawnLoc, final double maxHealth, double walkSpeed, TFSound hurtSound, TFSound deathSound, double damage)
 	{
 		this.entType = type;
 		this.health = maxHealth;
@@ -65,6 +66,7 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 		this.gm.getMobs().add(this);
 		walkSpeed = Math.min(/*0.2D + (walkSpeed - 1.0D) / 20.0D*/walkSpeed, 0.4D);
 		this.walkSpeed = walkSpeed;
+		this.damage = damage;
 //		new BukkitRunnable()
 //		{
 //			public void run()
@@ -459,5 +461,9 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	@Override
 	public Weapon getWeaponInHand() {
 		return weapon;
+	}
+	
+	public double getDamage() {
+		return damage;
 	}
 }

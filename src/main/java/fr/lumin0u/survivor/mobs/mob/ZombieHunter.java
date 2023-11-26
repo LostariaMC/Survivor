@@ -8,11 +8,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class ZombieShooter extends Zombie
+public class ZombieHunter extends Zombie
 {
-	public ZombieShooter(Location spawnLoc, double maxHealth, double walkSpeed)
+	public ZombieHunter(Location spawnLoc, double maxHealth, double walkSpeed)
 	{
-		super(spawnLoc, maxHealth, walkSpeed);
+		super(ZombieType.HUNTER, spawnLoc, maxHealth, walkSpeed);
 		
 		ZombieHuntingGun weapon = WeaponType.HUNTING_GUN.giveNewWeapon(this);
 		weapon.giveItem();
@@ -25,13 +25,13 @@ public class ZombieShooter extends Zombie
 			@Override
 			public void run()
 			{
-				org.bukkit.entity.Zombie zomb = (org.bukkit.entity.Zombie) ZombieShooter.this.ent;
-				if(ZombieShooter.this.dead)
+				org.bukkit.entity.Zombie zomb = (org.bukkit.entity.Zombie) ZombieHunter.this.ent;
+				if(ZombieHunter.this.dead)
 				{
 					this.cancel();
 				}
 				
-				if(!zomb.isDead() && ZombieShooter.this.target != null)
+				if(!zomb.isDead() && ZombieHunter.this.target != null)
 				{
 					ai.run();
 				}

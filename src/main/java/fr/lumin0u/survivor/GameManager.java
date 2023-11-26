@@ -527,19 +527,17 @@ public class GameManager
 				
 				for(int i = mod > j ? -1 : 0; i < ennemies / spawns.size(); ++i) {
 					double myHealth = health + Math.random() * 6 - 3;
-					Zombie m;
-					if((new Random()).nextInt(20) == 1 && this.wave > 3) {
-						m = new BabyZombie(spawn, myHealth / 2.0D, walkSpeed * 1.2D);
+					
+					ZombieType type = ZombieType.NORMAL;
+					
+					for(ZombieType aType : List.of(ZombieType.BABY, ZombieType.GRAPPLER, ZombieType.HUNTER, ZombieType.HUSK)) {
+						if(Math.random() < aType.getSpawnChance(wave, difficulty)) {
+							type = aType;
+							break;
+						}
 					}
-					else if((new Random()).nextInt(15) == 1 && this.wave > 2) {
-						m = new ZombieShooter(spawn, myHealth / 2.0D, walkSpeed);
-					}
-					else if((new Random()).nextInt(15) == 1 && this.wave > 4) {
-						m = new ZombieGrappler(spawn, myHealth, walkSpeed);
-					}
-					else {
-						m = new Zombie(spawn, myHealth, walkSpeed);
-					}
+					
+					Zombie m = type.createNew(spawn, myHealth, walkSpeed);
 					
 					zombies.add(m);
 					m.setReward(10 + this.wave);

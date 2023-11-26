@@ -6,7 +6,7 @@ import org.bukkit.Location;
 
 public class BabyZombie extends Zombie {
     public BabyZombie(Location spawnLoc, double maxHealth, double walkSpeed) {
-        super(spawnLoc, maxHealth, walkSpeed, TFSound.BABY_ZOMBIE_HURT, TFSound.BABY_ZOMBIE_DEATH);
+        super(ZombieType.BABY, spawnLoc, maxHealth, walkSpeed, TFSound.BABY_ZOMBIE_HURT, TFSound.BABY_ZOMBIE_DEATH);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class Wolf extends Enemy
 {
 	public Wolf(Location spawnLoc, double maxHealth, double walkSpeed)
 	{
-		super(EntityType.WOLF, spawnLoc, maxHealth, walkSpeed, TFSound.simple(Sound.ENTITY_WOLF_HURT), TFSound.simple(Sound.ENTITY_WOLF_DEATH));
+		super(EntityType.WOLF, spawnLoc, maxHealth, walkSpeed, TFSound.simple(Sound.ENTITY_WOLF_HURT), TFSound.simple(Sound.ENTITY_WOLF_DEATH), 1.5);
 	}
 	
 	@Override
