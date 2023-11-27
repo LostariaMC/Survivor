@@ -18,4 +18,9 @@ public class Husk extends Zombie {
 	public AABB getHeadHitbox() {
 		return new AABB(this.ent.getLocation().clone().add(-0.4D, 1.6D, -0.4D), this.ent.getLocation().clone().add(0.4D, 2.1D, 0.4D));
 	}
+	
+	@Override
+	public int getReward() {
+		return super.getReward() * 3;
+	}
 }

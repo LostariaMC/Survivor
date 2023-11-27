@@ -17,7 +17,7 @@ public enum ZombieType {
 			return wave > 2 ? 1./15 : 0;
 		}
 	},
-	BABY(EntityType.ZOMBIE, 0.5, 1.2, 2, BabyZombie.class) {
+	BABY(EntityType.ZOMBIE, 0.4, 1.2, 2, BabyZombie.class) {
 		@Override
 		public double getSpawnChance(int wave, Difficulty difficulty) {
 			return wave > 3 ? 1./20 : 0;
@@ -32,7 +32,7 @@ public enum ZombieType {
 	HUSK(EntityType.HUSK, 3, 1, 4, Husk.class) {
 		@Override
 		public double getSpawnChance(int wave, Difficulty difficulty) {
-			return wave * (double) difficulty.getFactor() / 100 / 15 +
+			return wave * (double) difficulty.getFactor() / 100 / 25 +
 					(wave > 25 ? 1./15 : 0);
 		}
 	};
