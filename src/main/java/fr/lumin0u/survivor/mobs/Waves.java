@@ -62,7 +62,7 @@ public class Waves
 	
 	public static double getEnnemiesLife(int wave, Difficulty diff)
 	{
-		return 2.3D * diff.getEnnemyHealthModifier() * (double) wave;
+		return 3.3D * diff.getEnnemyHealthModifier() * (double) wave;
 	}
 	
 	private static BiFunction<Double, Double, Double> speedF =
