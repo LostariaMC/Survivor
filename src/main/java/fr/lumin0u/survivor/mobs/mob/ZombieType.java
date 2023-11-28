@@ -33,17 +33,17 @@ public enum ZombieType {
 		@Override
 		public double getSpawnChance(int wave, Difficulty difficulty) {
 			return (wave + 2 * difficulty.getFactor() - 5) / 100 / 25 +
-					(wave > 15 ? 1./15 : 0);
+					(wave >= 15 ? 1./15 : 0);
 		}
 	},
 	DROWNED(EntityType.DROWNED, 1.2, 1, 2, Drowned.class) {
 		@Override
 		public double getSpawnChance(int wave, Difficulty difficulty) {
-			return (wave + 2 * difficulty.getFactor() - 15) / 100 / 35 +
-					(wave > 25 ? 1./15 : 0);
+			return (wave + 2 * difficulty.getFactor() - 10) / 100 / 25 +
+					(wave >= 25 ? 1./15 : 0);
 		}
 	},
-	BABY_DROWNED(EntityType.DROWNED, 0.35, 1.2, 1.8, Drowned.BabyDrowned.class) {
+	BABY_DROWNED(EntityType.DROWNED, 0.75, 1.2, 1.8, Drowned.BabyDrowned.class) {
 		@Override
 		public double getSpawnChance(int wave, Difficulty difficulty) {
 			return 0;
