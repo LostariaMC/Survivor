@@ -1,7 +1,7 @@
 package fr.lumin0u.survivor.weapons;
 
-import fr.lumin0u.survivor.mobs.mob.GrapplingHook;
-import fr.lumin0u.survivor.mobs.mob.ZombieHuntingGun;
+import fr.lumin0u.survivor.weapons.guns.GrapplingHook;
+import fr.lumin0u.survivor.weapons.guns.ZombieHuntingGun;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.NMSUtils;
 import fr.lumin0u.survivor.weapons.guns.*;

@@ -2,6 +2,7 @@ package fr.lumin0u.survivor.mobs.mob;
 
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.weapons.WeaponType;
+import fr.lumin0u.survivor.weapons.guns.GrapplingHook;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;

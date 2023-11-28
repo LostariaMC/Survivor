@@ -110,6 +110,13 @@ public enum Bonus
 		{
 			case NUKE -> {
 				final List<Enemy> damagee = new ArrayList<>(gm.getMobs());
+				
+				double reward = damagee.stream().mapToDouble(Enemy::getReward).sum() / 2;
+				reward /= gm.getOnlinePlayers().size();
+				for(SvPlayer sp : gm.getOnlinePlayers()) {
+					sp.addMoney(reward);
+				}
+				
 				new BukkitRunnable()
 				{
 					int distance = 2;
@@ -117,14 +124,15 @@ public enum Bonus
 					@Override
 					public void run()
 					{
-						if(damagee.isEmpty())
+						if(damagee.isEmpty() || distance > 100)
 						{
 							this.cancel();
+							new ArrayList<>(damagee).forEach(enemy -> enemy.kill(null));
 						}
 						
 						for(Enemy enemy : new ArrayList<>(damagee))
 						{
-							if(!(enemy.getEntity().getLocation().distance(picker.toBukkit().getLocation()) > (double) this.distance))
+							if(!(enemy.getEntity().getLocation().distanceSquared(picker.toBukkit().getLocation()) > distance*distance))
 							{
 								if(!(enemy instanceof Boss))
 								{
@@ -142,12 +150,6 @@ public enum Bonus
 						this.distance += 2;
 					}
 				}.runTaskTimer(Survivor.getInstance(), 0L, 1L);
-				
-				double reward = damagee.stream().mapToDouble(Enemy::getReward).sum() / 2;
-				reward /= gm.getOnlinePlayers().size();
-				for(SvPlayer sp : gm.getOnlinePlayers()) {
-					sp.addMoney(reward);
-				}
 			}
 			case INSTANT_KILL -> {
 				for(SvPlayer sp : gm.getOnlinePlayers())

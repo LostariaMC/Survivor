@@ -42,7 +42,11 @@ public interface TFSound
 	public TFSound withVolume(float volume);
 	
 	public static SimpleSound simple(Sound sound) {
-		return new SimpleSound(sound, 1f, 1f, SoundCategory.MASTER);
+		return simple(sound, 1f);
+	}
+	
+	public static SimpleSound simple(Sound sound, float pitch) {
+		return new SimpleSound(sound, 1f, pitch, SoundCategory.MASTER);
 	}
 	
 	public static class SimpleSound implements TFSound

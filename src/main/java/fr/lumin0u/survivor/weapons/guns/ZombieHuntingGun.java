@@ -1,4 +1,4 @@
-package fr.lumin0u.survivor.mobs.mob;
+package fr.lumin0u.survivor.weapons.guns;
 
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;

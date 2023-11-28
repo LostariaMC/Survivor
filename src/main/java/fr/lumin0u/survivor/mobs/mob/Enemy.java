@@ -289,7 +289,6 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 		{
 			Bonus.values()[(new Random()).nextInt(Bonus.values().length)].spawn(this.ent.getLocation());
 		}
-		
 	}
 	
 	public int getReward()
