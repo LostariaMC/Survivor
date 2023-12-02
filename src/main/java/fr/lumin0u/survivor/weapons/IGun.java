@@ -44,20 +44,20 @@ public interface IGun extends IWeapon
 		{
 			int i = 0;
 			int lastStop = 0;
-			double m = 0.0D;
-			double j = 0.0D;
+			double m = 0;
+			double j = 0;
 			Random ra = new Random();
 			
 			@Override
 			public void run()
 			{
-				for(; (double) this.i < Math.min((double) ray.getPoints().size(), 50.0D + (double) this.lastStop); ++this.i)
+				for(; (double) this.i < Math.min((double) ray.getPoints().size(), 50 + (double) this.lastStop); ++this.i)
 				{
 					Location point = (Location) ray.getPoints().get(this.i);
-					this.m += this.ra.nextBoolean() ? 0.012D : -0.012D;
-					this.j += this.ra.nextBoolean() ? this.ra.nextDouble() * 2.4D : -(this.ra.nextDouble() * 2.4D);
+					this.m += this.ra.nextBoolean() ? 0.012 : -0.012;
+					this.j += this.ra.nextBoolean() ? this.ra.nextDouble() * 2.4 : -(this.ra.nextDouble() * 2.4);
 					this.m = Math.abs(this.m);
-					Vector x1 = (new Vector(-ray.getIncrease().normalize().getZ(), 0.0D, ray.getIncrease().normalize().getX())).normalize();
+					Vector x1 = (new Vector(-ray.getIncrease().normalize().getZ(), 0, ray.getIncrease().normalize().getX())).normalize();
 					Vector x2 = ray.getIncrease().normalize().crossProduct(x1).normalize();
 					Location effectLoc = point.clone().add(x1.clone().multiply(this.m * Math.sin(this.j / ray.getLength() * Math.PI * 2.0D))).add(x2.clone().multiply(this.m * Math.cos(this.j / ray.getLength() * Math.PI * 2.0D)));
 					if(ray.getPoints().indexOf(point) >= 2)
@@ -78,9 +78,7 @@ public interface IGun extends IWeapon
 									color = Color.fromRGB(red, green, 75);
 								}
 								else if(critBullet) {
-									int red = ra.nextInt(255 - 150) + 200;
-									int green = ra.nextInt(red - 150) + 100;
-									color = Color.fromRGB(red, green, 75);
+									color = Color.fromRGB(200, 100, 75);
 								}
 								else if(explosiveBullet) {
 									color = Color.fromRGB(25, 25, 25);
