@@ -29,7 +29,7 @@ public class RailGun extends Gun implements Upgradeable, IRailGun
 	@Override
 	public int getAmmoBoxRecovery()
 	{
-		return 2 * clipSize;
+		return 2 * getClipSize();
 	}
 	
 	@Override

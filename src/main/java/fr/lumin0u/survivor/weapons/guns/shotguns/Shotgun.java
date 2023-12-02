@@ -37,7 +37,7 @@ public abstract class Shotgun extends Gun
 	@Override
 	public int getAmmoBoxRecovery()
 	{
-		return Math.max(2 * clipSize, 4);
+		return Math.max(2 * getClipSize(), 4);
 	}
 	
 	@Override

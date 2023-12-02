@@ -14,6 +14,6 @@ public class MPLLF extends Gun
 	@Override
 	public int getAmmoBoxRecovery()
 	{
-		return 2 * clipSize;
+		return 2 * getClipSize();
 	}
 }
