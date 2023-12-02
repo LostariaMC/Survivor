@@ -676,10 +676,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		
 		int c = 0;
 		
-		for(SvAsset asset : this.getAssets())
+		ItemStack noAssetItem = new ItemBuilder(Material.BARRIER).setDisplayName("§cAchetez un atout").build();
+		for(int i = 0; i < 4; i++) {
+			inv.setItem(9 + i, noAssetItem);
+		}
+		for(SvAsset asset : getAssets())
 		{
-			inv.setItem(9 + c, asset.getItem());
-			++c;
+			inv.setItem(9 + (c++), asset.getItem());
 		}
 		
 		if(GameManager.getInstance().getWave() < 10) {
