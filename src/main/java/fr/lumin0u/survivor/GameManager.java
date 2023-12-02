@@ -374,7 +374,7 @@ public class GameManager
 		bossBar.onChangeState();
 		Surviboard.updateWave();
 		
-		double nbPlayerMoleculeFactor = 1 - 1.0 / (1 + Math.pow(getOnlinePlayers().size(), 2));
+		double nbPlayerMoleculeFactor = 1 - 1.0 / (1.5 + Math.pow(getOnlinePlayers().size(), 2));
 		for(SvPlayer sp : getOnlinePlayers()) {
 			if(wave >= 9 && sp.toBukkit().getInventory().contains(Material.CARROT))
 				sp.toBukkit().getInventory().remove(Material.CARROT);
@@ -387,7 +387,7 @@ public class GameManager
 				MCUtils.sendTitle(sp.toBukkit(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
 			}
 			
-			sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getFactor()) / 5 * nbPlayerMoleculeFactor, "Vague " + wave);
+			sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getFactor()) / 4 * nbPlayerMoleculeFactor, "Vague " + wave);
 			
 			sp.addMoney(75 + 25 * this.wave);
 			sp.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, waveDelay, 5));
