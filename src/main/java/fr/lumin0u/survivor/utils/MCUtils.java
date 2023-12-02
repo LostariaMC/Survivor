@@ -244,7 +244,7 @@ public class MCUtils
 			if(mo.getFeets().distance(l) <= radius)
 			{
 				double damage = (1 - Utils.square(mo.getFeets().distance(l) / radius)) * centerDamage;
-				double m = Math.min(1, Math.max(0, 1 - TransparentUtils.solidBetween(l, mo.getFeets()) / 4));
+				double m = 1;//Math.min(1, Math.max(0, 1 - TransparentUtils.solidBetween(l, mo.getFeets()) / 4));
 				mo.damage(damage * m, damager, weapon, false, explosionVector(mo.getFeets(), l, radius).multiply(m * kb));
 			}
 		}
