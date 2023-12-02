@@ -409,6 +409,10 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 					LainBodies.wakeUp(SvPlayer.this.uid);
 				}
 				
+				private void revive() {
+				
+				}
+				
 				boolean hardlyDead = false;
 				
 				@Override

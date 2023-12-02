@@ -118,15 +118,19 @@ public interface IGun extends IWeapon
 				}
 				else
 				{
-					if(ray.getEnd() != null && ray.getPoints().size() > 3)
-					{
-						for(int i = 0; i < 20; ++i)
-						{
-							ray.getPoints().get(0).getWorld().spawnParticle(Particle.BLOCK_CRACK, ray.getPoints().get(ray.getPoints().size() - 4), 0, ray.getEnd().getBlockData());
+					Location lastPoint = ray.getPoints().size() > 3 ? ray.getPoints().get(ray.getPoints().size() - 4) : ray.getStart();
+					
+					if(ray.getEnd() != null) {
+						for(int i = 0; i < 20; ++i) {
+							lastPoint.getWorld().spawnParticle(Particle.BLOCK_CRACK, lastPoint, 0, ray.getEnd().getBlockData());
 						}
 					}
 					
+					if(explosiveBullet) {
+						MCUtils.explosion(shooter, weapon, dmg * 2, lastPoint, 2, 0, shooter.getTargetType());
+					}
 					this.cancel();
+					return;
 				}
 			}
 		}.runTaskTimer(Survivor.getInstance(), 0, 1);
