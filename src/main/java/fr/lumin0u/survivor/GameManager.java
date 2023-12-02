@@ -530,7 +530,7 @@ public class GameManager
 					
 					ZombieType type = ZombieType.NORMAL;
 					
-					for(ZombieType aType : List.of(ZombieType.BABY, ZombieType.GRAPPLER, ZombieType.HUNTER, ZombieType.HUSK, ZombieType.DROWNED)) {
+					for(ZombieType aType : List.of(ZombieType.BABY, ZombieType.GRAPPLER, ZombieType.HUNTER, ZombieType.HUSK, ZombieType.DROWNED, ZombieType.ZOMBIE_PIGMAN)) {
 						if(Math.random() < aType.getSpawnChance(wave, difficulty)) {
 							type = aType;
 							break;

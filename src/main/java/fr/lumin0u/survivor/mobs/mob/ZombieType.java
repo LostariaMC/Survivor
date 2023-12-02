@@ -48,6 +48,13 @@ public enum ZombieType {
 		public double getSpawnChance(int wave, Difficulty difficulty) {
 			return 0;
 		}
+	},
+	ZOMBIE_PIGMAN(EntityType.ZOMBIFIED_PIGLIN, 1.2, 1.05, 5, ZombiePigman.class) {
+		@Override
+		public double getSpawnChance(int wave, Difficulty difficulty) {
+			return (wave + 3 * difficulty.getFactor() - 30) / 100 / 7 +
+					(wave >= 35 ? 1./15 : 0);
+		}
 	};
 	
 	private final EntityType entityType;
