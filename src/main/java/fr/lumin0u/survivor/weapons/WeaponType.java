@@ -1,7 +1,5 @@
 package fr.lumin0u.survivor.weapons;
 
-import fr.lumin0u.survivor.weapons.guns.GrapplingHook;
-import fr.lumin0u.survivor.weapons.guns.ZombieHuntingGun;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.NMSUtils;
 import fr.lumin0u.survivor.weapons.guns.*;
@@ -46,7 +44,7 @@ public enum WeaponType
 	DOUBLE_BARREL(DoubleBarrel.class, RepeatingType.SEMIAUTOMATIC, "Double Barrel", Material.DIAMOND_SHOVEL, 60, 2, 70/*, new McSound("guns.doublebarrel", 80)*/, 1, true, -1, 30, Arrays.asList("dmg", "range", "accuracy", "shots"), Arrays.asList(5.8D, 20.0D, 1.1D, 7)),
 	DRAGUNOV(Dragunov.class, RepeatingType.SEMIAUTOMATIC, "Dragunov", Material.GOLD_INGOT, 100, 1, 68/*, new McSound("guns.sniper", 60)*/, 1, true, -1, 20, Arrays.asList("dmg", "range", "accuracy"), Arrays.asList(51.7D, 300.0D, 0.05D)),
 	MOSIN(MosinSniper.class, RepeatingType.SEMIAUTOMATIC, "Mosin", Material.GOLDEN_PICKAXE, 60, 1, 51/*, new McSound("guns.dragunov", 80)*/, 1, true, -1, 20, Arrays.asList("dmg", "range", "accuracy"), Arrays.asList(137.0D, 300.0D, 0.02D)),
-	REVOLVER(Revolver.class, RepeatingType.SEMIAUTOMATIC, "Revolver", Material.DIAMOND_PICKAXE, 120, 6, 43/*, new McSound("guns.magnum", 50)*/, 1, true, -1, 15, Arrays.asList("dmg", "range", "accuracy"), Arrays.asList(8.7D, 35.0D, 0.25D)),
+	REVOLVER(Revolver.class, RepeatingType.SEMIAUTOMATIC, "Revolver", Material.DIAMOND_PICKAXE, 120, 6, 43/*, new McSound("guns.magnum", 50)*/, 1, true, -1, 15, Arrays.asList("dmg", "range", "accuracy"), Arrays.asList(17.4D, 35.0D, 0.25D)),
 	THOMPSON(Thompson.class, RepeatingType.AUTOMATIC, "Thompson", Material.NETHERITE_PICKAXE, 400, 50, 95/*, new McSound("guns.thompson", 70)*/, 3000, true, -1, 4, Arrays.asList("dmg", "range", "accuracy"), Arrays.asList(6.2D, 50.0D, 0.5D)),
 	TOMMY_GUN(TommyGun.class, RepeatingType.BURSTS, "Tommy Gun", Material.WOODEN_SHOVEL, 275, 25, 40/*, new McSound("guns.pm63", 35)*/, 500, true, -1, 17, Arrays.asList("dmg", "range", "accuracy", "shots", "shotsDelay"), Arrays.asList(3.4D, 20.0D, 0.8D, 5, 1L)),
 	NERF(Nerf.class, RepeatingType.SEMIAUTOMATIC, "Nerf", Material.QUARTZ, 154, 11, 53/*, new McSound("guns.nerf", 15)*/, 1, true, -1, 23, Arrays.asList("dmg", "range", "accuracy"), Arrays.asList(9.7D, 100.0D, 0.2D)),

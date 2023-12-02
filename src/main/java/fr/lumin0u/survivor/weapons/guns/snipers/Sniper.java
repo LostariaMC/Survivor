@@ -1,26 +1,15 @@
 package fr.lumin0u.survivor.weapons.guns.snipers;
 
-import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.Survivor;
-import fr.lumin0u.survivor.mobs.mob.Enemy;
-import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.Ray;
+import fr.lumin0u.survivor.weapons.IGun;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.Gun;
-import org.bukkit.Color;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Particle.DustOptions;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
-
-import java.util.Random;
 
 public abstract class Sniper extends Gun
 {
@@ -66,6 +55,9 @@ public abstract class Sniper extends Gun
 	public void shoot() {
 		Ray ray = new Ray(owner.getShootLocation(), owner.getShootLocation().getDirection().multiply(0.2D), getRange(), getAccuracy());
 		
+		IGun.rawShoot(owner, this, ray, getDmg());
+		
+		/*
 		final int rSize = ray.getPoints().size();
 		new BukkitRunnable()
 		{
@@ -134,5 +126,6 @@ public abstract class Sniper extends Gun
 				}
 			}
 		}.runTaskTimer(Survivor.getInstance(), 0, 1);
+		*/
 	}
 }
