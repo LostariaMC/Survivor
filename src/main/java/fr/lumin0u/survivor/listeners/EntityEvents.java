@@ -11,9 +11,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+
+import java.util.ArrayList;
 
 public class EntityEvents implements Listener
 {
@@ -27,11 +30,12 @@ public class EntityEvents implements Listener
 		if(GameManager.getInstance() != null)
 		{
 			
-			for(Enemy m : GameManager.getInstance().getMobs())
-			{
-				if(m.getEntity().equals(e.getEntity()))
-				{
+			for(Enemy m : new ArrayList<>(GameManager.getInstance().getMobs())) {
+				if(m.getEntity().equals(e.getEntity())) {
 					e.setCancelled(true);
+				}
+				if(e.getCause() == DamageCause.VOID) {
+					m.kill(null);
 				}
 			}
 			

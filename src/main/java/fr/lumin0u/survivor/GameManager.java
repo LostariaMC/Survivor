@@ -6,7 +6,7 @@ import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.mobs.mob.Wolf;
 import fr.lumin0u.survivor.mobs.mob.Zombie;
-import fr.lumin0u.survivor.mobs.mob.*;
+import fr.lumin0u.survivor.mobs.mob.ZombieType;
 import fr.lumin0u.survivor.mobs.mob.boss.Boss;
 import fr.lumin0u.survivor.objects.Door;
 import fr.lumin0u.survivor.objects.MagicBoxManager;
@@ -626,9 +626,12 @@ public class GameManager
 						}
 						secSinceStart++;
 						
-						double treshold = (double) (secSinceStart + secNoChange - 5) / 60;//(double) ticksSinceStart / 500 * (double) Math.min(ticksNoChange - 100, 400) / 400;
+						double x = (double) secNoChange / 60;
+						double x2 = x*x;
+						double n = ennemies;
+						double treshold = (n * x2) / (n + x2);
 						
-						if(getRemainingEnnemies() < ennemies / 5 && secNoChange > 5 && treshold > 0 && getRemainingEnnemies() < treshold * treshold) {
+						if(secNoChange > 5 && getRemainingEnnemies() < treshold) {
 							for(Enemy m : new ArrayList<>(mobs)) {
 								m.kill(null);
 							}
