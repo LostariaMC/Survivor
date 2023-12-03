@@ -37,7 +37,7 @@ public enum Bonus
 	
 	public static double probability(Difficulty difficulty)
 	{
-		return 0.008D;
+		return 0.01;
 	}
 	
 	private Bonus(String name, Material mat)
