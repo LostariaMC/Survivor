@@ -2,13 +2,11 @@ package fr.lumin0u.survivor.weapons;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
-import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Ray;
 import fr.lumin0u.survivor.weapons.perks.Perk;
-import fr.lumin0u.survivor.weapons.superweapons.Turret;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -46,20 +44,20 @@ public interface IGun extends IWeapon
 		{
 			int i = 0;
 			int lastStop = 0;
-			double m = 0.0D;
-			double j = 0.0D;
+			double m = 0;
+			double j = 0;
 			Random ra = new Random();
 			
 			@Override
 			public void run()
 			{
-				for(; (double) this.i < Math.min((double) ray.getPoints().size(), 50.0D + (double) this.lastStop); ++this.i)
+				for(; (double) this.i < Math.min((double) ray.getPoints().size(), 50 + (double) this.lastStop); ++this.i)
 				{
 					Location point = (Location) ray.getPoints().get(this.i);
-					this.m += this.ra.nextBoolean() ? 0.012D : -0.012D;
-					this.j += this.ra.nextBoolean() ? this.ra.nextDouble() * 2.4D : -(this.ra.nextDouble() * 2.4D);
+					this.m += this.ra.nextBoolean() ? 0.012 : -0.012;
+					this.j += this.ra.nextBoolean() ? this.ra.nextDouble() * 2.4 : -(this.ra.nextDouble() * 2.4);
 					this.m = Math.abs(this.m);
-					Vector x1 = (new Vector(-ray.getIncrease().normalize().getZ(), 0.0D, ray.getIncrease().normalize().getX())).normalize();
+					Vector x1 = (new Vector(-ray.getIncrease().normalize().getZ(), 0, ray.getIncrease().normalize().getX())).normalize();
 					Vector x2 = ray.getIncrease().normalize().crossProduct(x1).normalize();
 					Location effectLoc = point.clone().add(x1.clone().multiply(this.m * Math.sin(this.j / ray.getLength() * Math.PI * 2.0D))).add(x2.clone().multiply(this.m * Math.cos(this.j / ray.getLength() * Math.PI * 2.0D)));
 					if(ray.getPoints().indexOf(point) >= 2)
@@ -73,24 +71,22 @@ public interface IGun extends IWeapon
 							if((double) this.ra.nextInt((int) (ray.getLength() * 5.0D)) > (double) this.i / 1.5D)
 							{
 								Color color;
-								if(fireBullet)
-								{
+								
+								if(fireBullet) {
 									int red = ra.nextInt(255 - 150) + 150;
 									int green = ra.nextInt(red - 150) + 150;
 									color = Color.fromRGB(red, green, 75);
 								}
-								else if(critBullet)
-								{
-									int red = ra.nextInt(255 - 150) + 200;
-									int green = ra.nextInt(red - 150) + 100;
-									color = Color.fromRGB(red, green, 75);
+								else if(critBullet) {
+									color = Color.fromRGB(200, 100, 75);
 								}
-								else if(explosiveBullet)
-								{
+								else if(explosiveBullet) {
 									color = Color.fromRGB(25, 25, 25);
 								}
-								else
+								else {
 									color = Color.fromRGB(75, 75, 75);
+								}
+								
 								point.getWorld().spawnParticle(Particle.REDSTONE, effectLoc, 0, new DustOptions(color, 1));
 							}
 							
@@ -98,12 +94,8 @@ public interface IGun extends IWeapon
 							{
 								if(ent.getBodyHitbox().contains(point) || ent.getHeadHitbox().contains(point))
 								{
-									if(ent instanceof Enemy) {
-										((Enemy)ent).damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D), weapon instanceof Turret ? 0.7D : 1.0D);
-									}
-									else {
-										ent.damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D));
-									}
+									ent.damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D));
+									
 									if(explosiveBullet) {
 										MCUtils.explosion(shooter, weapon, dmg * 2, point, 2, 0, shooter.getTargetType());
 									}
@@ -124,15 +116,19 @@ public interface IGun extends IWeapon
 				}
 				else
 				{
-					if(ray.getEnd() != null && ray.getPoints().size() > 3)
-					{
-						for(int i = 0; i < 20; ++i)
-						{
-							ray.getPoints().get(0).getWorld().spawnParticle(Particle.BLOCK_CRACK, ray.getPoints().get(ray.getPoints().size() - 4), 0, ray.getEnd().getBlockData());
+					Location lastPoint = ray.getPoints().size() > 3 ? ray.getPoints().get(ray.getPoints().size() - 4) : ray.getStart();
+					
+					if(ray.getEnd() != null) {
+						for(int i = 0; i < 20; ++i) {
+							lastPoint.getWorld().spawnParticle(Particle.BLOCK_CRACK, lastPoint, 0, ray.getEnd().getBlockData());
 						}
 					}
 					
+					if(explosiveBullet) {
+						MCUtils.explosion(shooter, weapon, dmg * 2, lastPoint, 2, 0, shooter.getTargetType());
+					}
 					this.cancel();
+					return;
 				}
 			}
 		}.runTaskTimer(Survivor.getInstance(), 0, 1);

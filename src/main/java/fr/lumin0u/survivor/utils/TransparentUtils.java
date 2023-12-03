@@ -192,8 +192,9 @@ public class TransparentUtils
 	
 	public static double solidBetween(Location l1, Location l2)
 	{
-		RayTraceResult collisionResult = collisionBetween(l1, l2);
-		return collisionResult == null ? 0.0D : collisionBetween(l1, l2).getHitPosition().distance(collisionBetween(l2, l1).getHitPosition());
+		RayTraceResult collisionResult1 = collisionBetween(l1, l2);
+		RayTraceResult collisionResult2 = collisionBetween(l2, l1);
+		return collisionResult1 == null || collisionResult2 == null ? 0 : collisionResult1.getHitPosition().distance(collisionResult2.getHitPosition());
 	}
 	
 	public static TransparentUtils.CollisionResult collision(AABB c, Vector l1, Vector l2)

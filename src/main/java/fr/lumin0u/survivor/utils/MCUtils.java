@@ -18,8 +18,12 @@ import net.kyori.adventure.text.TextComponent.Builder;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.Title.Times;
 import net.kyori.adventure.util.Ticks;
+import net.minecraft.network.protocol.game.ClientboundDamageEventPacket;
+import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
+import net.minecraft.network.protocol.game.PacketPlayOutUpdateHealth;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.MemorySection;
@@ -183,9 +187,25 @@ public class MCUtils
 				|| i1 != null && i2 != null && i1.getType().equals(i2.getType()) && (i1.getItemMeta() == null && i2.getItemMeta() == null || ChatColor.stripColor(i1.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(i2.getItemMeta().getDisplayName())));
 	}
 	
-	public static void damageAnimation(Entity p)
+	public static void damageAnimation(Entity entity)
 	{
-		playAnimation(p, 1, null);
+		PacketContainer packetDamageEvent = new PacketContainer(Play.Server.DAMAGE_EVENT,
+				new ClientboundDamageEventPacket(entity.getEntityId(), 0, 0, 0, Optional.empty()));
+		
+		for(WrappedPlayer watcher : WrappedPlayer.of(Bukkit.getOnlinePlayers())) {
+			watcher.sendPacket(packetDamageEvent);
+		}
+		
+		if(entity instanceof Player) {
+			WrappedPlayer player = WrappedPlayer.of(entity);
+			
+			PacketContainer packetHurtAnimation = new PacketContainer(Play.Server.HURT_ANIMATION, new ClientboundHurtAnimationPacket(player.toBukkit().getEntityId(), 0f));
+			float relativeHealth = (float) player.toBukkit().getHealth() / (float) player.toBukkit().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+			PacketContainer packetUpdateHealth = new PacketContainer(Play.Server.UPDATE_HEALTH, new PacketPlayOutUpdateHealth(relativeHealth * 20f, 20, 0f));
+			
+			player.sendPacket(packetHurtAnimation);
+			player.sendPacket(packetUpdateHealth);
+		}
 	}
 	
 	public static void armSwingAnimation(Player p, boolean hideForHim)
@@ -244,7 +264,7 @@ public class MCUtils
 			if(mo.getFeets().distance(l) <= radius)
 			{
 				double damage = (1 - Utils.square(mo.getFeets().distance(l) / radius)) * centerDamage;
-				double m = Math.min(1, Math.max(0, 1 - TransparentUtils.solidBetween(l, mo.getFeets()) / 4));
+				double m = 1;//Math.min(1, Math.max(0, 1 - TransparentUtils.solidBetween(l, mo.getFeets()) / 4));
 				mo.damage(damage * m, damager, weapon, false, explosionVector(mo.getFeets(), l, radius).multiply(m * kb));
 			}
 		}

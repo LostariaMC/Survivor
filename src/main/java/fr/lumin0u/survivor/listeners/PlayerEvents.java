@@ -494,7 +494,7 @@ public class PlayerEvents implements PacketListener, Listener
 			
 			//sp.onDisconnect();
 			
-			if(gm.getOnlinePlayers().isEmpty() && gm.isStarted()) {
+			if(gm.getOnlinePlayers().stream().filter(sp::isNot).findAny().isEmpty() && gm.isStarted()) {
 				gm.endGame();
 			}
 		}

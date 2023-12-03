@@ -29,7 +29,7 @@ public enum ZombieType {
 			return wave > 4 ? 1./15 : 0;
 		}
 	},
-	HUSK(EntityType.HUSK, 3, 1, 4, Husk.class) {
+	HUSK(EntityType.HUSK, 3, 1, 3, Husk.class) {
 		@Override
 		public double getSpawnChance(int wave, Difficulty difficulty) {
 			return (wave + 3 * difficulty.getFactor() - 10) / 100 / 3 +
@@ -43,10 +43,17 @@ public enum ZombieType {
 					(wave >= 25 ? 1./15 : 0);
 		}
 	},
-	BABY_DROWNED(EntityType.DROWNED, 0.75, 1.2, 1.8, Drowned.BabyDrowned.class) {
+	BABY_DROWNED(EntityType.DROWNED, 0.7, 1.2, 1.8, Drowned.BabyDrowned.class) {
 		@Override
 		public double getSpawnChance(int wave, Difficulty difficulty) {
 			return 0;
+		}
+	},
+	ZOMBIE_PIGMAN(EntityType.ZOMBIFIED_PIGLIN, 1.2, 1.05, 5, ZombiePigman.class) {
+		@Override
+		public double getSpawnChance(int wave, Difficulty difficulty) {
+			return (wave + 3 * difficulty.getFactor() - 30) / 100 / 7 +
+					(wave >= 35 ? 1./15 : 0);
 		}
 	};
 	

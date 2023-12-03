@@ -29,7 +29,7 @@ public class MosinSniper extends Sniper implements Upgradeable
     @Override
     public int getAmmoBoxRecovery()
     {
-        return 5;
+        return 4 + getClipSize();
     }
 	
 	@Override

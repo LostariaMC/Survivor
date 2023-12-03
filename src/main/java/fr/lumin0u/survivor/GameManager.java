@@ -6,7 +6,7 @@ import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.mobs.mob.Wolf;
 import fr.lumin0u.survivor.mobs.mob.Zombie;
-import fr.lumin0u.survivor.mobs.mob.*;
+import fr.lumin0u.survivor.mobs.mob.ZombieType;
 import fr.lumin0u.survivor.mobs.mob.boss.Boss;
 import fr.lumin0u.survivor.objects.Door;
 import fr.lumin0u.survivor.objects.MagicBoxManager;
@@ -374,6 +374,7 @@ public class GameManager
 		bossBar.onChangeState();
 		Surviboard.updateWave();
 		
+		double nbPlayerMoleculeFactor = 1 - 1.0 / (1.5 + Math.pow(getOnlinePlayers().size(), 2));
 		for(SvPlayer sp : getOnlinePlayers()) {
 			if(wave >= 9 && sp.toBukkit().getInventory().contains(Material.CARROT))
 				sp.toBukkit().getInventory().remove(Material.CARROT);
@@ -386,8 +387,7 @@ public class GameManager
 				MCUtils.sendTitle(sp.toBukkit(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
 			}
 			
-			sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getFactor()) / 5, "Vague " + wave);
-			
+			sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getFactor()) / 4 * nbPlayerMoleculeFactor, "Vague " + wave);
 			
 			sp.addMoney(75 + 25 * this.wave);
 			sp.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, waveDelay, 5));
@@ -530,7 +530,7 @@ public class GameManager
 					
 					ZombieType type = ZombieType.NORMAL;
 					
-					for(ZombieType aType : List.of(ZombieType.BABY, ZombieType.GRAPPLER, ZombieType.HUNTER, ZombieType.HUSK, ZombieType.DROWNED)) {
+					for(ZombieType aType : List.of(ZombieType.BABY, ZombieType.GRAPPLER, ZombieType.HUNTER, ZombieType.HUSK, ZombieType.DROWNED, ZombieType.ZOMBIE_PIGMAN)) {
 						if(Math.random() < aType.getSpawnChance(wave, difficulty)) {
 							type = aType;
 							break;
@@ -626,9 +626,12 @@ public class GameManager
 						}
 						secSinceStart++;
 						
-						double treshold = (double) (secSinceStart + secNoChange - 5) / 60;//(double) ticksSinceStart / 500 * (double) Math.min(ticksNoChange - 100, 400) / 400;
+						double x = (double) secNoChange / 60;
+						double x2 = x*x;
+						double n = ennemies;
+						double treshold = (n * x2) / (n + x2);
 						
-						if(getRemainingEnnemies() < ennemies / 5 && secNoChange > 5 && treshold > 0 && getRemainingEnnemies() < treshold * treshold) {
+						if(secNoChange > 5 && getRemainingEnnemies() < treshold) {
 							for(Enemy m : new ArrayList<>(mobs)) {
 								m.kill(null);
 							}

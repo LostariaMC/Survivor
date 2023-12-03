@@ -52,7 +52,8 @@ public class SurvivorGame
 				new Statistic("Parties jouées", GameVariables.GAMES_PLAYED),
 				new Statistic("Zombies tués", GameVariables.KILLS, true, true),
 				new Statistic("Chutes au sol", SvStatistics.DOWNFALLS, true, true),
-				new Statistic("Morts", GameVariables.DEATHS, true, true)
+				new Statistic("Morts", GameVariables.DEATHS, true, true),
+				new Statistic("Réanimations", SvStatistics.REANIMATIONS, true, true)
 		));
 		
 		/*statistics.addAll(Arrays.stream(WeaponType.values())
