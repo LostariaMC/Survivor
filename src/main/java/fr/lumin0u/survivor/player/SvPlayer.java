@@ -334,7 +334,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		final Location deathLoc = player.getLocation();
 		this.deathDate = Survivor.getCurrentTick();
 		
-		Location as1Location = player.getEyeLocation().add(0, 0.5, 0);
+		Location as1Location = player.getEyeLocation().add(0, 1.2, 0);
 		final ArmorStand as1 = MCUtils.oneConsistentFlyingText(as1Location, "§4JE SUIS EN TRAIN DE MOURIR");
 		final ArmorStand as2;
 		
