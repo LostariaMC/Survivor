@@ -12,6 +12,7 @@ import fr.worsewarn.cosmox.game.GameVariables;
 import fr.worsewarn.cosmox.game.teams.Team;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -98,6 +99,29 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						this.regen = 100;
 					}
 					
+					double maxHealth = bukkitPlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+					
+					if(this.regen == 0 && bukkitPlayer.getHealth() < maxHealth)
+					{
+						double lastHealth = bukkitPlayer.getHealth();
+						bukkitPlayer.setHealth(Math.min(maxHealth, bukkitPlayer.getHealth() + GameManager.getInstance().getDifficulty().regenHpPerSecond()));
+						if(Math.floor(lastHealth) < Math.floor(bukkitPlayer.getHealth())) {
+							bukkitPlayer.sendHealthUpdate();
+						}
+						
+						this.regen = 20;
+					}
+					
+					if(this.lastHealth != bukkitPlayer.getHealth()) {
+						WorldBorder worldBorder = Bukkit.createWorldBorder();
+						worldBorder.setCenter(bukkitPlayer.getLocation());
+						worldBorder.setSize(200000);
+						worldBorder.setWarningTime(15);
+						worldBorder.setWarningDistance((int) (-10000 * bukkitPlayer.getHealth() / maxHealth + 1300000));
+						
+						bukkitPlayer.setWorldBorder(worldBorder);
+					}
+					
 					if(fireTime == 1)
 					{
 						fireTime = 0;
@@ -112,26 +136,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						}
 						
 						--fireTime;
-					}
-					
-					if(this.regen == 0 && bukkitPlayer.getHealth() < bukkitPlayer.getMaxHealth())
-					{
-						double lastHealth = bukkitPlayer.getHealth();
-						bukkitPlayer.setHealth(Math.min(bukkitPlayer.getMaxHealth(), bukkitPlayer.getHealth() + GameManager.getInstance().getDifficulty().regenHpPerSecond()));
-						if(Math.floor(lastHealth) < Math.floor(bukkitPlayer.getHealth()))
-						{
-							/*PacketContainer packet = new PacketContainer(Play.Server.UPDATE_HEALTH);
-							packet.getFloat()
-									.write(0, (float) ((int) bukkitPlayer.getHealth()))
-									.write(1, 0f);
-							packet.getIntegers().write(0, (int) bukkitPlayer.getMaxHealth());
-							
-							
-							sendPacket(packet);*/
-							bukkitPlayer.sendHealthUpdate();
-						}
-						
-						this.regen = 20;
 					}
 					
 					if(isOnGround() && deathDate + ON_GROUND_TIME - Survivor.getCurrentTick() > 0)
