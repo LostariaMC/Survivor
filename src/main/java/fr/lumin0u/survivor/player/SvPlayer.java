@@ -843,6 +843,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		if(weapon != null)
 			dmg *= weapon.getDamageMultiplier(this);
 		
+		if(headshot)
+			dmg *= 1.5;
+		
 		if(isAlive())
 		{
 			Player p = toBukkit();
@@ -859,7 +862,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				if(!vanilla)
 				{
 					MCUtils.damageAnimation(p);
-					p.setHealth(p.getHealth() - dmg * (headshot ? 1.5 : 1));
+					
+					toBukkit().getWorld().playSound(toBukkit().getLocation(), Sound.ENTITY_PLAYER_HURT, 1, 1);
+					p.setHealth(p.getHealth() - dmg);
 					p.setVelocity(p.getVelocity().multiply(0.5).add(kb == null ? new Vector() : kb));
 					p.sendHealthUpdate();
 				}
