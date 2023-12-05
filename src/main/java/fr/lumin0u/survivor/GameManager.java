@@ -376,7 +376,8 @@ public class GameManager
 		
 		double nbPlayerXPFactor = 1 - 1.0 / (1.5 + Math.pow(getOnlinePlayers().size(), 2));
 		double difficultyXPFactor = Math.sqrt(difficulty.getFactor()) / 2.24; // sqrt 5
-		double molecules = difficultyXPFactor * nbPlayerXPFactor
+		double molecules = wave <= 0 ? 0 :
+				difficultyXPFactor * nbPlayerXPFactor
 				* 2.2 // scaling factor (1 min is approx 2 xp)
 				* (Math.log(wave) + 1); // a primitive of ln(x)+1 is xln(x), this is what i wanted
 		
