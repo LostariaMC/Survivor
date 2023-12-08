@@ -60,11 +60,11 @@ public interface IGun extends IWeapon
 					Vector x1 = (new Vector(-ray.getIncrease().normalize().getZ(), 0, ray.getIncrease().normalize().getX())).normalize();
 					Vector x2 = ray.getIncrease().normalize().crossProduct(x1).normalize();
 					Location effectLoc = point.clone().add(x1.clone().multiply(this.m * Math.sin(this.j / ray.getLength() * Math.PI * 2.0D))).add(x2.clone().multiply(this.m * Math.cos(this.j / ray.getLength() * Math.PI * 2.0D)));
-					if(ray.getPoints().indexOf(point) >= 2)
+					if(ray.getPoints().indexOf(point) >= 3)
 					{
-						if(ray.getPoints().indexOf(point) == 2)
+						if(ray.getPoints().indexOf(point) == 3)
 						{
-							point.getWorld().spawnParticle(Particle.FLAME, effectLoc, 0);
+							point.getWorld().spawnParticle(Particle.SMALL_FLAME, effectLoc, 0);
 						}
 						else
 						{
