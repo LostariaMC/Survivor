@@ -5,6 +5,7 @@ import fr.lumin0u.survivor.commands.SvArgCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class GetAssetItemCommand extends SvArgCommand
@@ -21,6 +22,8 @@ public class GetAssetItemCommand extends SvArgCommand
     
     @Override
     public List<String> getPossibleArgs(CommandSender executer, String[] args) {
-        return SvAsset.getNames().stream().map(str -> str.replaceAll("_", " ")).toList();
+        return Arrays.stream(SvAsset.values())
+                .map(SvAsset::getName)
+                .map(str -> str.replaceAll(" ", "_")).toList();
     }
 }
