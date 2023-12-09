@@ -4,6 +4,7 @@ import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.ItemBuilder;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Upgradeable;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.perks.Perk;
@@ -102,14 +103,14 @@ public class UpgradeBoxManager
 			if(!(weapon instanceof Upgradeable))
 			{
 				sp.toBukkit().closeInventory();
-				sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+				TFSound.CANT_AFFORD.playTo(sp);
 				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cCette arme n'est pas améliorable");
 				return;
 			}
 			if(sp.getMoney() <= ((Upgradeable) weapon).getNextLevelPrice())
 			{
 				sp.toBukkit().closeInventory();
-				sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+				TFSound.CANT_AFFORD.playTo(sp);
 				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent");
 				return;
 			}
@@ -129,14 +130,14 @@ public class UpgradeBoxManager
 			if(!weapon.acceptsPerks())
 			{
 				sp.toBukkit().closeInventory();
-				sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+				TFSound.CANT_AFFORD.playTo(sp);
 				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cCette arme ne peut pas recevoir de perk");
 				return;
 			}
 			if(sp.getMoney() <= Perk.PRICE)
 			{
 				sp.toBukkit().closeInventory();
-				sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+				TFSound.CANT_AFFORD.playTo(sp);
 				sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent");
 				return;
 			}

@@ -26,10 +26,7 @@ import fr.worsewarn.cosmox.game.events.PlayerJoinGameEvent;
 import fr.worsewarn.cosmox.game.teams.Team;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Cake;
@@ -344,7 +341,15 @@ public class PlayerEvents implements PacketListener, Listener
 							break;
 						}
 						
-						if(asset.getPrice() <= player.getMoney() && !player.getAssets().contains(asset) && player.getAssets().size() < 4)
+						if(asset.getPrice() > player.getMoney()) {
+							TFSound.CANT_AFFORD.playTo(player);
+							player.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous n'avez pas assez d'argent pour acheter ca !");
+						}
+						else if(player.getAssets().size() >= 4) {
+							TFSound.CANT_AFFORD.playTo(player);
+							player.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous ne pouvez pas acheter plus de 4 atouts !");
+						}
+						else if(!player.getAssets().contains(asset))
 						{
 							player.getAssets().add(asset);
 							
