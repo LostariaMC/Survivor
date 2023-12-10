@@ -3,18 +3,20 @@ package fr.lumin0u.survivor.weapons.superweapons;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.TransparentUtils;
+import fr.lumin0u.survivor.weapons.IPlaceable;
 import fr.lumin0u.survivor.weapons.SupplyWeapon;
 import fr.lumin0u.survivor.weapons.TurretRunnable;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.util.BlockIterator;
 
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-public class Turret extends SuperWeapon implements SupplyWeapon
+public class Turret extends SuperWeapon implements SupplyWeapon, IPlaceable
 {
 	public static final Predicate<Material> placeableOn = material -> (TransparentUtils.isFullBlock(material) || material.name().matches(".*SLAB2|.*STEP|.*STAIRS")) && !material.equals(Material.BEACON) && !material.equals(Material.CAKE);
 	
@@ -24,12 +26,12 @@ public class Turret extends SuperWeapon implements SupplyWeapon
 	
 	@Override
 	public ClickType getMainClickAction() {
-		return ClickType.RIGHT;
+		return ClickType.CREATIVE;
 	}
 	
 	@Override
 	public void rightClick() {
-		if(!(owner instanceof SvPlayer))
+		/*if(!(owner instanceof SvPlayer))
 			return;
 		
 		Iterator<Block> sight = new BlockIterator(((SvPlayer) owner).toBukkit(), 3);
@@ -45,10 +47,21 @@ public class Turret extends SuperWeapon implements SupplyWeapon
 				break;
 			}
 			last = current;
-		}
+		}*/
 	}
 	
 	@Override
 	public void leftClick() {
+	}
+	
+	@Override
+	public void place(Block block, BlockFace against) {
+		useAmmo();
+		new TurretRunnable(block, (SvPlayer) owner, this).start();
+	}
+	
+	@Override
+	public boolean canPlace(Block block, BlockFace against) {
+		return block.isEmpty() && placeableOn.test(block.getRelative(BlockFace.DOWN).getType());
 	}
 }

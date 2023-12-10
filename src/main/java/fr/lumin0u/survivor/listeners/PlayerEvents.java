@@ -18,6 +18,7 @@ import fr.lumin0u.survivor.player.LainBodies;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TFSound;
+import fr.lumin0u.survivor.weapons.IPlaceable;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.snipers.Sniper;
@@ -226,8 +227,16 @@ public class PlayerEvents implements PacketListener, Listener
 					}
 				}
 				
-				if(player.getWeaponInHand() != null) {
-					player.onRightClick();
+				Weapon weapon = player.getWeaponInHand();
+				if(weapon != null) {
+					if(weapon instanceof IPlaceable placeable
+							&& e.getAction() == Action.RIGHT_CLICK_BLOCK
+							&& placeable.canPlace(e.getClickedBlock().getRelative(e.getBlockFace()), e.getBlockFace())) {
+						placeable.place(e.getClickedBlock().getRelative(e.getBlockFace()), e.getBlockFace());
+					}
+					else {
+						player.onRightClick();
+					}
 				}
 			}
 			
