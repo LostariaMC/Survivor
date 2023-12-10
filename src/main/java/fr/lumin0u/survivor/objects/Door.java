@@ -3,8 +3,11 @@ package fr.lumin0u.survivor.objects;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import fr.lumin0u.survivor.GameManager;
+import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.TFSound;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -19,6 +22,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class Door
 {
@@ -72,9 +76,18 @@ public class Door
 		return bars;
 	}
 	
-	public void buy(SvPlayer sp)
+	public void tryBuy(SvPlayer sp)
 	{
-		room.buy(sp);
+		if(sp.isAlive()) {
+			if(sp.getMoney() >= room.getPrice()) {
+				room.buy(sp);
+			}
+			else {
+				TFSound.CANT_AFFORD.playTo(sp);
+				String message = "§cVous n'avez pas assez d'argent pour acheter cette porte (requis: " + room.getPrice() + ") !";
+				sp.toBukkit().sendMessage(SurvivorGame.prefix + message);
+			}
+		}
 	}
 	
 	public void remove()

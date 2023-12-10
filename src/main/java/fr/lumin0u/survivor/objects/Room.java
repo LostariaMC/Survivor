@@ -144,25 +144,22 @@ public class Room
 	
 	public void buy(SvPlayer sp)
 	{
-		if(sp.getMoney() >= getPrice() && sp.isAlive())
+		setBought(true);
+		sp.addMoney(-getPrice());
+		
+		for(Door d : getDoors())
 		{
-			setBought(true);
-			sp.addMoney(-getPrice());
-			
-			for(Door d : getDoors())
-			{
-				if(GameManager.getInstance().getRooms().stream()
-						.filter(Predicate.not(Room::isBought))
-						.filter(Predicate.not(this::equals))
-						.flatMap(room -> room.getDoors().stream())
-						.noneMatch(door -> door.getBarsUnsafe().equals(d.getBarsUnsafe()))) {
-					d.remove();
-				}
+			if(GameManager.getInstance().getRooms().stream()
+					.filter(Predicate.not(Room::isBought))
+					.filter(Predicate.not(this::equals))
+					.flatMap(room -> room.getDoors().stream())
+					.noneMatch(door -> door.getBarsUnsafe().equals(d.getBarsUnsafe()))) {
+				d.remove();
 			}
-			
-			GameManager.getInstance().augmentPrice();
-			Bukkit.broadcastMessage(SurvivorGame.prefix + "§5" + Bukkit.getOfflinePlayer(sp.getPlayerUid()).getName() + " §ea acheté §6" + getName());
 		}
+		
+		GameManager.getInstance().augmentPrice();
+		Bukkit.broadcastMessage(SurvivorGame.prefix + "§5" + Bukkit.getOfflinePlayer(sp.getPlayerUid()).getName() + " §ea acheté §6" + getName());
 		
 		for(Location block : getAdditionalBlocks())
 		{

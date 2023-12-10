@@ -21,6 +21,8 @@ import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.snipers.Sniper;
+import fr.lumin0u.survivor.weapons.knives.Knife;
+import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.game.events.PlayerJoinGameEvent;
 import fr.worsewarn.cosmox.game.teams.Team;
@@ -51,8 +53,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class PlayerEvents implements PacketListener, Listener
 {
@@ -146,7 +150,7 @@ public class PlayerEvents implements PacketListener, Listener
 				if(gm.isStarted()) {
 					for(Door d : gm.getDoors()) {
 						if(d.getBars().contains(e.getClickedBlock()) && !d.getRoom().isBought()) {
-							d.buy(player);
+							d.tryBuy(player);
 							return;
 						}
 					}
@@ -279,45 +283,54 @@ public class PlayerEvents implements PacketListener, Listener
 			{
 				e.setCancelled(true);
 				
-				for(WeaponType wt : WeaponType.values())
-				{
-					if(wt.getMaterial().equals(((ItemFrame) e.getRightClicked()).getItem().getType()))
-					{
-						((ItemFrame) e.getRightClicked()).setItem(wt.getItemToSell());
-						if(wt.getPrice() <= player.getMoney() && !player.getWeaponTypes().contains(wt))
-						{
-							if(player.getSimpleWeapons().size() >= (player.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2))
-							{
-								for(Weapon w : new ArrayList<>(player.getSimpleWeapons()))
-								{
-									if(e.getPlayer().getInventory().getItemInMainHand().equals(w.getItem()))
-									{
-										player.removeWeapon(w);
-										player.toBukkit().getInventory().remove(w.getType().getMaterial());
-										wt.giveNewWeapon(player).giveItem();
-										player.addMoney(-wt.getPrice());
-									}
+				Consumer<WeaponType> tryBuyWeapon = wt -> {
+					
+					((ItemFrame) e.getRightClicked()).setItem(wt.getItemToSell());
+					
+					if(!player.getWeaponTypes().contains(wt)) {
+						if(wt.getPrice() <= player.getMoney()) {
+							if(player.getSimpleWeapons().size() >= (player.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2)) {
+								Weapon replaced = player.getWeaponInHand();
+								
+								if(replaced != null && !(replaced instanceof SuperWeapon || replaced instanceof Knife)) {
+									player.removeWeapon(replaced);
+									wt.giveNewWeapon(player).giveItem();
+									player.addMoney(-wt.getPrice());
+								} else {
+									TFSound.CANT_AFFORD.playTo(player);
+									player.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous avez atteint la limite d'armes. Prenez une arme dans la main pour la remplacer.");
 								}
 							}
-							else
-							{
+							else {
 								wt.giveNewWeapon(player).giveItem();
 								player.addMoney(-wt.getPrice());
 							}
 						}
-						else if((double) wt.getPrice() / 2 <= player.getMoney() && player.getWeaponTypes().contains(wt))
-						{
-							for(Weapon w : new ArrayList<>(player.getSimpleWeapons()))
-							{
-								if(w.getType().equals(wt) && w.getAmmo() < w.getMaxAmmo())
-								{
-									w.setAmmo(w.getMaxAmmo());
-									player.addMoney((double) -wt.getPrice() / 2);
-								}
-							}
+						else {
+							TFSound.CANT_AFFORD.playTo(player);
+							player.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent pour acheter cette arme !");
 						}
 					}
-				}
+					else if((double) wt.getPrice() / 2 <= player.getMoney())
+					{
+						player.getWeapon(wt).ifPresent(weapon -> {
+							if(weapon.getAmmo() < weapon.getMaxAmmo())
+							{
+								weapon.setAmmo(weapon.getMaxAmmo());
+								player.addMoney((double) -wt.getPrice() / 2);
+							}
+						});
+					}
+					else {
+						TFSound.CANT_AFFORD.playTo(player);
+						player.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas assez d'argent pour acheter ces munitions !");
+					}
+				};
+				
+				Arrays.stream(WeaponType.values())
+						.filter(wt -> wt.getMaterial().equals(((ItemFrame) e.getRightClicked()).getItem().getType()))
+						.findFirst()
+						.ifPresent(tryBuyWeapon);
 				
 				for(SvAsset asset : SvAsset.values())
 				{
@@ -513,11 +526,13 @@ public class PlayerEvents implements PacketListener, Listener
 		{
 			e.setCancelled(true);
 			MagicBoxManager mbm = GameManager.getInstance().getMagicBoxManager();
-			ArmorStand magicBox = mbm.getMbTask().getClickableArmorStandWhenLaBoxEstOuverte();
-			if(magicBox == null)
-				magicBox = mbm.getMbTask().getClickableArmorStandWhenLaBoxEstPasOuverte();
+			ArmorStand magicBox = mbm.getMbTask().getClickableHologram();
 			
-			Optional<Door> clickedDoor = GameManager.getInstance().getRooms().stream().flatMap(room -> room.getDoors().stream()).filter(door -> !door.getRoom().isBought() && door.getClickableArmorStands().contains(e.getRightClicked())).findFirst();
+			Optional<Door> clickedDoor = GameManager.getInstance().getRooms().stream()
+					.flatMap(room -> room.getDoors().stream())
+					.filter(door -> !door.getRoom().isBought())
+					.filter(door -> door.getClickableArmorStands().contains(e.getRightClicked()))
+					.findFirst();
 			
 			if(magicBox != null && !magicBox.isDead() && magicBox.equals(e.getRightClicked()))
 			{
@@ -526,7 +541,7 @@ public class PlayerEvents implements PacketListener, Listener
 			}
 			else if(clickedDoor.isPresent())
 			{
-				clickedDoor.get().buy(SvPlayer.of(e.getPlayer()));
+				clickedDoor.get().tryBuy(SvPlayer.of(e.getPlayer()));
 			}
 			else
 			{

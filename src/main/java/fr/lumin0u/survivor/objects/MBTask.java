@@ -2,6 +2,7 @@ package fr.lumin0u.survivor.objects;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.SvAsset;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.AABB;
@@ -192,25 +193,29 @@ public class MBTask extends BukkitRunnable
 			boolean isItemGiven = false;
 			if(nounours)
 			{
-				this.clicker.addMoney(MagicBoxManager.boxPrice);
-				this.removeAll();
-				this.mbm.changeLoc();
+				clicker.addMoney(MagicBoxManager.boxPrice);
+				removeAll();
+				mbm.changeLoc();
 			}
 			else if(sp.getSimpleWeapons().size() >= (sp.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2) && !this.shownWeapon.isSuperWeaponType())
 			{
 				Weapon w = sp.getWeaponInHand();
-				if(w != null && !(w instanceof SuperWeapon) && (!(w instanceof Knife) || this.shownWeapon.isKnife()))
+				if(w != null && !(w instanceof SuperWeapon) && (!(w instanceof Knife) || shownWeapon.isKnife()))
 				{
-					sp.removeWeapon(this.shownWeapon.isKnife() ? sp.getKnife() : w);
-					sp.toBukkit().getInventory().remove(((Weapon) (this.shownWeapon.isKnife() ? sp.getKnife() : w)).getType().getMaterial());
-					this.shownWeapon.giveNewWeapon(sp).giveItem();
+					sp.removeWeapon(shownWeapon.isKnife() ? sp.getKnife() : w);
+					sp.toBukkit().getInventory().remove((shownWeapon.isKnife() ? sp.getKnife() : w).getType().getMaterial());
+					shownWeapon.giveNewWeapon(sp).giveItem();
 					isItemGiven = true;
-					this.removeAll();
+					removeAll();
+				}
+				else {
+					TFSound.CANT_AFFORD.playTo(sp);
+					sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous avez atteint la limite d'armes. Prenez une arme dans la main pour la remplacer.");
 				}
 			}
 			else
 			{
-				this.shownWeapon.giveNewWeapon(sp).giveItem();
+				shownWeapon.giveNewWeapon(sp).giveItem();
 				isItemGiven = true;
 				this.removeAll();
 			}
@@ -247,13 +252,7 @@ public class MBTask extends BukkitRunnable
 		}
 	}
 	
-	public ArmorStand getClickableArmorStandWhenLaBoxEstOuverte()
-	{
-		return this.vehicle;
-	}
-	
-	public ArmorStand getClickableArmorStandWhenLaBoxEstPasOuverte()
-	{
-		return this.magicBoxName;
+	public ArmorStand getClickableHologram() {
+		return vehicle == null ? magicBoxName : vehicle;
 	}
 }
