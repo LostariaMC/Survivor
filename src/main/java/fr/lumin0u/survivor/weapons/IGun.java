@@ -40,6 +40,8 @@ public interface IGun extends IWeapon
 		
 		double dmg = critBullet ? baseDmg * 3.5 : baseDmg;
 		
+		Iterable<? extends SvDamageable> targets = shooter.getTargetType().getDamageables(GameManager.getInstance());
+		
 		new BukkitRunnable()
 		{
 			int i = 0;
@@ -90,14 +92,17 @@ public interface IGun extends IWeapon
 								point.getWorld().spawnParticle(Particle.REDSTONE, effectLoc, 0, new DustOptions(color, 1));
 							}
 							
-							for(SvDamageable ent : shooter.getTargetType().getDamageables(GameManager.getInstance()))
+							for(SvDamageable ent : targets)
 							{
+								if(!ent.isAlive())
+									continue;
+								
 								if(ent.getBodyHitbox().contains(point) || ent.getHeadHitbox().contains(point))
 								{
 									ent.damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.05D));
 									
 									if(explosiveBullet) {
-										MCUtils.explosion(shooter, weapon, dmg * 2, point, 2, 0, shooter.getTargetType());
+										MCUtils.explosion(shooter, weapon, dmg * 2, point, 2, 0, targets);
 									}
 									if(fireBullet) {
 										ent.setFireTime(60, shooter, weapon);
@@ -125,7 +130,7 @@ public interface IGun extends IWeapon
 					}
 					
 					if(explosiveBullet) {
-						MCUtils.explosion(shooter, weapon, dmg * 2, lastPoint, 2, 0, shooter.getTargetType());
+						MCUtils.explosion(shooter, weapon, dmg * 2, lastPoint, 2, 0, targets);
 					}
 					this.cancel();
 					return;

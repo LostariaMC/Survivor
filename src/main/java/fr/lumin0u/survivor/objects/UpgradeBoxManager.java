@@ -60,6 +60,8 @@ public class UpgradeBoxManager
 				.decorate(TextDecoration.BOLD)
 				.color(TextColor.color(new Color(0xB66028).getRGB())));
 		nameDisplay.setBillboard(Display.Billboard.CENTER);
+		//nameDisplay.setSeeThrough(true);
+		nameDisplay.setDefaultBackground(false);
 		
 		machine.setType(Material.ENCHANTING_TABLE);
 	}

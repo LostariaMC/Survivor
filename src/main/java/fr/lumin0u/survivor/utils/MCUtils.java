@@ -15,6 +15,8 @@ import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TextComponent.Builder;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.Title.Times;
 import net.kyori.adventure.util.Ticks;
@@ -29,10 +31,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -255,15 +254,18 @@ public class MCUtils
 		}
 	}
 	
-	public static void explosion(WeaponOwner damager, Weapon weapon, double centerDamage, Location l, double radius, double kb, DamageTarget damageTarget)
-	{
+	public static void explosion(WeaponOwner damager, Weapon weapon, double centerDamage, Location l, double radius, double kb, DamageTarget damageTarget) {
+		explosion(damager, weapon, centerDamage, l, radius, kb, damageTarget.getDamageables(GameManager.getInstance()));
+	}
+	
+	public static void explosion(WeaponOwner damager, Weapon weapon, double centerDamage, Location l, double radius, double kb, Iterable<? extends SvDamageable> targets) {
 		GameManager gm = GameManager.getInstance();
 		
-		for(SvDamageable mo : damageTarget.getDamageables(gm))
+		for(SvDamageable mo : targets)
 		{
-			if(mo.getFeets().distance(l) <= radius)
+			if(mo.getFeets().distanceSquared(l) <= radius * radius)
 			{
-				double damage = (1 - Utils.square(mo.getFeets().distance(l) / radius)) * centerDamage;
+				double damage = (1 - mo.getFeets().distanceSquared(l) / radius / radius) * centerDamage;
 				double m = 1;//Math.min(1, Math.max(0, 1 - TransparentUtils.solidBetween(l, mo.getFeets()) / 4));
 				mo.damage(damage * m, damager, weapon, false, explosionVector(mo.getFeets(), l, radius).multiply(m * kb));
 			}
@@ -322,23 +324,25 @@ public class MCUtils
 		oneConsistentFlyingText(l, text, time, minDistance);
 	}
 	
-	public static ArmorStand oneConsistentFlyingText(Location l, String text)
+	public static TextDisplay oneConsistentFlyingText(Location l, String text)
 	{
-		ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.clone().add(0.0D, -2.125D, 0.0D), EntityType.ARMOR_STAND);
+		TextDisplay display = (TextDisplay) l.getWorld().spawnEntity(l.clone().add(0, 0.05, 0), EntityType.TEXT_DISPLAY);
+		display.setText(text);
+		display.setBillboard(Display.Billboard.CENTER);
+		//display.setSeeThrough(true);
+		display.setDefaultBackground(false);
+		display.setSeeThrough(true);
+		/*ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.clone().add(0.0D, -2.125D, 0.0D), EntityType.ARMOR_STAND);
 		as.setVisible(false);
 		as.setGravity(false);
 		as.setCustomName(text);
-		as.setCustomNameVisible(true);
-		return as;
+		as.setCustomNameVisible(true);*/
+		return display;
 	}
 	
-	public static ArmorStand oneConsistentFlyingText(Location l, String text, long time, double minDistance)
+	public static TextDisplay oneConsistentFlyingText(Location l, String text, long time, double minDistance)
 	{
-		ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.clone().add(0.0D, -2.125D, 0.0D), EntityType.ARMOR_STAND);
-		as.setVisible(false);
-		as.setGravity(false);
-		as.setCustomName(text);
-		as.setCustomNameVisible(true);
+		TextDisplay as = oneConsistentFlyingText(l, text);
 		
 		for(Player player : l.getWorld().getPlayers())
 		{

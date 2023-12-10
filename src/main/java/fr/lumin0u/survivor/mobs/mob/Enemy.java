@@ -274,7 +274,7 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 			((fr.lumin0u.survivor.mobs.mob.Zombie) this).getGroup().update();
 		}
 		
-		for(int i = 0; i < 100; ++i)
+		for(int i = 0; i < (killer == null ? 10 : 100); ++i)
 		{
 			this.ent.getWorld().spawnParticle(Particle.BLOCK_CRACK, this.getBodyHitbox().rdLoc().toLocation(this.ent.getWorld()), 0, Material.REDSTONE_BLOCK.createBlockData());
 		}
@@ -458,5 +458,10 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	
 	public double getDamage() {
 		return damage;
+	}
+	
+	@Override
+	public boolean isAlive() {
+		return !isDead();
 	}
 }

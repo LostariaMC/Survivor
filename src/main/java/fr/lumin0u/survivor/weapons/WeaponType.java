@@ -30,7 +30,7 @@ public enum WeaponType
 	BUCHER_KNIFE(BucherKnife.class, RepeatingType.NONE, "Pelle Lourde", Material.NETHERITE_SHOVEL, 30, 1, 20, 300, true, -1, 40, Map.of("dmg", 18.9D)),
 	
 	M1911(M1911.class, RepeatingType.SEMIAUTOMATIC, "M1911", Material.WOODEN_PICKAXE, 160, 10, 40/*, new McSound("guns.m1911", 30)*/, 250, false, -1, 4, Map.of("dmg", 2.3D, "range", 30.0D, "accuracy", 0.3D)),
-	FAMAS(Famas.class, RepeatingType.BURSTS, "Famas", Material.GOLDEN_AXE, 420, 30, 86/*, new McSound("guns.famas", 80)*/, 3500, true, -1, 15, Map.of("dmg", 5.6D, "range", 60.0D, "accuracy", 0.2D, "shots", 3, "shotsDelay", 3L)),
+	FAMAS(Famas.class, RepeatingType.AUTOMATIC, "Famas", Material.GOLDEN_AXE, 420, 30, 86/*, new McSound("guns.famas", 80)*/, 3500, true, -1, 5, Map.of("dmg", 5.6D, "range", 60.0D, "accuracy", 0.2D)),
 	AK47(AK47.class, RepeatingType.AUTOMATIC, "AK47", Material.WOODEN_HOE, 480, 30, 92/*, new McSound("guns.ak47", 60)*/, 800, true, -1, 5, Map.of("dmg", 3.6D, "range", 40.0D, "accuracy", 0.5D)),
 	M16(M16.class, RepeatingType.BURSTS, "M16", Material.STONE_HOE, 480, 30, 124/*, new McSound("guns.m16a3", 40)*/, 3000, true, -1, 15, Map.of("dmg", 6.4D, "range", 25.0D, "accuracy", 0.3D, "shots", 3, "shotsDelay", 3L)),
 	SCARL(Scare.class, RepeatingType.AUTOMATIC, "SCAR-L", Material.DIAMOND_HOE, 600, 40, 52/*, new McSound("guns.scar", 60)*/, 2200, true, -1, 6, Map.of("dmg", 4.5D, "range", 30.0D, "accuracy", 0.2D)),

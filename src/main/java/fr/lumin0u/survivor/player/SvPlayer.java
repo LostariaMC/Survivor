@@ -18,7 +18,9 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -256,17 +258,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public List<Weapon> getSimpleWeapons()
 	{
-		List<Weapon> list = new ArrayList<>();
-		
-		for(Weapon w : this.weapons)
-		{
-			if(!(w instanceof SuperWeapon) && !w.equals(this.getKnife()))
-			{
-				list.add(w);
-			}
-		}
-		
-		return list;
+		return weapons.stream()
+				.filter(w -> !(w instanceof SuperWeapon || w.equals(this.getKnife())))
+				.toList();
 	}
 	
 	public void setActionBar(Weapon actionBar)
@@ -335,8 +329,8 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		this.deathDate = Survivor.getCurrentTick();
 		
 		Location as1Location = player.getEyeLocation().add(0, 1.2, 0);
-		final ArmorStand as1 = MCUtils.oneConsistentFlyingText(as1Location, "§4JE SUIS EN TRAIN DE MOURIR");
-		final ArmorStand as2;
+		final Entity as1 = MCUtils.oneConsistentFlyingText(as1Location, "§4JE SUIS EN TRAIN DE MOURIR");
+		final Entity as2;
 		
 		if(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == 1 && Calendar.getInstance().get(Calendar.MONTH) == Calendar.APRIL)
 		{
@@ -347,7 +341,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			as2 = MCUtils.oneConsistentFlyingText(as1Location.clone().add(0, -0.3, 0), "§aSAUVE MOI EN SNEAKANT");
 		}
 		
-		final ArmorStand as3 = MCUtils.oneConsistentFlyingText(as1Location.clone().add(0, -0.6, 0), "§4· · · · · ·");
+		final TextDisplay as3 = MCUtils.oneConsistentFlyingText(as1Location.clone().add(0, -0.6, 0), "§4· · · · · ·");
 		player.setVelocity(new Vector(0, 0, 0));
 		LainBodies.lie(player);
 		
@@ -494,17 +488,17 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							}
 							
 							if(reviveTime == 1000.0D)
-								as3.setCustomName("§4· · · · · ·");
+								as3.setText("§4· · · · · ·");
 							else if(reviveTime > 800.0D)
-								as3.setCustomName("§c■ · · · · ·");
+								as3.setText("§c■ · · · · ·");
 							else if(reviveTime > 600.0D)
-								as3.setCustomName("§6■ ■ · · · ·");
+								as3.setText("§6■ ■ · · · ·");
 							else if(reviveTime > 400.0D)
-								as3.setCustomName("§e■ ■ ■ · · ·");
+								as3.setText("§e■ ■ ■ · · ·");
 							else if(reviveTime > 200.0D)
-								as3.setCustomName("§a■ ■ ■ ■ · ·");
+								as3.setText("§a■ ■ ■ ■ · ·");
 							else if(reviveTime > 0.0D)
-								as3.setCustomName("§2■ ■ ■ ■ ■ ·");
+								as3.setText("§2■ ■ ■ ■ ■ ·");
 							else if(reviveTime <= 0.0D)
 							{
 								Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + getName() + "§a a été réanimé !");
