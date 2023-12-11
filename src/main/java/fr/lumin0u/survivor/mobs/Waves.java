@@ -87,7 +87,7 @@ public class Waves
 		
 		for(int x = -10; x < 10; ++x)
 		{
-			for(int y = -3; y < 3; ++y)
+			for(int y = -2; y < 2; ++y)
 			{
 				for(int z = -10; z < 10; ++z)
 				{
