@@ -2,6 +2,7 @@ package fr.lumin0u.survivor.weapons.knives;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
@@ -33,7 +34,7 @@ public abstract class Knife extends Weapon
 	
 	@Override
 	public ClickType getMainClickAction() {
-		return ClickType.LEFT;
+		return ClickType.UNKNOWN;
 	}
 	
 	@Override
@@ -44,14 +45,8 @@ public abstract class Knife extends Weapon
 	@Override
 	public void leftClick()
 	{
-		if(Survivor.getCurrentTick() - this.lastLClick > this.rpm)
+		/*if(Survivor.getCurrentTick() - this.lastLClick > this.rpm)
 		{
-			if(owner instanceof SvPlayer)
-			{
-				TFSound.MELEE_MISS.playTo((SvPlayer) owner);
-				showCooldown(rpm);
-			}
-			this.lastLClick = Survivor.getCurrentTick();
 			
 			Ray r = new Ray(owner.getShootLocation(), owner.getShootLocation().getDirection().multiply(0.5D), 3.0D, 0.0D);
 			
@@ -67,7 +62,18 @@ public abstract class Knife extends Weapon
 				}
 			}
 		}
-		
+		*/
+	}
+	
+	public void onHit(SvDamageable mob) {
+		if(owner instanceof SvPlayer && Survivor.getCurrentTick() - this.lastLClick > this.rpm)
+		{
+			TFSound.MELEE_MISS.playTo((SvPlayer) owner);
+			showCooldown(rpm);
+			mob.damage(dmg, owner, this, false, ((SvPlayer) owner).toBukkit().getLocation().getDirection().multiply(0.1));
+			
+			lastLClick = Survivor.getCurrentTick();
+		}
 	}
 	
 	public double dmgPerTick()

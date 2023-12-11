@@ -15,6 +15,7 @@ import fr.lumin0u.survivor.objects.Door;
 import fr.lumin0u.survivor.objects.MagicBoxManager;
 import fr.lumin0u.survivor.objects.Room;
 import fr.lumin0u.survivor.player.LainBodies;
+import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TFSound;
@@ -454,6 +455,14 @@ public class PlayerEvents implements PacketListener, Listener
 		else if(e.getEntity() instanceof ItemFrame)
 		{
 			e.setCancelled(true);
+		}
+		
+		SvDamageable mob = GameManager.getInstance().getMob(e.getEntity());
+		if(e.getDamager() instanceof Player && mob != null) {
+			SvPlayer player = SvPlayer.of(e.getDamager());
+			if(player.getWeaponInHand() instanceof Knife) {
+				((Knife) player.getWeaponInHand()).onHit(mob);
+			}
 		}
 	}
 	
