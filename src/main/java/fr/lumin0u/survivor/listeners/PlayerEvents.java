@@ -26,10 +26,7 @@ import fr.worsewarn.cosmox.game.events.PlayerJoinGameEvent;
 import fr.worsewarn.cosmox.game.teams.Team;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Cake;
@@ -291,15 +288,16 @@ public class PlayerEvents implements PacketListener, Listener
 						{
 							if(player.getSimpleWeapons().size() >= (player.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2))
 							{
-								for(Weapon w : new ArrayList<>(player.getSimpleWeapons()))
-								{
-									if(e.getPlayer().getInventory().getItemInMainHand().equals(w.getItem()))
-									{
-										player.removeWeapon(w);
-										player.toBukkit().getInventory().remove(w.getType().getMaterial());
-										wt.giveNewWeapon(player).giveItem();
-										player.addMoney(-wt.getPrice());
-									}
+								Weapon w = player.getWeaponInHand();
+								if(w != null && player.getSimpleWeapons().contains(w)) {
+									player.removeWeapon(w);
+									player.toBukkit().getInventory().remove(w.getType().getMaterial());
+									wt.giveNewWeapon(player).giveItem();
+									player.addMoney(-wt.getPrice());
+								}
+								else {
+									player.sendMessage(SurvivorGame.prefix + "§cVous avez atteint la limite d'armes, prenez-en une en main pour l'échanger.");
+									player.toBukkit().playSound(player.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
 								}
 							}
 							else

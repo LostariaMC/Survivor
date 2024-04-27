@@ -2,6 +2,7 @@ package fr.lumin0u.survivor.objects;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.SvAsset;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.AABB;
@@ -10,10 +11,7 @@ import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.knives.Knife;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -195,13 +193,17 @@ public class MBTask extends BukkitRunnable
 			else if(sp.getSimpleWeapons().size() >= (sp.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2) && !this.shownWeapon.isSuperWeaponType())
 			{
 				Weapon w = sp.getWeaponInHand();
-				if(w != null && !(w instanceof SuperWeapon) && (!(w instanceof Knife) || this.shownWeapon.isKnife()))
-				{
-					sp.removeWeapon(this.shownWeapon.isKnife() ? sp.getKnife() : w);
-					sp.toBukkit().getInventory().remove(((Weapon) (this.shownWeapon.isKnife() ? sp.getKnife() : w)).getType().getMaterial());
-					this.shownWeapon.giveNewWeapon(sp).giveItem();
+				if(this.shownWeapon.isKnife() || (w != null && !(w instanceof SuperWeapon) && !(w instanceof Knife))) {
+					Weapon removedWeapon = this.shownWeapon.isKnife() ? sp.getKnife() : w;
+					sp.removeWeapon(removedWeapon);
+					sp.toBukkit().getInventory().remove(removedWeapon.getType().getMaterial());
+					shownWeapon.giveNewWeapon(sp).giveItem();
 					isItemGiven = true;
 					this.removeAll();
+				}
+				else {
+					sp.sendMessage(SurvivorGame.prefix + "§cVous avez atteint la limite d'armes, prenez-en une en main pour l'échanger.");
+					sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
 				}
 			}
 			else
