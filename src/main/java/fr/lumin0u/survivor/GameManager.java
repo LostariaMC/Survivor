@@ -374,7 +374,13 @@ public class GameManager
 		bossBar.onChangeState();
 		Surviboard.updateWave();
 		
-		double nbPlayerMoleculeFactor = 1 - 1.0 / (1.5 + Math.pow(getOnlinePlayers().size(), 2));
+		double nbPlayerXPFactor = 1 - 1.0 / (1.5 + Math.pow(getOnlinePlayers().size() + 0.5, 2));
+		double difficultyXPFactor = Math.sqrt(difficulty.getFactor()) / 2.24; // sqrt 5
+		double molecules = wave <= 0 ? 0 :
+				difficultyXPFactor * nbPlayerXPFactor
+				* 1.4 // scaling factor (1 min is approx 2 xp)
+				* (Math.log(wave) + 1); // a primitive of ln(x)+1 is xln(x), this is what i wanted
+		
 		for(SvPlayer sp : getOnlinePlayers()) {
 			if(wave >= 9 && sp.toBukkit().getInventory().contains(Material.CARROT))
 				sp.toBukkit().getInventory().remove(Material.CARROT);
@@ -387,7 +393,7 @@ public class GameManager
 				MCUtils.sendTitle(sp.toBukkit(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
 			}
 			
-			sp.toCosmox().addMolecules(this.wave * Math.sqrt(difficulty.getFactor()) / 4 * nbPlayerMoleculeFactor, "Vague " + wave);
+			sp.toCosmox().addMolecules(molecules, "Vague " + wave);
 			
 			sp.addMoney(75 + 25 * this.wave);
 			sp.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, waveDelay, 5));

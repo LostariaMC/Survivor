@@ -318,8 +318,8 @@ public abstract class Weapon implements IWeapon
 			rightClick();
 		else if(clickType == ClickType.LEFT)
 			leftClick();
-		else
-			throw new UnsupportedOperationException("Can't handle this click !");
+		/*else
+			throw new UnsupportedOperationException("Can't handle this click !");*/
 	}
 	
 	public abstract ClickType getMainClickAction();

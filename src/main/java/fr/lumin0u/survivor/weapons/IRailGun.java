@@ -39,6 +39,8 @@ public interface IRailGun extends IGun
 		double ballSpeed = 600.0D;
 		final Random ra = new Random();
 		
+		Iterable<? extends SvDamageable> targets = shooter.getTargetType().getDamageables(GameManager.getInstance());
+		
 		new BukkitRunnable()
 		{
 			int i = 0;
@@ -66,17 +68,20 @@ public interface IRailGun extends IGun
 							point.getWorld().spawnParticle(Particle.REDSTONE, effectLoc, 0, new DustOptions(getRailColor(), 1));
 						}
 						
-						for(SvDamageable ent : shooter.getTargetType().getDamageables(GameManager.getInstance()))
+						for(SvDamageable ent : targets)
 						{
+							if(!ent.isAlive())
+								continue;
+							
 							if(ent.getBodyHitbox().contains(point) || ent.getHeadHitbox().contains(point))
 							{
-								if(!this.hit.contains(ent))
+								if(!hit.contains(ent))
 								{
 									ent.damage(dmg, shooter, weapon, false, ray.getIncrease().normalize().multiply(0.05D));
-									this.hit.add(ent);
+									hit.add(ent);
 									
 									if(explosiveBullet) {
-										MCUtils.explosion(shooter, weapon, dmg * 2, point, 2, 0, shooter.getTargetType());
+										MCUtils.explosion(shooter, weapon, dmg * 2, point, 2, 0, targets);
 									}
 									if(fireBullet) {
 										ent.setFireTime(60, shooter, weapon);

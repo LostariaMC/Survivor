@@ -66,7 +66,7 @@ public class Waves
 	}
 	
 	private static BiFunction<Double, Double, Double> speedF =
-		(w, d) -> 0.06 * w / (20 - d + w);
+		(w, d) -> 0.1 * w / (20 - d + w);
 	
 	public static double getEnnemiesSpeed(int wave, Difficulty diff)
 	{
@@ -87,7 +87,7 @@ public class Waves
 		
 		for(int x = -10; x < 10; ++x)
 		{
-			for(int y = -3; y < 3; ++y)
+			for(int y = -2; y < 2; ++y)
 			{
 				for(int z = -10; z < 10; ++z)
 				{

@@ -78,7 +78,7 @@ public class InventoryEvents implements Listener
 				}.runTaskLater(Survivor.getInstance(), 1L);
 			}
 			
-			SvAsset asset = SvAsset.byMat(item.getType());
+			SvAsset asset = SvAsset.byMaterial(item.getType());
 			if(asset != null)
 			{
 				e.setCancelled(false);

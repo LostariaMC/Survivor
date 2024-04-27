@@ -7,11 +7,15 @@ import fr.lumin0u.survivor.SvAsset;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.knives.Knife;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -179,6 +183,9 @@ public class MBTask extends BukkitRunnable
 				for(Player player : b.getWorld().getPlayers())
 					player.playNote(b.getLocation(), (byte) 1, (byte) 1);
 			}
+			else {
+				TFSound.CANT_AFFORD.playTo(sp);
+			}
 		}
 		else if(this.superCounter > 10L && this.clicker.equals(sp) && sp.isAlive())
 		{
@@ -186,29 +193,29 @@ public class MBTask extends BukkitRunnable
 			boolean isItemGiven = false;
 			if(nounours)
 			{
-				this.clicker.addMoney(MagicBoxManager.boxPrice);
-				this.removeAll();
-				this.mbm.changeLoc();
+				clicker.addMoney(MagicBoxManager.boxPrice);
+				removeAll();
+				mbm.changeLoc();
 			}
 			else if(sp.getSimpleWeapons().size() >= (sp.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2) && !this.shownWeapon.isSuperWeaponType())
 			{
 				Weapon w = sp.getWeaponInHand();
-				if(this.shownWeapon.isKnife() || (w != null && !(w instanceof SuperWeapon) && !(w instanceof Knife))) {
-					Weapon removedWeapon = this.shownWeapon.isKnife() ? sp.getKnife() : w;
-					sp.removeWeapon(removedWeapon);
-					sp.toBukkit().getInventory().remove(removedWeapon.getType().getMaterial());
+				if(w != null && !(w instanceof SuperWeapon) && (!(w instanceof Knife) || shownWeapon.isKnife()))
+				{
+					sp.removeWeapon(shownWeapon.isKnife() ? sp.getKnife() : w);
+					sp.toBukkit().getInventory().remove((shownWeapon.isKnife() ? sp.getKnife() : w).getType().getMaterial());
 					shownWeapon.giveNewWeapon(sp).giveItem();
 					isItemGiven = true;
-					this.removeAll();
+					removeAll();
 				}
 				else {
-					sp.sendMessage(SurvivorGame.prefix + "§cVous avez atteint la limite d'armes, prenez-en une en main pour l'échanger.");
-					sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+					TFSound.CANT_AFFORD.playTo(sp);
+					sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous avez atteint la limite d'armes. Prenez une arme dans la main pour la remplacer.");
 				}
 			}
 			else
 			{
-				this.shownWeapon.giveNewWeapon(sp).giveItem();
+				shownWeapon.giveNewWeapon(sp).giveItem();
 				isItemGiven = true;
 				this.removeAll();
 			}
@@ -245,13 +252,7 @@ public class MBTask extends BukkitRunnable
 		}
 	}
 	
-	public ArmorStand getClickableArmorStandWhenLaBoxEstOuverte()
-	{
-		return this.vehicle;
-	}
-	
-	public ArmorStand getClickableArmorStandWhenLaBoxEstPasOuverte()
-	{
-		return this.magicBoxName;
+	public ArmorStand getClickableHologram() {
+		return vehicle == null ? magicBoxName : vehicle;
 	}
 }

@@ -18,4 +18,6 @@ public interface SvDamageable
 	public void setFireTime(long fireTime, WeaponOwner fireMan, Weapon weapon);
 	
 	public void setFrozenTime(long frozenTime);
+	
+	public boolean isAlive();
 }

@@ -18,16 +18,18 @@ public class Drowned extends Zombie
 	
 	@Override
 	public void kill(WeaponOwner killer, double coinsMultiplier) {
+		if(killer != null) {
+			getGroup().update();
+			
+			double health = this.maxHealth * ZombieType.BABY_DROWNED.getHealthMul();
+			double speed = this.walkSpeed * ZombieType.BABY_DROWNED.getSpeedMul();
+			BabyDrowned baby1 = new BabyDrowned(getEntity().getLocation(), health, speed);
+			BabyDrowned baby2 = new BabyDrowned(getEntity().getLocation(), health, speed);
+			getGroup().getZombies().add(baby1);
+			getGroup().getZombies().add(baby2);
+		}
+		
 		super.kill(killer, coinsMultiplier);
-		
-		getGroup().update();
-		
-		double health = this.maxHealth * ZombieType.BABY_DROWNED.getHealthMul();
-		double speed = this.walkSpeed * ZombieType.BABY_DROWNED.getSpeedMul();
-		BabyDrowned baby1 = new BabyDrowned(getEntity().getLocation(), health, speed);
-		BabyDrowned baby2 = new BabyDrowned(getEntity().getLocation(), health, speed);
-		getGroup().getZombies().add(baby1);
-		getGroup().getZombies().add(baby2);
 	}
 	
 	public static class BabyDrowned extends Zombie

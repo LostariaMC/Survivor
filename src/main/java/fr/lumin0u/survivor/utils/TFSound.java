@@ -13,6 +13,8 @@ public interface TFSound
 {
 	SoundCombination SILENCE = new SoundCombination();
 	
+	TFSound CANT_AFFORD = TFSound.simple(Sound.ENTITY_VILLAGER_NO);
+	
 	TFSound PLAYER_FALL = new SimpleSound(Sound.BLOCK_ANVIL_BREAK, 10000.0f, 1f, SoundCategory.PLAYERS);
 	TFSound PLAYER_DEATH = new SimpleSound(Sound.ENTITY_WITHER_HURT, 10000.0f, 0.5f, 0.6f, SoundCategory.PLAYERS);
 	TFSound MELEE_MISS = new SimpleSound(Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 0.7f, SoundCategory.PLAYERS);

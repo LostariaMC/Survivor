@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public interface WeaponOwner extends SvDamageable
@@ -22,7 +23,16 @@ public interface WeaponOwner extends SvDamageable
 	public void removeWeapon(Weapon weapon);
 	
 	public default <T extends Weapon> List<T> getWeaponsByType(Class<T> clazz) {
-		return (List<T>) getWeapons().stream().filter(clazz::isInstance).collect(Collectors.toList());
+		return (List<T>) getWeapons().stream()
+				.filter(clazz::isInstance)
+				.toList();
+	}
+	
+	public default Optional<Weapon> getWeapon(WeaponType type)
+	{
+		return getWeapons().stream()
+				.filter(w -> w.getType() == type)
+				.findFirst();
 	}
 	
 	public Weapon getWeaponInHand();

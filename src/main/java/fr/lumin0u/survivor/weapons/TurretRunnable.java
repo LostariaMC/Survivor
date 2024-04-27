@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -24,8 +25,8 @@ public class TurretRunnable extends BukkitRunnable
 	private Block turret;
 	private SvPlayer owner;
 	private long time;
-	private ArmorStand infoTime;
-	private ArmorStand info;
+	private TextDisplay infoTime;
+	private TextDisplay info;
 	private boolean ready;
 	private boolean isShooting;
 	private long lifeTime;
@@ -61,28 +62,28 @@ public class TurretRunnable extends BukkitRunnable
 			time = Math.max(time, lifeTime - 500);
 		}
 		
-		if(this.time > 100L && !this.ready)
+		if(time > 100L && !this.ready)
 		{
-			this.ready = true;
-			this.infoTime = MCUtils.oneConsistentFlyingText(this.turret.getLocation().add(0.5D, 1.2D, 0.5D), "§e" + (this.lifeTime - this.time) / 20L);
+			ready = true;
+			infoTime = MCUtils.oneConsistentFlyingText(turret.getLocation().add(0.5D, 1.2D, 0.5D), "§e" + (this.lifeTime - this.time) / 20L);
 		}
 		
-		if(this.lifeTime - this.time <= 0L)
+		if(lifeTime - time <= 0L)
 		{
-			this.info.setCustomName("§c*tuuûut*");
-			this.cancel();
+			info.setText("§c*tuuûut*");
+			cancel();
 		}
 		else
 		{
-			if(this.ready)
+			if(ready)
 			{
-				this.infoTime.setCustomName("§e" + (this.lifeTime - this.time) / 20L);
+				infoTime.setText("§e" + (lifeTime - time) / 20L);
 				if(this.time % 6 == 0)
 				{
-					Location tur = this.turret.getLocation().add(0.5D, 1.0D, 0.5D);
-					if(this.target == null || this.target.isDead() || TransparentUtils.solidBetween(this.target.getBodyHitbox().midpoint().toLocation(tur.getWorld()), tur) >= 0.1D)
+					Location tur = turret.getLocation().add(0.5D, 1.0D, 0.5D);
+					if(target == null || target.isDead() || TransparentUtils.solidBetween(target.getBodyHitbox().midpoint().toLocation(tur.getWorld()), tur) >= 0.1D)
 					{
-						this.target = null;
+						target = null;
 						Iterator var2 = GameManager.getInstance().getMobs().iterator();
 						
 						label55:
@@ -106,19 +107,19 @@ public class TurretRunnable extends BukkitRunnable
 									
 									l = m.getBodyHitbox().midpoint().toLocation(tur.getWorld());
 								} while(!(l.distance(tur) < 20.0D));
-							} while(this.target != null && !(l.distance(tur) < this.target.getBodyHitbox().midpoint().distance(tur.toVector())));
+							} while(target != null && !(l.distance(tur) < target.getBodyHitbox().midpoint().distance(tur.toVector())));
 							
 							if(!TransparentUtils.anySolidBetween(l, tur))
 							{
-								this.target = m;
+								target = m;
 							}
 						}
 					}
 					
-					if(this.target != null)
+					if(target != null)
 					{
-						this.isShooting = true;
-						Ray shoot = new Ray(tur, MCUtils.vectorFrom(tur.toVector(), this.target.getBodyHitbox().midpoint()).normalize().multiply(0.2D), 40.0D, 0.7D);
+						isShooting = true;
+						Ray shoot = new Ray(tur, MCUtils.vectorFrom(tur.toVector(), target.getBodyHitbox().midpoint()).normalize().multiply(0.2D), 40.0D, 0.7D);
 						TFSound.GUN_SHOT.play(turret.getLocation());
 						IGun.rawShoot(this.owner, weapon, shoot, 1.5D + 0.3D * (double) GameManager.getInstance().getWave());
 					}
@@ -128,17 +129,15 @@ public class TurretRunnable extends BukkitRunnable
 					}
 				}
 				
-				if(this.isShooting)
-				{
-					this.info.setCustomName("§c§k!!!!!");
+				if(isShooting) {
+					info.setText("§c§k!!!!!");
 				}
-				else
-				{
-					this.info.setCustomName("§a-----");
+				else {
+					info.setText("§a-----");
 				}
 			}
 			
-			++this.time;
+			time++;
 		}
 	}
 	
@@ -146,10 +145,10 @@ public class TurretRunnable extends BukkitRunnable
 	public synchronized void cancel()
 	{
 		runningInstances.remove(this);
-		this.turret.setType(Material.AIR);
+		turret.setType(Material.AIR);
 		super.cancel();
-		this.info.remove();
-		this.infoTime.remove();
+		info.remove();
+		infoTime.remove();
 	}
 	
 	public void start()
