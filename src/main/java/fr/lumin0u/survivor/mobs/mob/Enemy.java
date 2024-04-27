@@ -4,7 +4,6 @@ import com.comphenix.protocol.utility.MinecraftReflection;
 import fr.lumin0u.survivor.DamageTarget;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
-import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.mobs.mob.boss.Boss;
 import fr.lumin0u.survivor.objects.Bonus;
 import fr.lumin0u.survivor.player.SvDamageable;
@@ -14,7 +13,6 @@ import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
-import fr.lumin0u.survivor.weapons.perks.Perk;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,13 +24,13 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Consumer;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.Consumer;
 
 public abstract class Enemy implements SvDamageable, WeaponOwner
 {

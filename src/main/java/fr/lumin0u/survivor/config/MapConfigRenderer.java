@@ -2,10 +2,7 @@ package fr.lumin0u.survivor.config;
 
 import com.comphenix.protocol.PacketType.Play.Server;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedDataValue;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
+import com.comphenix.protocol.wrappers.MinecraftKey;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -13,13 +10,9 @@ import fr.lumin0u.survivor.utils.NMSUtils;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.PacketDataSerializer;
-import net.minecraft.network.protocol.game.PacketPlayOutCustomPayload;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
 import net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity;
-import net.minecraft.resources.MinecraftKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.decoration.EntityArmorStand;
 import net.minecraft.world.entity.monster.EntityZombie;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -96,7 +89,9 @@ public class MapConfigRenderer
 		});
 		zombies.clear();
 		
-		player.sendPacket(new PacketContainer(Server.CUSTOM_PAYLOAD, new PacketPlayOutCustomPayload(new MinecraftKey("debug/game_test_clear"), new PacketDataSerializer(Unpooled.buffer()))));
+		PacketContainer custom = new PacketContainer(Server.CUSTOM_PAYLOAD);
+		custom.getMinecraftKeys().write(0, new MinecraftKey("debug/game_test_clear"));
+		player.sendPacket(custom);
 	}
 	
 	private void showAll() {
@@ -272,12 +267,17 @@ public class MapConfigRenderer
 			writeString(packet, text);
 			packet.writeInt(highlight.time());
 			
+			PacketContainer custom = new PacketContainer(Server.CUSTOM_PAYLOAD);
+			custom.getMinecraftKeys().write(0, new MinecraftKey("debug/game_test_clear"));
 			
-			player.sendPacket(new PacketContainer(Server.CUSTOM_PAYLOAD, new PacketPlayOutCustomPayload(new MinecraftKey("debug/game_test_add_marker"), new PacketDataSerializer(packet))));
+			player.sendPacket(custom);
 		}
 		
 		public static void sendStop(WrappedPlayer player) {
-			player.sendPacket(new PacketContainer(Server.CUSTOM_PAYLOAD, new PacketPlayOutCustomPayload(new MinecraftKey("debug/game_test_clear"), new PacketDataSerializer(Unpooled.wrappedBuffer(new byte[0])))));
+			PacketContainer custom = new PacketContainer(Server.CUSTOM_PAYLOAD);
+			custom.getMinecraftKeys().write(0, new MinecraftKey("debug/game_test_clear"));
+			
+			player.sendPacket(custom);
 		}
 	}
 	
