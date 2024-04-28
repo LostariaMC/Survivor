@@ -98,7 +98,7 @@ public class MBTask extends BukkitRunnable
 					this.magicBoxName = null;
 				}
 				
-				if(this.superCounter < 10L)
+				if(this.superCounter < 9L)
 				{
 					if(this.subCounter > 0L)
 					{
@@ -140,12 +140,12 @@ public class MBTask extends BukkitRunnable
 						((ArmorStand) this.shownItem.getVehicle()).setCustomName(this.nounours ? "§6Nounours" : (this.shownWeapon.isSuperWeaponType() ? "§d" : "§9") + this.shownWeapon.getName());
 					}
 				}
-				else if(this.superCounter == 10L)
+				else if(this.superCounter == 9L)
 				{
 					this.subCounter = 0L;
 					this.superCounter = System.currentTimeMillis();
 				}
-				else if(System.currentTimeMillis() - this.superCounter > (long) (this.nounours ? 2000 : 10000))
+				else if(System.currentTimeMillis() - this.superCounter > (long) (this.nounours ? 2000 : 6000))
 				{
 					if(this.nounours)
 					{
