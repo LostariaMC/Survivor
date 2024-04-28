@@ -762,7 +762,7 @@ public class GameManager
 			}
 			
 			if(isInWave()) {
-				bossBar.setTitle("§6Ennemis restant: §c" + getRemainingEnnemies() + (getAliveBosses().size() > 0 ? " §7(" + getAliveBosses().size() + " boss" + (getAliveBosses().size() > 1 ? "es" : "") + ")" : ""));
+				bossBar.setTitle("§6Ennemis restant: §c" + getRemainingEnnemies() + (!getAliveBosses().isEmpty() ? " §7(" + getAliveBosses().size() + " boss)" : ""));
 				bossBar.setProgress(Math.min(1, (double) getRemainingEnnemies() / max));
 			}
 			else {
