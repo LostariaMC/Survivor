@@ -54,7 +54,7 @@ public class Waves
 	{
 		for(int i = nbZombies.get(diff).size(); i < wave + 5; ++i)
 		{
-			nbZombies.get(diff).add((int) ((double) wave * Math.sqrt(diff.getFactor()) * 1.3 + 1.5 + Math.random() * (double) diff.getFactor()));
+			nbZombies.get(diff).add((int) ((double) wave * Math.sqrt(diff.getFactor()) * 1.3 + 1.5 + Math.random() * (double) (diff.getFactor() * wave)));
 		}
 		
 		return nbZombies.get(diff).get(wave);

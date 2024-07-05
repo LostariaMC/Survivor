@@ -56,13 +56,12 @@ public class GameManager
 	@NotNull
 	private Difficulty difficulty = Difficulty.NOT_SET;
 	private Location electrical;
-	private final /*final*/ double priceAugmentation;
+	private final double priceAugmentation;
 	private boolean electricalBought;
 	private long nextWaveStartDate;
 	private boolean dogWave;
 	private boolean mayBeEndWave;
-	private int spawnedWolves;
-	private int totalWolves;
+	private int remainingWolves;
 	private BukkitRunnable wolfRunnable;
 	private final List<SvPlayer> voteSkippers = new ArrayList<>();
 	private final GameBossBar bossBar;
@@ -286,7 +285,7 @@ public class GameManager
 	}
 	
 	public int getRemainingEnnemies() {
-		return dogWave ? totalWolves - spawnedWolves + mobs.size() : mobs.size();
+		return remainingWolves + mobs.size();
 	}
 	
 	public boolean isDogWave() {
@@ -473,8 +472,10 @@ public class GameManager
 		
 		boolean dogWave = Waves.isDogWave(this.wave);
 		this.dogWave = dogWave;
+		
 		int nbZombies = (int) (Waves.getNbEnnemies(this.wave, this.difficulty) * Math.sqrt(getOnlinePlayers().size()));
-		int ennemies = dogWave ? (int) Math.pow(nbZombies, 0.7) : nbZombies;
+		if(dogWave)
+			nbZombies /= 2;
 		
 		List<Location> spawns = new ArrayList<>();
 		
@@ -499,65 +500,70 @@ public class GameManager
 		
 		inWave = true;
 		this.mayBeEndWave = false;
-		spawnedWolves = 0;
+		remainingWolves = 0;
 		
 		double health = Waves.getEnnemiesLife(wave, difficulty) * Math.sqrt(getOnlinePlayers().size());
 		
-		if(!dogWave) {
-			if(spawns.isEmpty()) {
-				Bukkit.broadcastMessage("§cVeuillez définir des points d'apparition pour les zombies");
-				return;
-			}
+		if(spawns.isEmpty()) {
+			Bukkit.broadcastMessage("§cVeuillez définir des points d'apparition pour les zombies");
+			return;
+		}
+		
+		if(wave % 10 == 0) {
+			double bossHealth = this.wave * 60 - 20;
+			double bossWalkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
 			
-			if(wave % 10 == 0) {
-				double bossHealth = this.wave * 60 - 20;
-				double bossWalkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
+			for(int i = 0; i < getOnlinePlayers().size() / 3 + 1; i++) {
+				Location bossSpawn = spawns.get((new Random()).nextInt(spawns.size()));
 				
-				for(int i = 0; i < getOnlinePlayers().size() / 3 + 1; i++) {
-					Location bossSpawn = spawns.get((new Random()).nextInt(spawns.size()));
-					
-					Boss boss = Boss.createRandom(bossSpawn, bossHealth, bossWalkSpeed * 1.1D);
-					boss.setReward(this.wave * this.wave * 10);
-				}
-			}
-			
-			int mod = ennemies % spawns.size();
-			int spawnsSize = spawns.size();
-			
-			ennemyHealth = health;
-			double walkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
-			
-			for(int j = 0; j < spawnsSize; ++j) {
-				Location spawn = spawns.get(j);
-				List<Zombie> zombies = new ArrayList<>();
-				
-				for(int i = mod > j ? -1 : 0; i < ennemies / spawns.size(); ++i) {
-					double myHealth = Math.max(0, health + Math.random() * 6 - 3);
-					
-					ZombieType type = ZombieType.NORMAL;
-					
-					for(ZombieType aType : List.of(ZombieType.BABY, ZombieType.GRAPPLER, ZombieType.HUNTER, ZombieType.HUSK, ZombieType.DROWNED, ZombieType.ZOMBIE_PIGMAN)) {
-						if(Math.random() < aType.getSpawnChance(wave, difficulty)) {
-							type = aType;
-							break;
-						}
-					}
-					
-					Zombie m = type.createNew(spawn, myHealth, walkSpeed);
-					
-					zombies.add(m);
-					m.setReward(10 + this.wave);
-				}
-				
-				this.mayBeEndWave = true;
-				if(!zombies.isEmpty()) {
-					Group group = new Group(zombies);
-					zombies.forEach(zombie -> zombie.setGroup(group));
-				}
+				Boss boss = Boss.createRandom(bossSpawn, bossHealth, bossWalkSpeed * 1.1D);
+				boss.setReward(this.wave * this.wave * 10);
 			}
 		}
-		else {
-			this.totalWolves = ennemies;
+		
+		int mod = nbZombies % spawns.size();
+		int spawnsSize = spawns.size();
+		
+		ennemyHealth = health;
+		double walkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
+		
+		for(int j = 0; j < spawnsSize; ++j) {
+			Location spawn = spawns.get(j);
+			List<Zombie> zombies = new ArrayList<>();
+			
+			int nbToSpawnHere = nbZombies / spawns.size() + (mod > j ? 1 : 0);
+			for(int i = 0; i < nbToSpawnHere; i++) {
+				double myHealth = Math.max(0, health + Math.random() * 6 - 3);
+				
+				ZombieType type = ZombieType.NORMAL;
+				
+				for(ZombieType aType : List.of(ZombieType.BABY, ZombieType.GRAPPLER, ZombieType.HUNTER, ZombieType.HUSK, ZombieType.DROWNED, ZombieType.ZOMBIE_PIGMAN)) {
+					if(Math.random() < aType.getSpawnChance(wave, difficulty)) {
+						type = aType;
+						break;
+					}
+				}
+				
+				Zombie m = type.createNew(spawn, myHealth, walkSpeed);
+				
+				zombies.add(m);
+				m.setReward(10 + this.wave);
+			}
+			
+			this.mayBeEndWave = true;
+			if(!zombies.isEmpty()) {
+				Group group = new Group(zombies);
+				zombies.forEach(zombie -> zombie.setGroup(group));
+			}
+		}
+		
+		int nbWolves = dogWave ? (int) Math.pow(2 * nbZombies, 0.7) : 0;
+		
+		if(dogWave) {
+			
+			Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.ENTITY_WOLF_HOWL, 1, 1));
+			
+			this.remainingWolves = nbWolves;
 			
 			ennemyHealth = health;
 			wolfRunnable = new BukkitRunnable()
@@ -576,7 +582,7 @@ public class GameManager
 						float walkSpeed = (float) Waves.getEnnemiesSpeed(wave, difficulty);
 						world.strikeLightningEffect(nextLoc);
 						
-						int spawnCount = Math.min(new Random().nextInt((int) Math.sqrt(wave)) + 1, totalWolves - spawnedWolves);
+						int spawnCount = Math.min(new Random().nextInt((int) Math.sqrt(wave)) + 1, remainingWolves);
 						
 						for(int i = 0; i < spawnCount; i++) {
 							Wolf wo = new Wolf(this.nextLoc, myHealth * 0.4D, walkSpeed * 2.0F);
@@ -585,11 +591,11 @@ public class GameManager
 						
 						this.nextLoc = null;
 						
-						spawnedWolves += spawnCount;
+						remainingWolves -= spawnCount;
 						
 						this.time = (new Random()).nextInt(130) + 40;
 						
-						if(spawnedWolves >= totalWolves) {
+						if(remainingWolves <= 0) {
 							mayBeEndWave = true;
 							this.cancel();
 							return;
@@ -611,9 +617,11 @@ public class GameManager
 		}
 		
 		if(wave % 10 != 0) {
+			final int totalEnnemies = nbZombies + nbWolves;
+			
 			new BukkitRunnable()
 			{
-				int lastCount = ennemies;
+				int lastCount = totalEnnemies;
 				int secNoChange = 0;
 				int secSinceStart = 0;
 				
@@ -632,9 +640,10 @@ public class GameManager
 						}
 						secSinceStart++;
 						
+						// calculs savant
 						double x = (double) secNoChange / 60;
 						double x2 = x*x;
-						double n = ennemies;
+						double n = totalEnnemies;
 						double treshold = (n * x2) / (n + x2);
 						
 						if(secNoChange > 5 && getRemainingEnnemies() < treshold) {
