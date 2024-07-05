@@ -2,7 +2,6 @@ package fr.lumin0u.survivor.weapons.superweapons;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
-import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.weapons.SupplyWeapon;
@@ -36,7 +35,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 			
 			Vector vector = MCUtils.explosionVector(loc.clone().add(Math.sin(angle) * 0.5D, 0.3D, Math.cos(angle) * 0.5D), loc, 10.0D)
 					.multiply(new Vector(1, 0.5, 1))
-					.multiply(Math.random() * 7.0D * (Math.random() * 0.6 + 0.4));
+					.multiply(Math.random() * 5.0D * (Math.random() * 0.6 + 0.4));
 			
 			int explosionDelay = new Random().nextInt(10) + 50;
 			

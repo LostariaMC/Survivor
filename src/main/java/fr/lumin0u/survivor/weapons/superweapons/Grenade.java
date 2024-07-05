@@ -1,7 +1,6 @@
 package fr.lumin0u.survivor.weapons.superweapons;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.weapons.SupplyWeapon;
@@ -20,6 +19,6 @@ public class Grenade extends AbstractGrenade implements SupplyWeapon
 	public void explode(Location loc)
 	{
 		GameManager gm = GameManager.getInstance();
-		MCUtils.explosion(owner, this, gm.getApproxEnnemyHealth() * 1.05D, loc, 10.0D, 1.0D, owner.getTargetType());
+		MCUtils.explosion(owner, this, gm.getApproxEnnemyHealth() * 0.85D, loc, 11.0D, 5.0D, owner.getTargetType());
 	}
 }
