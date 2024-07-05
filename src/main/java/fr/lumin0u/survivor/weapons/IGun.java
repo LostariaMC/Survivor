@@ -76,7 +76,7 @@ public interface IGun extends IWeapon
 								
 								if(fireBullet) {
 									int red = ra.nextInt(255 - 150) + 150;
-									int green = ra.nextInt(red - 150) + 150;
+									int green = ra.nextInt(red - 150 + 1) + 150;
 									color = Color.fromRGB(red, green, 75);
 								}
 								else if(critBullet) {

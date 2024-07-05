@@ -2,14 +2,16 @@ package fr.lumin0u.survivor.config;
 
 import com.comphenix.protocol.PacketType.Play.Server;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.MinecraftKey;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.NMSUtils;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import net.minecraft.core.BlockPosition;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
+import net.minecraft.network.protocol.common.custom.GameTestClearMarkersDebugPayload;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
 import net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity;
 import net.minecraft.world.entity.Entity;
@@ -89,8 +91,7 @@ public class MapConfigRenderer
 		});
 		zombies.clear();
 		
-		PacketContainer custom = new PacketContainer(Server.CUSTOM_PAYLOAD);
-		custom.getMinecraftKeys().write(0, new MinecraftKey("debug/game_test_clear"));
+		PacketContainer custom = new PacketContainer(Server.CUSTOM_PAYLOAD, new ClientboundCustomPayloadPacket(new GameTestClearMarkersDebugPayload()));
 		player.sendPacket(custom);
 	}
 	
@@ -188,9 +189,6 @@ public class MapConfigRenderer
 			
 			for(Block doorBlock : door.getBarsUnsafe().stream().map(vector -> vector.toLocation(player.toBukkit().getWorld()).getBlock()).toList())
 			{
-				if(doorBlock.getLocation().add(0.5, 0.5, 0.5).toVector().distance(door.getMidLoc()) < 1.5)
-					continue;
-				
 				MCDebugUtil.sendBlockHighlight(player, new BlockHighlight(doorBlock, new Color(0, 255, 0, 127), "door_" + i.getAndIncrement(), 100000000));
 			}
 		});
@@ -208,7 +206,7 @@ public class MapConfigRenderer
 		int i = 0;
 		for(Block fence : config.getRooms().stream().flatMap(room -> room.getFencesUnsafe().stream()).map(vector -> vector.toLocation(player.toBukkit().getWorld()).getBlock()).toList())
 		{
-			MCDebugUtil.sendBlockHighlight(player, new BlockHighlight(fence, new Color(0, 127, 0, 127), "fence_" + i++, 100000000));
+			MCDebugUtil.sendBlockHighlight(player, new BlockHighlight(fence, new Color(220, 108, 46, 127), "fence_" + i++, 100000000));
 		}
 	}
 	
@@ -260,22 +258,14 @@ public class MapConfigRenderer
 		}
 		
 		public static void sendBlockHighlight(WrappedPlayer player, BlockHighlight highlight) {
-			ByteBuf packet = Unpooled.buffer();
-			packet.writeLong((((long) highlight.x() & 0x3FFFFFF) << 38) | (((long) highlight.z() & 0x3FFFFFF) << 12) | (((long) highlight.y() & 0xFFF)));
-			packet.writeInt(highlight.color());
-			String text = highlight.text();
-			writeString(packet, text);
-			packet.writeInt(highlight.time());
-			
-			PacketContainer custom = new PacketContainer(Server.CUSTOM_PAYLOAD);
-			custom.getMinecraftKeys().write(0, new MinecraftKey("debug/game_test_clear"));
+			PacketContainer custom = new PacketContainer(Server.CUSTOM_PAYLOAD, new ClientboundCustomPayloadPacket(new GameTestAddMarkerDebugPayload(
+					new BlockPosition(highlight.x(), highlight.y(), highlight.z()), highlight.color(), highlight.text(), highlight.time())));
 			
 			player.sendPacket(custom);
 		}
 		
 		public static void sendStop(WrappedPlayer player) {
-			PacketContainer custom = new PacketContainer(Server.CUSTOM_PAYLOAD);
-			custom.getMinecraftKeys().write(0, new MinecraftKey("debug/game_test_clear"));
+			PacketContainer custom = new PacketContainer(Server.CUSTOM_PAYLOAD, new ClientboundCustomPayloadPacket(new GameTestClearMarkersDebugPayload()));
 			
 			player.sendPacket(custom);
 		}

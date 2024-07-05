@@ -153,7 +153,7 @@ public class Room
 					.filter(Predicate.not(Room::isBought))
 					.filter(Predicate.not(this::equals))
 					.flatMap(room -> room.getDoors().stream())
-					.noneMatch(door -> door.getBarsUnsafe().equals(d.getBarsUnsafe()))) {
+					.noneMatch(door -> door.getBarsUnsafe().stream().anyMatch(d.getBarsUnsafe()::contains))) {
 				d.remove();
 			}
 		}
@@ -232,10 +232,6 @@ public class Room
 		for(Door door : this.doors)
 		{
 			door.showNameAndPrice();
-			if(!this.bought)
-			{
-				door.place();
-			}
 		}
 	}
 	

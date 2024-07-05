@@ -185,9 +185,10 @@ public class Utils
 				return p -> Optional.ofNullable(p.obj);
 			}
 			
+			private final Set<Characteristics> characteristics = Set.of(Characteristics.CONCURRENT, Characteristics.UNORDERED);
 			@Override
 			public Set<Characteristics> characteristics() {
-				return Set.of(Characteristics.CONCURRENT, Characteristics.UNORDERED);
+				return characteristics;
 			}
 		};
 	}

@@ -70,15 +70,11 @@ public class Survivor extends JavaPlugin
 	{
 		/*
 		* TODO
-		*
-		* spec join
-		* upgradebox hologram ?
-	 	* grenade frag
-		* *reload/bizarre
-		*
-		* lainbodies
-		*
-		* molecules
+		* vagues loup
+		* boss autres mobs
+		* ramasseur au fond du ravin ?
+		* rendre la mort plusse drole
+		* boites de munitions achetables
 		*/
 		
 		protocolManager = ProtocolLibrary.getProtocolManager();

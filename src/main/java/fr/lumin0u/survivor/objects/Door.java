@@ -7,7 +7,6 @@ import fr.lumin0u.survivor.SurvivorGame;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TFSound;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -22,7 +21,6 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class Door
 {
@@ -115,6 +113,7 @@ public class Door
 		return MCUtils.middle(bars);
 	}
 	
+	@Deprecated
 	public void place()
 	{
 		for(Block bar : getBars())
