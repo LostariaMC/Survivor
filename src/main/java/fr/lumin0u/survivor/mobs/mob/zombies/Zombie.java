@@ -134,20 +134,6 @@ public class Zombie extends Enemy
 		
 	}
 	
-	/*public boolean hasPath()
-	{
-		EntityZombie nmsEnt = NMSUtils.getNMSEntity(ent);
-		NavigationAbstract nav = nmsEnt.D();
-		return nav.j() != null;
-	}
-	
-	public int pathLength()
-	{
-		EntityZombie nmsEnt = NMSUtils.getNMSEntity(ent);
-		NavigationAbstract nav = nmsEnt.D();
-		return nav.j() != null ? nav.j().e() : 0;
-	}*/
-	
 	@Override
 	public void navigation()
 	{
@@ -162,11 +148,6 @@ public class Zombie extends Enemy
 		}
 		else
 			ticksStuck++;
-		
-		/*if(isStuck() && group.getLeader() == this && group.anyNotStuckZombie())
-		{
-			group.update();
-		}*/
 		
 		SvPlayer target = null;
 		
@@ -193,63 +174,6 @@ public class Zombie extends Enemy
 				this.ent.setTarget(target.toBukkit());
 				return;
 			}
-			/*
-			if(this.ent.getTarget() != null)
-			{
-				this.ent.setTarget(null);
-			}
-			
-			Zombie.MyEntityZombie nmsEnt = (Zombie.MyEntityZombie) ((CraftCreature) this.ent).getHandle();
-			if(!this.group.isValid() || this.group.getLeader() == this || (this.group.getLeader().hasPath() && this.group.getLeader().pathLength() <= 10))
-			{
-				Bukkit.getScheduler().runTaskAsynchronously(Survivor.getInstance(), () ->
-				{
-					try
-					{
-						PathEntity path;
-						if(!isStuck() || this.group.getLeader().hasPath() && this.group.getLeader().pathLength() <= 10)
-						{
-							nmsEnt.getAsyncNavigation().setFollowRange(100);
-							path = nmsEnt.getAsyncNavigation().a(((CraftPlayer) this.target.getPlayer()).getHandle(), 100);
-						}
-						else
-						{
-							Location nearestFence = gm.getRooms().stream()
-									.flatMap(room -> room.getFences().stream())
-									.min((loc1, loc2) -> Double.compare(loc1.distance(ent.getLocation()), loc2.distance(ent.getLocation())))
-									.get();
-							nmsEnt.getAsyncNavigation().setFollowRange(10);
-							path = nmsEnt.getAsyncNavigation().a(new BlockPosition(nearestFence.getBlockX(), nearestFence.getBlockY(), nearestFence.getBlockZ()), 10);
-						}
-						Bukkit.getScheduler().runTask(Survivor.getInstance(), () ->
-						{
-							nmsEnt.D().a(path, 1.0D);
-						});
-					} catch(Exception ignored)
-					{
-					}
-					
-				});
-			}
-			/*else
-			{
-				targetLoc = this.group.getLeader().ent.getLocation();
-				Bukkit.getScheduler().runTaskAsynchronously(Survivor.getInstance(), () ->
-				{
-					try
-					{
-						nmsEnt.getAsyncNavigation().setFollowRange(20);
-						PathEntity path = nmsEnt.getAsyncNavigation().a(((CraftZombie) this.group.getLeader().getEntity()).getHandle(), 20);
-						Bukkit.getScheduler().runTask(Survivor.getInstance(), () ->
-						{
-							nmsEnt.D().a(path, 1.0D);
-						});
-					} catch(Exception ignored)
-					{
-					}
-					
-				});
-			}*/
 		}
 	}
 	
@@ -259,43 +183,6 @@ public class Zombie extends Enemy
 	{
 		return ticksStuck > STUCK_TRESHOLD;
 	}
-	
-	/*@Override
-	protected Zombie.MyEntityZombie createEntity(Location spawnLoc)
-	{
-		Zombie.MyEntityZombie entity = new Zombie.MyEntityZombie(((CraftWorld) spawnLoc.getWorld()).getHandle());
-		entity.e(spawnLoc.getX(), spawnLoc.getY(), spawnLoc.getZ());
-		return entity;
-	}
-	
-	public class MyEntityZombie extends EntityZombie
-	{
-		public SvNavigation asyncNavigation;
-		
-		public MyEntityZombie(World world)
-		{
-			super(world);
-			this.asyncNavigation = new SvNavigation(this, world, 100);
-			Pathfinder pathfinder = (Pathfinder) PacketUtils.getFieldValue("t", this.asyncNavigation);
-			PathfinderNormal svPathfinder = new PathfinderNormal();
-			svPathfinder.a(true);
-			PacketUtils.setField("d", svPathfinder, pathfinder);
-		}
-		
-		public SvNavigation getAsyncNavigation()
-		{
-			return this.asyncNavigation;
-		}
-		
-		@Override
-		public void g(Entity entity)
-		{
-			if(Zombie.this.group == null || !Zombie.this.group.isValid() || !Zombie.this.group.getLeader().equals(Zombie.this))
-			{
-				super.g(entity);
-			}
-		}
-	}*/
 	
 	@Override
 	public Location getShootLocation()

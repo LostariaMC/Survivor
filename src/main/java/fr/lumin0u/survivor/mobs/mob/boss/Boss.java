@@ -14,9 +14,9 @@ public interface Boss extends SvDamageable
 			case 0 ->
 					new IllusionerBoss(spawnLoc, maxHealth, walkSpeed);
 			case 1 ->
-					new PoisonousBoss(spawnLoc, maxHealth, walkSpeed);
-			case 2 ->
 					new BlazeBoss(spawnLoc, maxHealth, walkSpeed);
+			case 2 ->
+					new PoisonousBoss(spawnLoc, maxHealth, walkSpeed);
 			default ->
 					throw new RuntimeException("Incomplete switch case");
 		};

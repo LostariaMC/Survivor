@@ -27,7 +27,7 @@ public class BlazeBoss extends Enemy implements Boss
 	private EnemyWeaponAI ai;
 	
 	public BlazeBoss(Location spawnLoc, double maxHealth, double walkSpeed) {
-		super(EntityType.BLAZE, spawnLoc, maxHealth, walkSpeed * 2, TFSound.simple(Sound.ENTITY_BLAZE_HURT), TFSound.simple(Sound.ENTITY_BLAZE_DEATH), 2);
+		super(EntityType.BLAZE, spawnLoc, maxHealth, walkSpeed * 0.9, TFSound.simple(Sound.ENTITY_BLAZE_HURT), TFSound.simple(Sound.ENTITY_BLAZE_DEATH), 2);
 		
 		Weapon weapon = WeaponType.BLAZE_GUN.giveNewWeapon(this);
 		ai = new EnemyWeaponAI(weapon, true);
@@ -112,5 +112,10 @@ public class BlazeBoss extends Enemy implements Boss
 		public Color getRayColor() {
 			return Color.fromRGB(175, 150, 75);
 		}
+	}
+	
+	@Override
+	public Location getShootLocation() {
+		return super.getShootLocation().setDirection(target.getShootLocation().toVector().subtract(super.getShootLocation().toVector()));
 	}
 }

@@ -1,5 +1,6 @@
 package fr.lumin0u.survivor.mobs.mob.boss;
 
+import com.destroystokyo.paper.entity.Pathfinder.PathResult;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
@@ -80,7 +81,15 @@ public class IllusionerBoss extends Enemy implements Boss
 			
 			if(targetLoc.distance(this.ent.getLocation()) < 100.0D)
 			{
-				this.ent.setTarget(target.toBukkit());
+				if(!ent.getPathfinder().hasPath()) {
+					PathResult path = ent.getPathfinder().findPath(targetLoc);
+					
+					if(path != null && path.getPoints().size() - path.getNextPointIndex() > 5) {
+						ent.getPathfinder().moveTo(path);
+					}
+				}
+				
+				ent.setTarget(target.toBukkit());
 				return;
 			}
 		}
@@ -93,7 +102,7 @@ public class IllusionerBoss extends Enemy implements Boss
 			ent.getWorld().playSound(ent.getLocation(), Sound.ENTITY_ILLUSIONER_PREPARE_MIRROR, 1, 1);
 		}
 		if(reload <= 0) {
-			reload = new Random().nextInt(3 * 20) + 6 * 20;
+			reload = new Random().nextInt(4 * 20) + 7 * 20;
 			ent.getWorld().playSound(ent.getLocation(), Sound.ENTITY_ILLUSIONER_MIRROR_MOVE, 1, 1);
 			
 			double wave = (double) gm.getWave();
