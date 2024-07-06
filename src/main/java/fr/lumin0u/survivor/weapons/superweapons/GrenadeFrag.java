@@ -64,7 +64,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 					if(this.time > explosionDelay)
 					{
 						GameManager gm = GameManager.getInstance();
-						MCUtils.explosion(owner, GrenadeFrag.this, gm.getApproxEnnemyHealth() * 0.75D, projectile.getLocation(), 5.0D, 1.0D, owner.getTargetType());
+						MCUtils.explosion(owner, GrenadeFrag.this, gm.getApproxEnnemyHealth() * 0.75D, projectile.getLocation(), 5.0D, 2.0D, owner.getTargetType());
 						this.projectile.remove();
 						this.cancel();
 					}

@@ -19,6 +19,6 @@ public class Grenade extends AbstractGrenade implements SupplyWeapon
 	public void explode(Location loc)
 	{
 		GameManager gm = GameManager.getInstance();
-		MCUtils.explosion(owner, this, gm.getApproxEnnemyHealth() * 0.85D, loc, 11.0D, 5.0D, owner.getTargetType());
+		MCUtils.explosion(owner, this, gm.getApproxEnnemyHealth() * 0.65D, loc, 11.0D, 6.0D, owner.getTargetType());
 	}
 }
