@@ -100,9 +100,9 @@ public class IllusionerBoss extends Enemy implements Boss
 			
 			for(int i = 0; i < wave / 2; ++i)
 			{
-				if(GameManager.getInstance().getMobs().stream().filter(CloneZombie.class::isInstance).count() < 10 + GameManager.getInstance().getWave())
+				if(GameManager.getInstance().getMobs().stream().filter(SkeletonClone.class::isInstance).count() < 10 + GameManager.getInstance().getWave())
 				{
-					CloneZombie clone = new CloneZombie(getEntity().getLocation(), GameManager.getInstance().getApproxEnnemyHealth() / 3, getWalkSpeed() * 1.2);
+					SkeletonClone clone = new SkeletonClone(getEntity().getLocation(), GameManager.getInstance().getApproxEnnemyHealth() / 5, getWalkSpeed() * 1.2);
 					clone.setReward(0);
 				}
 			}

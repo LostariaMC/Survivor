@@ -1,7 +1,7 @@
 package fr.lumin0u.survivor.mobs.mob.zombies;
 
 import fr.lumin0u.survivor.Difficulty;
-import fr.lumin0u.survivor.mobs.mob.boss.CloneZombie;
+import fr.lumin0u.survivor.mobs.mob.boss.SkeletonClone;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
@@ -12,7 +12,7 @@ public enum ZombieType {
 			return 1;
 		}
 	},
-	SKELETON(EntityType.SKELETON, 1, 1, 2, CloneZombie.class) {
+	SKELETON(EntityType.SKELETON, 1, 1, 2, SkeletonClone.class) {
 		@Override
 		public double getSpawnChance(int wave, Difficulty difficulty) {
 			return 0;

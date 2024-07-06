@@ -2,7 +2,7 @@ package fr.lumin0u.survivor.mobs;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
-import fr.lumin0u.survivor.mobs.mob.boss.CloneZombie;
+import fr.lumin0u.survivor.mobs.mob.boss.SkeletonClone;
 import fr.lumin0u.survivor.mobs.mob.zombies.BabyZombie;
 import fr.lumin0u.survivor.mobs.mob.zombies.Zombie;
 
@@ -34,7 +34,7 @@ public class Group
 	}
 	
 	private final Predicate<Zombie> isNotStuck = zombie -> !zombie.isStuck();
-	private final Predicate<Zombie> isFineZombie = zombie -> !(zombie instanceof CloneZombie || zombie instanceof BabyZombie);
+	private final Predicate<Zombie> isFineZombie = zombie -> !(zombie instanceof SkeletonClone || zombie instanceof BabyZombie);
 	
 	public void chooseLeader()
 	{
@@ -56,7 +56,7 @@ public class Group
 	
 	public boolean canAddErpriexZombie()
 	{
-		return this.zombies.stream().filter(zombie -> zombie instanceof CloneZombie).count() < (long) (10 + GameManager.getInstance().getWave() / 2);
+		return this.zombies.stream().filter(zombie -> zombie instanceof SkeletonClone).count() < (long) (10 + GameManager.getInstance().getWave() / 2);
 	}
 	
 	public boolean anyNotStuckZombie()
