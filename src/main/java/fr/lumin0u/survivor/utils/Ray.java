@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Ray {
-    protected List<Location> points = new ArrayList();
+    protected List<Location> points = new ArrayList<>();
     protected boolean pointsOk;
     protected Block end;
     protected Location start;
@@ -26,15 +26,28 @@ public class Ray {
         this.pointsOk = false;
         this.calculate();
     }
+    
+    private static Vector addSpread(Vector directionNormalized, double inaccuracy) {
+        double a = directionNormalized.getX(), b = directionNormalized.getY(), c = directionNormalized.getZ();
+        Vector perpendicular;
+        if(c == 1)
+            perpendicular = new Vector(1, 0, 0);
+        else
+            perpendicular = new Vector(-b, a, 0).normalize();
+        
+        double alpha = Math.random() * 2 * Math.PI;
+        double beta = new Random().nextGaussian(0, inaccuracy);
+        
+        Vector spreaded = directionNormalized.clone().rotateAroundAxis(perpendicular, beta);
+        
+        return spreaded.rotateAroundAxis(directionNormalized, alpha);
+    }
 
     public void calculate() {
         Location point = this.start.clone();
         Vector increase = this.increase;
         double m = increase.length() / increase.clone().normalize().length();
-        Random r = new Random();
-        increase.setX(increase.getX() + (double)(r.nextBoolean() ? -1 : 1) * r.nextDouble() * this.accuracy / 50.0D);
-        increase.setY(increase.getY() + (double)(r.nextBoolean() ? -1 : 1) * r.nextDouble() * this.accuracy / 50.0D);
-        increase.setZ(increase.getZ() + (double)(r.nextBoolean() ? -1 : 1) * r.nextDouble() * this.accuracy / 50.0D);
+        increase = addSpread(increase, accuracy);
         increase.normalize().multiply(m);
         if (increase.length() > 0.0D) {
             Location wantedEndPoint = this.start.clone().add(increase.clone().normalize().multiply(this.length));

@@ -25,32 +25,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.PI;
+
 public enum WeaponType
 {
 	LITTLE_KNIFE(LittleKnife.class, RepeatingType.NONE, "Pelle", Material.IRON_SHOVEL, 100, 1, 5, 100, false, -1, 10, Map.of("dmg", 4.2D)),
 	BUCHER_KNIFE(BucherKnife.class, RepeatingType.NONE, "Pelle Lourde", Material.NETHERITE_SHOVEL, 30, 1, 20, 300, true, -1, 20, Map.of("dmg", 18.9D)),
 	
-	M1911(M1911.class, RepeatingType.SEMIAUTOMATIC, "M1911", Material.WOODEN_PICKAXE, 160, 10, 40/*, new McSound("guns.m1911", 30)*/, 250, false, -1, 4, Map.of("dmg", 2.8D, "range", 30.0D, "accuracy", 0.3D)),
-	FAMAS(Famas.class, RepeatingType.AUTOMATIC, "Famas", Material.GOLDEN_AXE, 420, 30, 86/*, new McSound("guns.famas", 80)*/, 3500, true, -1, 5, Map.of("dmg", 5.6D, "range", 60.0D, "accuracy", 0.2D)),
-	AK47(AK47.class, RepeatingType.AUTOMATIC, "AK47", Material.WOODEN_HOE, 480, 30, 92/*, new McSound("guns.ak47", 60)*/, 800, true, -1, 5, Map.of("dmg", 3.6D, "range", 40.0D, "accuracy", 0.5D)),
-	M16(M16.class, RepeatingType.BURSTS, "M16", Material.STONE_HOE, 480, 30, 124/*, new McSound("guns.m16a3", 40)*/, 3000, true, -1, 15, Map.of("dmg", 6.4D, "range", 25.0D, "accuracy", 0.3D, "shots", 3, "shotsDelay", 3L)),
-	SCARL(Scare.class, RepeatingType.AUTOMATIC, "SCAR-L", Material.DIAMOND_HOE, 600, 40, 52/*, new McSound("guns.scar", 60)*/, 2200, true, -1, 6, Map.of("dmg", 4.5D, "range", 30.0D, "accuracy", 0.2D)),
-	SKORPION(Skorpion.class, RepeatingType.AUTOMATIC, "Skorpion", Material.STICK, 320, 20, 45/*, new McSound("guns.scorpion", 50)*/, 3500, true, -1, 2, Map.of("dmg", 2.8D, "range", 20.0D, "accuracy", 0.7D)),
-	MPLLF(MPLLF.class, RepeatingType.AUTOMATIC, "MPL-LF", Material.FEATHER, 700, 20, 13/*, new McSound("guns.mpllf", 35)*/, 900, true, -1, 2, Map.of("dmg", 1.4D, "range", 25.0D, "accuracy", 1.0D)),
-	RAILGUN(RailGun.class, RepeatingType.SEMIAUTOMATIC, "Railgun", Material.IRON_PICKAXE, 120, 5, 62/*, new McSound("guns.raygun", 40)*/, 690420, true, -1, 4, Map.of("dmg", 7.6D, "range", 50.0D, "accuracy", 0.2D)),
-	MP5(MP5.class, RepeatingType.AUTOMATIC, "MP5", Material.GOLDEN_HOE, 700, 20, 26/*, new McSound("guns.mp5", 40)*/, 1, true, -1, 3, Map.of("dmg", 3.5D, "range", 25.0D, "accuracy", 0.5D)),
-	UMP45(UMP45.class, RepeatingType.AUTOMATIC, "UMP45", Material.IRON_HOE, 640, 40, 41/*, new McSound("guns.ump45", 40)*/, 1, true, -1, 2, Map.of("dmg", 2.1D, "range", 30.0D, "accuracy", 0.3D)),
-	SPAS12(SPAS12.class, RepeatingType.SEMIAUTOMATIC, "SPAS-12", Material.GOLDEN_SHOVEL, 70, 1, 53/*, new McSound("guns.spas12", 80)*/, 1400, true, -1, 30, Map.of("dmg", 5.7D, "range", 7.5D, "accuracy", 2.0D, "shots", 8)),
-	MCS(MCS.class, RepeatingType.SEMIAUTOMATIC, "MCS", Material.STONE_PICKAXE, 80, 4, 84/*, new McSound("guns.olympia", 80)*/, 3300, true, -1, 30, Map.of("dmg", 6.9D, "range", 20.0D, "accuracy", 0.8D, "shots", 5)),
-	DOUBLE_BARREL(DoubleBarrel.class, RepeatingType.SEMIAUTOMATIC, "Double Barrel", Material.DIAMOND_SHOVEL, 60, 2, 70/*, new McSound("guns.doublebarrel", 80)*/, 1, true, -1, 30, Map.of("dmg", 5.8D, "range", 20.0D, "accuracy", 1.1D, "shots", 7)),
-	DRAGUNOV(Dragunov.class, RepeatingType.SEMIAUTOMATIC, "Dragunov", Material.GOLD_INGOT, 60, 1, 68/*, new McSound("guns.sniper", 60)*/, 1, true, -1, 20, Map.of("dmg", 51.7D, "range", 300.0D, "accuracy", 0.05D)),
-	MOSIN(MosinSniper.class, RepeatingType.SEMIAUTOMATIC, "Mosin", Material.GOLDEN_PICKAXE, 60, 1, 51/*, new McSound("guns.dragunov", 80)*/, 2500, true, -1, 20, Map.of("dmg", 137.0D, "range", 300.0D, "accuracy", 0.02D)),
-	REVOLVER(Revolver.class, RepeatingType.SEMIAUTOMATIC, "Revolver", Material.DIAMOND_PICKAXE, 120, 6, 43/*, new McSound("guns.magnum", 50)*/, 1, true, -1, 15, Map.of("dmg", 17.4D, "range", 35.0D, "accuracy", 0.25D)),
-	THOMPSON(Thompson.class, RepeatingType.AUTOMATIC, "Thompson", Material.NETHERITE_PICKAXE, 400, 25, 95/*, new McSound("guns.thompson", 70)*/, 3000, true, -1, 4, Map.of("dmg", 6.2D, "range", 50.0D, "accuracy", 0.5D)),
-	TOMMY_GUN(TommyGun.class, RepeatingType.BURSTS, "Tommy Gun", Material.WOODEN_SHOVEL, 400, 25, 40/*, new McSound("guns.pm63", 35)*/, 500, true, -1, 17, Map.of("dmg", 3.4D, "range", 20.0D, "accuracy", 0.8D, "shots", 5, "shotsDelay", 1L)),
-	NERF(Nerf.class, RepeatingType.SEMIAUTOMATIC, "Nerf", Material.QUARTZ, 154, 11, 53/*, new McSound("guns.nerf", 15)*/, 1, false, -1, 23, Map.of("dmg", 9.7D, "range", 100.0D, "accuracy", 0.2D)),
+	M1911(M1911.class, RepeatingType.SEMIAUTOMATIC, "M1911", Material.WOODEN_PICKAXE, 160, 10, 40/*, new McSound("guns.m1911", 30)*/, 250, false, -1, 4, Map.of("dmg", 2.8D, "range", 30.0D, "accuracy", PI / 90)),
+	FAMAS(Famas.class, RepeatingType.AUTOMATIC, "Famas", Material.GOLDEN_AXE, 420, 30, 86/*, new McSound("guns.famas", 80)*/, 3500, true, -1, 5, Map.of("dmg", 5.6D, "range", 60.0D, "accuracy", PI / 120)),
+	AK47(AK47.class, RepeatingType.AUTOMATIC, "AK47", Material.WOODEN_HOE, 480, 30, 92/*, new McSound("guns.ak47", 60)*/, 800, true, -1, 5, Map.of("dmg", 3.6D, "range", 40.0D, "accuracy", PI / 75)),
+	M16(M16.class, RepeatingType.BURSTS, "M16", Material.STONE_HOE, 480, 30, 124/*, new McSound("guns.m16a3", 40)*/, 3000, true, -1, 15, Map.of("dmg", 6.4D, "range", 25.0D, "accuracy", PI / 90, "shots", 3, "shotsDelay", 3L)),
+	SCARL(Scare.class, RepeatingType.AUTOMATIC, "SCAR-L", Material.DIAMOND_HOE, 600, 40, 52/*, new McSound("guns.scar", 60)*/, 2200, true, -1, 6, Map.of("dmg", 4.5D, "range", 30.0D, "accuracy", PI / 120)),
+	SKORPION(Skorpion.class, RepeatingType.AUTOMATIC, "Skorpion", Material.STICK, 320, 20, 45/*, new McSound("guns.scorpion", 50)*/, 3500, true, -1, 2, Map.of("dmg", 2.8D, "range", 20.0D, "accuracy", PI / 30)),
+	MPLLF(MPLLF.class, RepeatingType.AUTOMATIC, "MPL-LF", Material.FEATHER, 700, 20, 13/*, new McSound("guns.mpllf", 35)*/, 900, true, -1, 2, Map.of("dmg", 1.4D, "range", 25.0D, "accuracy", PI / 30)),
+	RAILGUN(RailGun.class, RepeatingType.SEMIAUTOMATIC, "Railgun", Material.IRON_PICKAXE, 120, 5, 62/*, new McSound("guns.raygun", 40)*/, 690420, true, -1, 4, Map.of("dmg", 7.6D, "range", 50.0D, "accuracy", PI / 90)),
+	MP5(MP5.class, RepeatingType.AUTOMATIC, "MP5", Material.GOLDEN_HOE, 700, 20, 26/*, new McSound("guns.mp5", 40)*/, 1, true, -1, 3, Map.of("dmg", 3.5D, "range", 25.0D, "accuracy", PI / 45)),
+	UMP45(UMP45.class, RepeatingType.AUTOMATIC, "UMP45", Material.IRON_HOE, 640, 40, 41/*, new McSound("guns.ump45", 40)*/, 1, true, -1, 2, Map.of("dmg", 2.1D, "range", 30.0D, "accuracy", PI / 90)),
+	SPAS12(SPAS12.class, RepeatingType.SEMIAUTOMATIC, "SPAS-12", Material.GOLDEN_SHOVEL, 70, 1, 53/*, new McSound("guns.spas12", 80)*/, 1400, true, -1, 30, Map.of("dmg", 5.7D, "range", 7.5D, "accuracy", PI / 25, "shots", 8)),
+	MCS(MCS.class, RepeatingType.SEMIAUTOMATIC, "MCS", Material.STONE_PICKAXE, 80, 4, 84/*, new McSound("guns.olympia", 80)*/, 3300, true, -1, 30, Map.of("dmg", 6.9D, "range", 20.0D, "accuracy", PI / 45, "shots", 5)),
+	DOUBLE_BARREL(DoubleBarrel.class, RepeatingType.SEMIAUTOMATIC, "Double Barrel", Material.DIAMOND_SHOVEL, 60, 2, 70/*, new McSound("guns.doublebarrel", 80)*/, 1, true, -1, 30, Map.of("dmg", 5.8D, "range", 20.0D, "accuracy", PI / 30, "shots", 7)),
+	DRAGUNOV(Dragunov.class, RepeatingType.SEMIAUTOMATIC, "Dragunov", Material.GOLD_INGOT, 60, 1, 68/*, new McSound("guns.sniper", 60)*/, 1, true, -1, 20, Map.of("dmg", 51.7D, "range", 300.0D, "accuracy", PI / 200)),
+	MOSIN(MosinSniper.class, RepeatingType.SEMIAUTOMATIC, "Mosin", Material.GOLDEN_PICKAXE, 60, 1, 51/*, new McSound("guns.dragunov", 80)*/, 2500, true, -1, 20, Map.of("dmg", 137.0D, "range", 300.0D, "accuracy", PI / 200)),
+	REVOLVER(Revolver.class, RepeatingType.SEMIAUTOMATIC, "Revolver", Material.DIAMOND_PICKAXE, 120, 6, 43/*, new McSound("guns.magnum", 50)*/, 1, true, -1, 15, Map.of("dmg", 17.4D, "range", 35.0D, "accuracy", PI / 160)),
+	THOMPSON(Thompson.class, RepeatingType.AUTOMATIC, "Thompson", Material.NETHERITE_PICKAXE, 400, 25, 95/*, new McSound("guns.thompson", 70)*/, 3000, true, -1, 4, Map.of("dmg", 6.2D, "range", 50.0D, "accuracy", PI / 60)),
+	TOMMY_GUN(TommyGun.class, RepeatingType.BURSTS, "Tommy Gun", Material.WOODEN_SHOVEL, 400, 25, 40/*, new McSound("guns.pm63", 35)*/, 500, true, -1, 17, Map.of("dmg", 3.4D, "range", 20.0D, "accuracy", PI / 45, "shots", 5, "shotsDelay", 1L)),
+	NERF(Nerf.class, RepeatingType.SEMIAUTOMATIC, "Nerf", Material.QUARTZ, 154, 11, 53/*, new McSound("guns.nerf", 15)*/, 1, false, -1, 23, Map.of("dmg", 9.7D, "range", 100.0D, "accuracy", PI / 60)),
 	
-	TRIPLE_RAILGUN(TripleRailGun.class, RepeatingType.SEMIAUTOMATIC, "Railgun II", Material.DIAMOND, 0, 10, 42/*, new McSound("guns.raygun2", 40)*/, 1, true, 8, 8, Map.of("dmg", 23.4D, "range", 35.0D, "accuracy", 0.5D)),
+	TRIPLE_RAILGUN(TripleRailGun.class, RepeatingType.SEMIAUTOMATIC, "Railgun II", Material.DIAMOND, 0, 10, 42/*, new McSound("guns.raygun2", 40)*/, 1, true, 8, 8, Map.of("dmg", 23.4D, "range", 35.0D, "accuracy", PI / 100)),
 	AIRSTRIKE(AirStrike.class, RepeatingType.SEMIAUTOMATIC, "Airstrike", Material.REDSTONE, 0, 1, 1/*, new McSound("random.click", 10)*/, 1, false, 7, 1, Map.of()),
 	MEDIC_KIT(MedicKit.class, RepeatingType.SEMIAUTOMATIC, "Medic Kit", Material.PAPER, 0, 1, 53/*, new McSound("guns.medic", 15)*/, 1, false, 6, 23, Map.of()),
 	LANCEPATATE(LancePatate.class, RepeatingType.SEMIAUTOMATIC, "Lance Patate", Material.STONE_SHOVEL, 0, 5, 64/*, new McSound("guns.m79", 20)*/, 1, false, 8, 15, Map.of()),
@@ -63,11 +65,11 @@ public enum WeaponType
 	TURRET(Turret.class, RepeatingType.SEMIAUTOMATIC, "Tourelle", Material.GOLD_NUGGET, 0, 1, 64, 465278045, false, 6, 1, Map.of()),
 	AMMO_BOX(AmmoBox.class, RepeatingType.SEMIAUTOMATIC, "Boite de munitions", Material.CAKE, 0, 1, 53, 1, false, 6, 1, Map.of()),
 	
-	HUNTING_GUN(ZombieHuntingGun.class, RepeatingType.SEMIAUTOMATIC, "Fusil de Chasse", Material.WOODEN_AXE, 10, 1, 60/*, new McSound("guns.mosin", 30)*/, 1, false, -1, 10, Map.of("dmg", 4.6, "range", 40.0D, "accuracy", 0.65D)),
-	GRAPPLING_HOOK(GrapplingHook.class, RepeatingType.SEMIAUTOMATIC, "Grappin", Material.FISHING_ROD, 1, 1, 0/*, new McSound("random.bow", 0.5F, 10)*/, 1, false, -1, 10, Map.of("dmg", 0.0D, "range", 5.0D, "accuracy", 0.0D)),
-	BLAZE_GUN(BlazeGun.class, RepeatingType.BURSTS, "Blaze gun", Material.BLAZE_ROD, 100, 40, 100/*, new McSound("guns.mosin", 30)*/, 1, false, -1, 10, Map.of("dmg", 2.0, "range", 40.0D, "accuracy", 0.95D, "shots", 10, "shotsDelay", 1L)),
+	HUNTING_GUN(ZombieHuntingGun.class, RepeatingType.SEMIAUTOMATIC, "Fusil de Chasse", Material.WOODEN_AXE, 10, 1, 60/*, new McSound("guns.mosin", 30)*/, 1, false, -1, 10, Map.of("dmg", 4.6, "range", 40.0D, "accuracy", PI / 60)),
+	GRAPPLING_HOOK(GrapplingHook.class, RepeatingType.SEMIAUTOMATIC, "Grappin", Material.FISHING_ROD, 1, 1, 0/*, new McSound("random.bow", 0.5F, 10)*/, 1, false, -1, 10, Map.of("dmg", 0.0D, "range", 5.0D, "accuracy", 0.0)),
+	BLAZE_GUN(BlazeGun.class, RepeatingType.BURSTS, "Blaze gun", Material.BLAZE_ROD, 100, 40, 100/*, new McSound("guns.mosin", 30)*/, 1, false, -1, 10, Map.of("dmg", 2.0, "range", 40.0D, "accuracy", PI / 40, "shots", 10, "shotsDelay", 1L)),
 	
-	BIMBOUMSNIPER(BimBoumSniper.class, RepeatingType.AUTOMATIC, "Bim Boum Sniper", Material.SADDLE, 2000, 40, 15/*, new McSound("guns.bimboumsniper", 500)*/, 1, false, -1, 3, Map.of("dmg", 16.7D, "range", 100.0D, "accuracy", 0.05D));
+	BIMBOUMSNIPER(BimBoumSniper.class, RepeatingType.AUTOMATIC, "Bim Boum Sniper", Material.SADDLE, 2000, 40, 15/*, new McSound("guns.bimboumsniper", 500)*/, 1, false, -1, 3, Map.of("dmg", 16.7D, "range", 100.0D, "accuracy", PI / 100));
 	
 	private final Class<? extends Weapon> weapon;
 	private final String name;
