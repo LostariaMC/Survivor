@@ -100,7 +100,7 @@ public interface IGun extends IWeapon
 								
 								if(ent.getBodyHitbox().contains(point) || ent.getHeadHitbox().contains(point))
 								{
-									ent.damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.08D * dmg));
+									ent.damage(dmg, shooter, weapon, ent.getHeadHitbox().contains(point), ray.getIncrease().normalize().multiply(0.13D * Math.sqrt(weapon.getType().get("dmg"))));
 									
 									if(explosiveBullet) {
 										MCUtils.explosion(shooter, weapon, dmg * 2, point, 2, 0, targets);
