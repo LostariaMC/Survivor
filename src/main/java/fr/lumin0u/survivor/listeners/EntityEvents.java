@@ -9,11 +9,8 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 import java.util.ArrayList;
@@ -62,6 +59,12 @@ public class EntityEvents implements Listener
 				e.setCancelled(true);
 			}
 		}
+	}
+	
+	@EventHandler
+	public void onEntitySpellCast(EntitySpellCastEvent e)
+	{
+		e.setCancelled(true);
 	}
 	
 	@EventHandler

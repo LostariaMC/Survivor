@@ -70,8 +70,8 @@ public class Survivor extends JavaPlugin
 	{
 		/*
 		* TODO
-		* vagues loup
-		* boss autres mobs
+		* * vagues loup
+		* * boss autres mobs
 		* ramasseur au fond du ravin ?
 		* rendre la mort plusse drole
 		* boites de munitions achetables

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class ZombieWeaponAI implements Runnable
+public class EnemyWeaponAI implements Runnable
 {
 	private Weapon weapon;
 	private int reload;
@@ -21,7 +21,7 @@ public class ZombieWeaponAI implements Runnable
 	private List<Location> locationsBuffer = new ArrayList<>();
 	private Enemy mob;
 	
-	public ZombieWeaponAI(Weapon weapon, boolean infiniteAmmo)
+	public EnemyWeaponAI(Weapon weapon, boolean infiniteAmmo)
 	{
 		this.weapon = weapon;
 		this.infiniteAmmo = infiniteAmmo;

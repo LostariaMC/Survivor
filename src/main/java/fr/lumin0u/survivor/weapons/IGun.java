@@ -6,6 +6,7 @@ import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Ray;
+import fr.lumin0u.survivor.weapons.guns.Gun;
 import fr.lumin0u.survivor.weapons.perks.Perk;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -86,7 +87,7 @@ public interface IGun extends IWeapon
 									color = Color.fromRGB(25, 25, 25);
 								}
 								else {
-									color = Color.fromRGB(75, 75, 75);
+									color = (weapon instanceof Gun g ? g.getRayColor() : Color.fromRGB(75, 75, 75));
 								}
 								
 								point.getWorld().spawnParticle(Particle.REDSTONE, effectLoc, 0, new DustOptions(color, 1));

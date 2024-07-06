@@ -8,6 +8,7 @@ import fr.lumin0u.survivor.weapons.RepeatingType;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
@@ -121,5 +122,9 @@ public abstract class Gun extends Weapon implements IGun
 	@Override
 	public double getAccuracy() {
 		return this.accuracy;
+	}
+	
+	public Color getRayColor() {
+		return Color.fromRGB(75, 75, 75);
 	}
 }

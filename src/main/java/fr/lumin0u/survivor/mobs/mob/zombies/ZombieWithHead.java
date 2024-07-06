@@ -1,4 +1,4 @@
-package fr.lumin0u.survivor.mobs.mob;
+package fr.lumin0u.survivor.mobs.mob.zombies;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

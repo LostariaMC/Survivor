@@ -1,10 +1,14 @@
 package fr.lumin0u.survivor.commands.gamecommands;
 
 import fr.lumin0u.survivor.commands.AbstractGameCommand;
-import fr.lumin0u.survivor.mobs.mob.*;
-import fr.lumin0u.survivor.mobs.mob.boss.CloneBoss;
-import fr.lumin0u.survivor.mobs.mob.boss.CopyCatBoss;
+import fr.lumin0u.survivor.mobs.mob.Wolf;
+import fr.lumin0u.survivor.mobs.mob.boss.BlazeBoss;
+import fr.lumin0u.survivor.mobs.mob.boss.IllusionerBoss;
 import fr.lumin0u.survivor.mobs.mob.boss.PoisonousBoss;
+import fr.lumin0u.survivor.mobs.mob.zombies.BabyZombie;
+import fr.lumin0u.survivor.mobs.mob.zombies.Zombie;
+import fr.lumin0u.survivor.mobs.mob.zombies.ZombieGrappler;
+import fr.lumin0u.survivor.mobs.mob.zombies.ZombieHunter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -47,7 +51,7 @@ public class SpawnMobCommand extends AbstractGameCommand
 		
 		if(args[0].equalsIgnoreCase("erpriex"))
 		{
-			new CloneBoss(p.getLocation(), h, 0.15F);
+			new IllusionerBoss(p.getLocation(), h, 0.15F);
 		}
 		
 		if(args[0].equalsIgnoreCase("lylyssou1"))
@@ -57,7 +61,7 @@ public class SpawnMobCommand extends AbstractGameCommand
 		
 		if(args[0].equalsIgnoreCase("copycat"))
 		{
-			new CopyCatBoss(p.getLocation(), h, 0.15F);
+			new BlazeBoss(p.getLocation(), h, 0.15F);
 		}
 	}
 }

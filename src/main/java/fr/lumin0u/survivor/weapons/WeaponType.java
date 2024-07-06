@@ -1,5 +1,6 @@
 package fr.lumin0u.survivor.weapons;
 
+import fr.lumin0u.survivor.mobs.mob.boss.BlazeBoss.BlazeGun;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.NMSUtils;
 import fr.lumin0u.survivor.weapons.guns.*;
@@ -62,8 +63,9 @@ public enum WeaponType
 	TURRET(Turret.class, RepeatingType.SEMIAUTOMATIC, "Tourelle", Material.GOLD_NUGGET, 0, 1, 64, 465278045, false, 6, 1, Map.of()),
 	AMMO_BOX(AmmoBox.class, RepeatingType.SEMIAUTOMATIC, "Boite de munitions", Material.CAKE, 0, 1, 53, 1, false, 6, 1, Map.of()),
 	
-	HUNTING_GUN(ZombieHuntingGun.class, RepeatingType.SEMIAUTOMATIC, "Fusil de Chasse", Material.WOODEN_AXE, 10, 1, 60/*, new McSound("guns.mosin", 30)*/, 1, false, -1, 10, Map.of("dmg", 15D, "range", 40.0D, "accuracy", 0.65D)),
+	HUNTING_GUN(ZombieHuntingGun.class, RepeatingType.SEMIAUTOMATIC, "Fusil de Chasse", Material.WOODEN_AXE, 10, 1, 60/*, new McSound("guns.mosin", 30)*/, 1, false, -1, 10, Map.of("dmg", 4.6, "range", 40.0D, "accuracy", 0.65D)),
 	GRAPPLING_HOOK(GrapplingHook.class, RepeatingType.SEMIAUTOMATIC, "Grappin", Material.FISHING_ROD, 1, 1, 0/*, new McSound("random.bow", 0.5F, 10)*/, 1, false, -1, 10, Map.of("dmg", 0.0D, "range", 5.0D, "accuracy", 0.0D)),
+	BLAZE_GUN(BlazeGun.class, RepeatingType.BURSTS, "Blaze gun", Material.BLAZE_ROD, 100, 40, 100/*, new McSound("guns.mosin", 30)*/, 1, false, -1, 10, Map.of("dmg", 2.0, "range", 40.0D, "accuracy", 0.95D, "shots", 10, "shotsDelay", 1L)),
 	
 	BIMBOUMSNIPER(BimBoumSniper.class, RepeatingType.AUTOMATIC, "Bim Boum Sniper", Material.SADDLE, 2000, 40, 15/*, new McSound("guns.bimboumsniper", 500)*/, 1, false, -1, 3, Map.of("dmg", 16.7D, "range", 100.0D, "accuracy", 0.05D));
 	

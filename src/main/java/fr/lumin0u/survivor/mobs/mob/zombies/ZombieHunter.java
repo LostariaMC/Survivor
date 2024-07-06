@@ -1,6 +1,7 @@
-package fr.lumin0u.survivor.mobs.mob;
+package fr.lumin0u.survivor.mobs.mob.zombies;
 
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.mobs.mob.EnemyWeaponAI;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.ZombieHuntingGun;
 import org.bukkit.Location;
@@ -17,7 +18,7 @@ public class ZombieHunter extends Zombie
 		
 		ZombieHuntingGun weapon = WeaponType.HUNTING_GUN.giveNewWeapon(this);
 		weapon.giveItem();
-		ai = new ZombieWeaponAI(weapon, true);
+		ai = new EnemyWeaponAI(weapon, true);
 		
 		(new BukkitRunnable()
 		{

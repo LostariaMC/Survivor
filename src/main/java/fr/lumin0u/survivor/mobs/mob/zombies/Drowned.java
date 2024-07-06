@@ -1,9 +1,5 @@
-package fr.lumin0u.survivor.mobs.mob;
+package fr.lumin0u.survivor.mobs.mob.zombies;
 
-import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.mobs.Waves;
-import fr.lumin0u.survivor.mobs.mob.boss.CloneZombie;
-import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.TFSound;

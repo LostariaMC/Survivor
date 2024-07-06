@@ -21,6 +21,12 @@ public class SurvivorCommand implements TabExecutor, CommandExecutor
 {
 	private List<SvArgCommand> commands = new ArrayList<>();
 	
+	private static boolean cheating = false;
+	
+	public static boolean isCheating() {
+		return cheating;
+	}
+	
 	public SurvivorCommand() {
 		this.registerCommands();
 	}
@@ -150,8 +156,12 @@ public class SurvivorCommand implements TabExecutor, CommandExecutor
 						{
 							if(args[args.length - 1].equalsIgnoreCase("help"))
 								sender.sendMessage("§f§l/sv " + c.getName() + (c.getUse().isEmpty() ? "" : " " + c.getUse()) + " §7: " + c.getDef());
-							else
+							else {
+								if(c.minRankPower != 0 && Arrays.stream(args).noneMatch("nocheat"::equalsIgnoreCase)) {
+									cheating = true;
+								}
 								c.execute(sender, Arrays.copyOfRange(args, 1, args.length));
+							}
 							
 							return true;
 						}

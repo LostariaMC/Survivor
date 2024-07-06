@@ -1,13 +1,14 @@
 package fr.lumin0u.survivor;
 
+import fr.lumin0u.survivor.commands.SurvivorCommand;
 import fr.lumin0u.survivor.config.MapConfig;
 import fr.lumin0u.survivor.mobs.Group;
 import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.mobs.mob.Wolf;
-import fr.lumin0u.survivor.mobs.mob.Zombie;
-import fr.lumin0u.survivor.mobs.mob.ZombieType;
 import fr.lumin0u.survivor.mobs.mob.boss.Boss;
+import fr.lumin0u.survivor.mobs.mob.zombies.Zombie;
+import fr.lumin0u.survivor.mobs.mob.zombies.ZombieType;
 import fr.lumin0u.survivor.objects.Door;
 import fr.lumin0u.survivor.objects.MagicBoxManager;
 import fr.lumin0u.survivor.objects.Room;
@@ -392,7 +393,8 @@ public class GameManager
 				MCUtils.sendTitle(sp.toBukkit(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
 			}
 			
-			sp.toCosmox().addMolecules(molecules, "Vague " + wave);
+			if(!SurvivorCommand.isCheating())
+				sp.toCosmox().addMolecules(molecules, "Vague " + wave);
 			
 			sp.addMoney(75 + 25 * this.wave);
 			sp.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, waveDelay, 5));
@@ -472,6 +474,7 @@ public class GameManager
 		
 		boolean dogWave = Waves.isDogWave(this.wave);
 		this.dogWave = dogWave;
+		this.mayBeEndWave = !dogWave;
 		
 		int nbZombies = (int) (Waves.getNbEnnemies(this.wave, this.difficulty) * Math.sqrt(getOnlinePlayers().size()));
 		if(dogWave)
@@ -499,7 +502,6 @@ public class GameManager
 		}
 		
 		inWave = true;
-		this.mayBeEndWave = false;
 		remainingWolves = 0;
 		
 		double health = Waves.getEnnemiesLife(wave, difficulty) * Math.sqrt(getOnlinePlayers().size());
@@ -516,7 +518,7 @@ public class GameManager
 			for(int i = 0; i < getOnlinePlayers().size() / 3 + 1; i++) {
 				Location bossSpawn = spawns.get((new Random()).nextInt(spawns.size()));
 				
-				Boss boss = Boss.createRandom(bossSpawn, bossHealth, bossWalkSpeed * 1.1D);
+				Enemy boss = Boss.createRandom(bossSpawn, bossHealth, bossWalkSpeed * 1.1D);
 				boss.setReward(this.wave * this.wave * 10);
 			}
 		}
@@ -550,7 +552,6 @@ public class GameManager
 				m.setReward(10 + this.wave);
 			}
 			
-			this.mayBeEndWave = true;
 			if(!zombies.isEmpty()) {
 				Group group = new Group(zombies);
 				zombies.forEach(zombie -> zombie.setGroup(group));
@@ -661,7 +662,7 @@ public class GameManager
 	}
 	
 	public boolean mayBeEndWave() {
-		return this.mayBeEndWave;
+		return mayBeEndWave;
 	}
 	
 	public void setWave(int wave) {

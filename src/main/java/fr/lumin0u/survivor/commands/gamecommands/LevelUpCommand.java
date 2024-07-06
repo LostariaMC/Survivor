@@ -12,7 +12,7 @@ public class LevelUpCommand extends AbstractGameCommand
 {
 	public LevelUpCommand()
 	{
-		super("levelUp", "", "", true, 1, true);
+		super("levelUp", "", "", false, 1, true);
 	}
 	
 	@Override

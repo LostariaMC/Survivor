@@ -1,4 +1,4 @@
-package fr.lumin0u.survivor.mobs.mob;
+package fr.lumin0u.survivor.mobs.mob.zombies;
 
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.TFSound;

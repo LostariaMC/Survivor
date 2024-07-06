@@ -1,6 +1,8 @@
-package fr.lumin0u.survivor.mobs.mob;
+package fr.lumin0u.survivor.mobs.mob.zombies;
 
 import fr.lumin0u.survivor.mobs.Group;
+import fr.lumin0u.survivor.mobs.mob.Enemy;
+import fr.lumin0u.survivor.mobs.mob.EnemyWeaponAI;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.NMSUtils;
@@ -9,13 +11,11 @@ import net.minecraft.world.entity.EntityInsentient;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalLookAtPlayer;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalMeleeAttack;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalSelector;
-import net.minecraft.world.entity.monster.EntityZombie;
-import net.minecraft.world.entity.monster.EntityZombieHusk;
+import net.minecraft.world.entity.monster.EntityMonster;
 import net.minecraft.world.entity.player.EntityHuman;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -30,7 +30,7 @@ public class Zombie extends Enemy
 	private int ticksStuck;
 	private int stuckBlockX;
 	private int stuckBlockZ;
-	protected ZombieWeaponAI ai;
+	protected EnemyWeaponAI ai;
 	private boolean hasHead = true;
 	
 	public Zombie(Location spawnLoc, double maxHealth, double walkSpeed) {
@@ -68,7 +68,7 @@ public class Zombie extends Enemy
 	{
 		super.spawnEntity(spawnLoc);
 		
-		EntityZombie nmsZombie = NMSUtils.getNMSEntity(ent);
+		EntityMonster nmsZombie = NMSUtils.getNMSEntity(ent);
 		
 		Field[] a1 = Arrays.stream(EntityInsentient.class.getDeclaredFields()).filter(f -> f.getType().equals(PathfinderGoalSelector.class)).limit(2).toArray(Field[]::new);
 		
@@ -121,11 +121,6 @@ public class Zombie extends Enemy
 	public AABB getHeadHitbox()
 	{
 		return new AABB(this.ent.getLocation().clone().add(-0.4D, 1.6D, -0.4D), this.ent.getLocation().clone().add(0.4D, 2.0D, 0.4D));
-	}
-	
-	public static EntityType getEntityType()
-	{
-		return EntityType.ZOMBIE;
 	}
 	
 	@Override

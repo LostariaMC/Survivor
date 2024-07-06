@@ -1,16 +1,17 @@
 package fr.lumin0u.survivor.mobs;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.mobs.mob.BabyZombie;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
-import fr.lumin0u.survivor.mobs.mob.Zombie;
 import fr.lumin0u.survivor.mobs.mob.boss.CloneZombie;
+import fr.lumin0u.survivor.mobs.mob.zombies.BabyZombie;
+import fr.lumin0u.survivor.mobs.mob.zombies.Zombie;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+@Deprecated
 public class Group
 {
 	private List<Zombie> zombies;

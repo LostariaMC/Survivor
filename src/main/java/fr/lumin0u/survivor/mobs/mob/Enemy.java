@@ -5,6 +5,7 @@ import fr.lumin0u.survivor.DamageTarget;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.mobs.mob.boss.Boss;
+import fr.lumin0u.survivor.mobs.mob.zombies.Zombie;
 import fr.lumin0u.survivor.objects.Bonus;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
@@ -212,20 +213,17 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 			dmg *= 5;
 		
 		int i;
-		if(headshot)
+		if(headshot && this instanceof Zombie zombieThis && zombieThis.hasHead())
 		{
 			dmg *= 1.5D;
-			if(this instanceof Zombie && ((Zombie)this).hasHead())
+			zombieThis.setHasHead(false);
+			if(damager instanceof SvPlayer) {
+				((SvPlayer)damager).addMoney((double) reward / 4.0D * coinsMultiplier);
+			}
+			
+			for(i = 0; i < 30; ++i)
 			{
-				((Zombie)this).setHasHead(false);
-				if(damager instanceof SvPlayer) {
-					((SvPlayer)damager).addMoney((double) reward / 4.0D * coinsMultiplier);
-				}
-				
-				for(i = 0; i < 30; ++i)
-				{
-					this.ent.getWorld().spawnParticle(Particle.BLOCK_CRACK, this.getHeadHitbox().rdLoc().toLocation(this.ent.getWorld()), 0, Material.REDSTONE_BLOCK.createBlockData());
-				}
+				ent.getWorld().spawnParticle(Particle.BLOCK_CRACK, getHeadHitbox().rdLoc().toLocation(ent.getWorld()), 0, Material.REDSTONE_BLOCK.createBlockData());
 			}
 		}
 		
@@ -267,9 +265,9 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 			((SvPlayer) killer).killZombie();
 		}
 		
-		if(this instanceof fr.lumin0u.survivor.mobs.mob.Zombie)
+		if(this instanceof Zombie)
 		{
-			((fr.lumin0u.survivor.mobs.mob.Zombie) this).getGroup().update();
+			((Zombie) this).getGroup().update();
 		}
 		
 		for(int i = 0; i < (killer == null ? 10 : 100); ++i)
