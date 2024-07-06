@@ -15,6 +15,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Blaze;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -26,7 +27,7 @@ public class BlazeBoss extends Enemy implements Boss
 	private EnemyWeaponAI ai;
 	
 	public BlazeBoss(Location spawnLoc, double maxHealth, double walkSpeed) {
-		super(EntityType.BLAZE, spawnLoc, maxHealth, walkSpeed * 0.9, TFSound.simple(Sound.ENTITY_BLAZE_HURT), TFSound.simple(Sound.ENTITY_BLAZE_DEATH), 2);
+		super(EntityType.BLAZE, spawnLoc, maxHealth, walkSpeed * 2, TFSound.simple(Sound.ENTITY_BLAZE_HURT), TFSound.simple(Sound.ENTITY_BLAZE_DEATH), 2);
 		
 		Weapon weapon = WeaponType.BLAZE_GUN.giveNewWeapon(this);
 		ai = new EnemyWeaponAI(weapon, true);
@@ -65,7 +66,7 @@ public class BlazeBoss extends Enemy implements Boss
 	
 	@Override
 	public void damage(double dmg, WeaponOwner damager, Weapon weapon, boolean headshot, Vector kb, double coinsMultiplier) {
-		super.damage(dmg, damager, weapon, headshot, kb.clone().multiply(0.2), coinsMultiplier);
+		super.damage(dmg, damager, weapon, headshot, kb.clone().multiply(0.07), coinsMultiplier);
 	}
 	
 	@Override
@@ -76,7 +77,7 @@ public class BlazeBoss extends Enemy implements Boss
 		for(SvPlayer sp : gm.getOnlinePlayers())
 		{
 			Player p = sp.toBukkit();
-			if(target == null || p.getLocation().distance(this.ent.getLocation()) < target.toBukkit().getLocation().distance(this.ent.getLocation()))
+			if(target == null || p.getLocation().distanceSquared(this.ent.getLocation()) < target.toBukkit().getLocation().distanceSquared(this.ent.getLocation()))
 			{
 				if(sp.isAlive() && p.getGameMode().equals(GameMode.ADVENTURE))
 				{
@@ -93,7 +94,8 @@ public class BlazeBoss extends Enemy implements Boss
 			
 			if(targetLoc.distance(this.ent.getLocation()) < 100.0D)
 			{
-				this.ent.setTarget(target.toBukkit());
+				((Blaze) ent).getPathfinder().moveTo(targetLoc);
+				ent.setTarget(target.toBukkit());
 				return;
 			}
 		}
