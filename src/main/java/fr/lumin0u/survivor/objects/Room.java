@@ -154,8 +154,9 @@ public class Room
 					.filter(Predicate.not(this::equals))
 					.flatMap(room -> room.getDoors().stream())
 					.noneMatch(door -> door.getBarsUnsafe().stream().anyMatch(d.getBarsUnsafe()::contains))) {
-				d.remove();
+				d.break_();
 			}
+			d.removeArmorStands();
 		}
 		
 		GameManager.getInstance().augmentPrice();

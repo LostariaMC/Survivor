@@ -88,7 +88,7 @@ public class Door
 		}
 	}
 	
-	public void remove()
+	public void break_()
 	{
 		for(Block bar : this.getBars())
 		{
@@ -96,7 +96,10 @@ public class Door
 			
 			bar.setType(Material.AIR);
 		}
-		
+	}
+	
+	public void removeArmorStands()
+	{
 		if(this.asName != null)
 		{
 			this.asName.remove();
