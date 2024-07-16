@@ -62,7 +62,7 @@ public enum WeaponType
 	GRENADE(Grenade.class, RepeatingType.SEMIAUTOMATIC, "Grenade", Material.CLAY_BALL, 0, 3, 64, 1, false, 6, 1, Map.of()),
 	GRENADEFRAG(GrenadeFrag.class, RepeatingType.SEMIAUTOMATIC, "Grenade Frag", Material.SLIME_BALL, 0, 2, 64, 1, false, 6, 1, Map.of()),
 	GRENADEFLAME(GrenadeFlame.class, RepeatingType.SEMIAUTOMATIC, "Grenade Incendiaire", Material.MAGMA_CREAM, 0, 3, 64, 1, false, 6, 1, Map.of()),
-	TURRET(Turret.class, RepeatingType.SEMIAUTOMATIC, "Tourelle", Material.GOLD_NUGGET, 0, 1, 64, 465278045, false, 6, 1, Map.of()),
+	TURRET(Turret.class, RepeatingType.SEMIAUTOMATIC, "Tourelle", Material.GOLD_NUGGET, 0, 1, 64, 465278045, false, 6, 1, Map.of("dmg", 5.0D)),
 	AMMO_BOX(AmmoBox.class, RepeatingType.SEMIAUTOMATIC, "Boite de munitions", Material.CAKE, 0, 1, 53, 1, false, 6, 1, Map.of()),
 	
 	HUNTING_GUN(ZombieHuntingGun.class, RepeatingType.SEMIAUTOMATIC, "Fusil de Chasse", Material.WOODEN_AXE, 10, 1, 60/*, new McSound("guns.mosin", 30)*/, 1, false, -1, 10, Map.of("dmg", 4.6, "range", 40.0D, "accuracy", PI / 90)),
