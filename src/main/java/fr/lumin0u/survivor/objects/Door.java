@@ -153,10 +153,12 @@ public class Door
 			
 			this.asName = (ArmorStand) middle.getWorld().spawnEntity(middle.clone().add(0.0D, -2.0D, 0.0D), EntityType.ARMOR_STAND);
 			this.asPrice = (ArmorStand) middle.getWorld().spawnEntity(middle.clone().add(0.0D, -2.2D, 0.0D), EntityType.ARMOR_STAND);
+			
 			this.asName.setVisible(false);
 			this.asName.setGravity(false);
 			this.asName.setCustomName("§a" + this.room.getName());
 			this.asName.setCustomNameVisible(true);
+			
 			this.asPrice.setVisible(false);
 			this.asPrice.setGravity(false);
 			this.asPrice.setCustomName("§6" + this.room.getPrice() + "$");
