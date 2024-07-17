@@ -21,7 +21,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public enum Bonus
@@ -59,13 +58,13 @@ public enum Bonus
 		as.setGravity(false);
 		as.setCustomName(this.name);
 		as.setCustomNameVisible(true);
-		as.setPassenger(it);
+		as.addPassenger(it);
 		it.getItemStack().setAmount(64);
 		it.setPickupDelay(2147483647);
 		(new BukkitRunnable()
 		{
 			int i = 0;
-			static final int imax = 1200;
+			static final int imax = 60 * 20;
 			
 			@Override
 			public void run()
@@ -77,11 +76,11 @@ public enum Bonus
 					if(p.toBukkit().getGameMode().equals(GameMode.ADVENTURE) && p.toBukkit().getLocation().distance(it.getLocation()) < 2.5D)
 					{
 						Bonus.this.onPickup(p);
-						this.i = 1200;
+						i = imax;
 					}
 				}
 				
-				if(this.i >= 1200)
+				if(i >= imax)
 				{
 					it.remove();
 					as.remove();
@@ -104,8 +103,6 @@ public enum Bonus
 			}
 		}
 		
-		Iterator var6;
-		Iterator var11;
 		switch(this)
 		{
 			case NUKE -> {

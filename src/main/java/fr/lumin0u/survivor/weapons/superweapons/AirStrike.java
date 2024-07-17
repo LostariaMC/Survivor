@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType.Play.Server;
 import com.comphenix.protocol.events.PacketContainer;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
-import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TransparentUtils;
@@ -93,7 +92,7 @@ public class AirStrike extends SuperWeapon
 				MCUtils.explosionParticles(floc, 2.0F, 6, Particle.FLAME, Particle.SMOKE_LARGE);
 				if(floc.getY() <= yStop)
 				{
-					double life = GameManager.getInstance().getApproxEnnemyHealth();
+					double life = GameManager.getInstance().getBaseEnnemyHealth();
 					MCUtils.explosion(owner, AirStrike.this, life / 3, floc, 10.0D, 0.0D, owner.getTargetType());
 					this.cancel();
 					

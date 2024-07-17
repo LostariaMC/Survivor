@@ -458,7 +458,7 @@ public class GameManager
 	
 	private double ennemyHealth;
 	
-	public double getApproxEnnemyHealth() {
+	public double getBaseEnnemyHealth() {
 		return ennemyHealth;
 	}
 	
@@ -505,6 +505,7 @@ public class GameManager
 		remainingWolves = 0;
 		
 		double health = Waves.getEnnemiesLife(wave, difficulty) * Math.sqrt(getOnlinePlayers().size());
+		ennemyHealth = health;
 		
 		if(spawns.isEmpty()) {
 			Bukkit.broadcastMessage("§cVeuillez définir des points d'apparition pour les zombies");
@@ -526,7 +527,6 @@ public class GameManager
 		int mod = nbZombies % spawns.size();
 		int spawnsSize = spawns.size();
 		
-		ennemyHealth = health;
 		double walkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
 		
 		for(int j = 0; j < spawnsSize; ++j) {
@@ -566,7 +566,6 @@ public class GameManager
 			
 			this.remainingWolves = nbWolves;
 			
-			ennemyHealth = health;
 			wolfRunnable = new BukkitRunnable()
 			{
 				int time = 0;

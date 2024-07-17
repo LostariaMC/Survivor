@@ -107,7 +107,7 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 						ent.setFireTicks((int) fireTime);
 						if(fireTime % 20L == 0L)
 						{
-							damage(gm.getApproxEnnemyHealth() / 20, fireMan, fireWeaponSource, false, null);
+							damage(gm.getBaseEnnemyHealth() / 10, fireMan, fireWeaponSource, false, null);
 						}
 						
 						--fireTime;

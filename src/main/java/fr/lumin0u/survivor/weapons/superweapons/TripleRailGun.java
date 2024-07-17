@@ -2,7 +2,6 @@ package fr.lumin0u.survivor.weapons.superweapons;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
-import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.IRailGun;
@@ -49,7 +48,7 @@ public class TripleRailGun extends SuperGun implements IRailGun
 	@Override
 	public double getDmg()
 	{
-		return GameManager.getInstance().getApproxEnnemyHealth() * 0.6D;
+		return GameManager.getInstance().getBaseEnnemyHealth() * 0.6D;
 	}
 	
 	@Override

@@ -1,7 +1,6 @@
 package fr.lumin0u.survivor.weapons.superweapons;
 
 import fr.lumin0u.survivor.GameManager;
-import fr.lumin0u.survivor.mobs.Waves;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.Ray;
@@ -51,7 +50,7 @@ public class Freezer extends HeatSender
 			{
 				if((ent.getBodyHitbox().multiply((double) i / 1.5).contains(point) || ent.getHeadHitbox().multiply((double) i / 1.5).contains(point)) && !hit.contains(ent))
 				{
-					ent.damage(gm.getApproxEnnemyHealth() / 10, owner, this, false, null);
+					ent.damage(gm.getBaseEnnemyHealth() / 10, owner, this, false, null);
 					ent.setFrozenTime(200L);
 					hit.add(ent);
 				}

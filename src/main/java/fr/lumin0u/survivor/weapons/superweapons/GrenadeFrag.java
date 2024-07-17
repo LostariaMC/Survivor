@@ -53,7 +53,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 					{
 						ItemStack itemStack = new ItemStack(Material.CLAY_BALL);
 						ItemMeta im = itemStack.getItemMeta();
-						im.displayName(Component.text(Long.toHexString(System.nanoTime()) + new Random().nextInt(100)));
+						im.displayName(Component.text(Long.toHexString(System.currentTimeMillis()) + new Random().nextInt(100)));
 						itemStack.setItemMeta(im);
 						
 						this.projectile = loc.getWorld().dropItem(loc.clone().add(0, 0.2, 0), itemStack);
@@ -64,7 +64,7 @@ public class GrenadeFrag extends AbstractGrenade implements SupplyWeapon
 					if(this.time > explosionDelay)
 					{
 						GameManager gm = GameManager.getInstance();
-						MCUtils.explosion(owner, GrenadeFrag.this, gm.getApproxEnnemyHealth() * 0.75D, projectile.getLocation(), 5.0D, 2.0D, owner.getTargetType());
+						MCUtils.explosion(owner, GrenadeFrag.this, gm.getBaseEnnemyHealth() * 0.75D, projectile.getLocation(), 5.0D, 2.0D, owner.getTargetType());
 						this.projectile.remove();
 						this.cancel();
 					}

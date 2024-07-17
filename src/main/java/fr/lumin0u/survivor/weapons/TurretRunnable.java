@@ -12,13 +12,14 @@ import fr.lumin0u.survivor.weapons.superweapons.Turret;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static java.lang.Math.PI;
 
 public class TurretRunnable extends BukkitRunnable
 {
@@ -119,7 +120,7 @@ public class TurretRunnable extends BukkitRunnable
 					if(target != null)
 					{
 						isShooting = true;
-						Ray shoot = new Ray(tur, MCUtils.vectorFrom(tur.toVector(), target.getBodyHitbox().midpoint()).normalize().multiply(0.2D), 40.0D, 0.7D);
+						Ray shoot = new Ray(tur, MCUtils.vectorFrom(tur.toVector(), target.getBodyHitbox().midpoint()).normalize().multiply(0.2D), 40.0D, PI / 50);
 						TFSound.GUN_SHOT.play(turret.getLocation());
 						IGun.rawShoot(this.owner, weapon, shoot, 1.5D + 0.3D * (double) GameManager.getInstance().getWave());
 					}
