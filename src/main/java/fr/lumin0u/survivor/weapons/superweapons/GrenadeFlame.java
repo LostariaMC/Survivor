@@ -29,7 +29,7 @@ public class GrenadeFlame extends AbstractGrenade implements SupplyWeapon
 		{
 			if(m.getFeets().distance(loc) < 20.0D && TransparentUtils.solidBetween(m.getFeets(), loc) < 3)
 			{
-				m.setFireTime((long) (450 - (int) (17.0D * m.getFeets().distance(loc))), owner, this);
+				m.setFireTime((long) (320 - (int) (11.0D * m.getFeets().distance(loc))), owner, this);
 			}
 		}
 		
