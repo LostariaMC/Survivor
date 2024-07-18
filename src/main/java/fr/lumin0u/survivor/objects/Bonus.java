@@ -1,6 +1,5 @@
 package fr.lumin0u.survivor.objects;
 
-import fr.lumin0u.survivor.Difficulty;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
@@ -22,27 +21,24 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public enum Bonus
 {
-	NUKE("§4Nuke", Material.TNT),
-	INSTANT_KILL("§cMort Instantanée", Material.DEAD_BUSH),
-	MUNMAX("§9Munitions Max", Material.GLOWSTONE_DUST),
-	CARPENTER("§6Charpentier", Material.OAK_FENCE),
-	AIRSTRIKE("§dAirstrike", Material.REDSTONE);
+	NUKE("§4Nuke", Material.TNT, 0.001),
+	INSTANT_KILL("§cMort Instantanée", Material.DEAD_BUSH, 0.002),
+	MUNMAX("§9Munitions Max", Material.GLOWSTONE_DUST, 0.004),
+	CARPENTER("§6Charpentier", Material.OAK_FENCE, 0.004),
+	AIRSTRIKE("§dAirstrike", Material.REDSTONE, 0.003);
 	
 	private final String name;
 	private final Material mat;
+	private final double probaWeight;
 	
-	public static double probability(Difficulty difficulty)
-	{
-		return 0.01;
-	}
-	
-	private Bonus(String name, Material mat)
-	{
+	Bonus(String name, Material mat, double probaWeight) {
 		this.name = name;
 		this.mat = mat;
+		this.probaWeight = probaWeight;
 	}
 	
 	public Material getMat()
@@ -181,22 +177,16 @@ public enum Bonus
 		
 	}
 	
-	public static Bonus byItem(ItemStack it)
-	{
-		if(it != null)
-		{
-			Bonus[] var1 = values();
-			int var2 = var1.length;
-			
-			for(Bonus b : var1)
-			{
-				if(b.getMat().equals(it.getType()))
-				{
-					return b;
-				}
+	public static Optional<Bonus> findWeightedRandom() {
+		double random = Math.random();
+		
+		for(Bonus b : values()) {
+			random -= b.probaWeight;
+			if(random < 0) {
+				return Optional.of(b);
 			}
-			
 		}
-		return null;
+		
+		return Optional.empty();
 	}
 }

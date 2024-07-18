@@ -30,7 +30,6 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.function.Consumer;
 
 public abstract class Enemy implements SvDamageable, WeaponOwner
@@ -281,10 +280,7 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 			this.gm.endWave();
 		}
 		
-		if((new Random()).nextDouble() < Bonus.probability(gm.getDifficulty()))
-		{
-			Bonus.values()[(new Random()).nextInt(Bonus.values().length)].spawn(this.ent.getLocation());
-		}
+		Bonus.findWeightedRandom().ifPresent(b -> b.spawn(this.ent.getLocation()));
 	}
 	
 	public int getReward()
