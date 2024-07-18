@@ -17,7 +17,6 @@ import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
@@ -386,23 +385,20 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 					if(!assets.contains(SvAsset.PIERRE_TOMBALE))
 					{
 						assets.clear();
-						weapons.clear();
-						WeaponType.LITTLE_KNIFE.giveNewWeapon(SvPlayer.this).giveItem();
-						WeaponType.M1911.giveNewWeapon(SvPlayer.this).giveItem();
 						
 						if(isOnline())
 						{
 							toBukkit().setMaxHealth(GameManager.getInstance().getDifficulty().getMaxHealth());
 							toBukkit().setWalkSpeed(0.2F);
 							
-							toBukkit().sendMessage(SurvivorGame.prefix + "§cVous n'aviez pas l'atout §7Pierre tombale§c, vous avez donc perdu vos armes et vos atouts");
+							toBukkit().sendMessage(SurvivorGame.prefix + "§cVous n'aviez pas l'atout §7Pierre tombale§c, vous avez donc perdu vos atouts");
 						}
 					}
 					else
 					{
 						assets.remove(SvAsset.PIERRE_TOMBALE);
 						if(isOnline()) {
-							toBukkit().sendMessage(SurvivorGame.prefix + "§cVous aviez l'atout §7Pierre tombale§c, vous n'avez donc pas perdu vos armes ni vos atouts, excepté l'atout pierre tombale");
+							toBukkit().sendMessage(SurvivorGame.prefix + "§cVous aviez l'atout §7Pierre tombale§c, vous n'avez donc pas perdu vos autres atouts");
 						}
 					}
 					
