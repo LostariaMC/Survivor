@@ -11,6 +11,7 @@ import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TFSound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Fence;
 import org.bukkit.block.data.type.Gate;
@@ -193,32 +194,18 @@ public class Room
 	
 	public void placeFence(Location loc)
 	{
-		boolean isGate = loc.getBlock().getBlockData() instanceof Gate;
-		
-		/*if(isGate)
-		{
-			Material material = Material.getMaterial(loc.getBlock().getType().name().replaceAll("_GATE$", ""));
-			
-			loc.getBlock().setType(material);
-		}
-		else if(!(loc.getBlock().getBlockData() instanceof Fence))
-		{
-			loc.getBlock().setType(Material.OAK_FENCE);
-		}*/
-		
 		loc.getBlock().setBlockData(fenceDirections.get(loc.getBlock()));
 	}
 	
 	public void placeGate(Location loc)
 	{
-		boolean isFence = loc.getBlock().getBlockData() instanceof Fence;
-		
-		if(isFence)
+		if(loc.getBlock().getBlockData() instanceof Fence fence)
 		{
 			Material material = Material.getMaterial(loc.getBlock().getType().name() + "_GATE");
 			
 			Gate gate = (Gate) material.createBlockData();
 			gate.setOpen(true);
+			gate.setFacing(fence.hasFace(BlockFace.SOUTH) ? BlockFace.EAST : BlockFace.SOUTH);
 			
 			loc.getBlock().setBlockData(gate);
 		}
