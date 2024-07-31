@@ -24,13 +24,13 @@ public enum Difficulty
 	private final double ennemyHealthModifier;
 	private final String displayName;
 	
-	private Difficulty(String displayName, double maxHealth, double regenHpPerSecond, ChatColor color, Material skull, double id, double ennemyHealthModifier)
+	private Difficulty(String displayName, double maxHealth, double regenHpPerSecond, ChatColor color, Material skull, double difficultyFactor, double ennemyHealthModifier)
 	{
 		this.maxHealth = maxHealth;
 		this.regenHpPerSecond = regenHpPerSecond;
 		this.color = color;
 		this.skull = skull;
-		this.difficultyFactor = id;
+		this.difficultyFactor = difficultyFactor;
 		this.ennemyHealthModifier = ennemyHealthModifier;
 		this.displayName = displayName;
 	}
