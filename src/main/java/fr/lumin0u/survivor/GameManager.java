@@ -119,20 +119,6 @@ public class GameManager
 		this.defaultRoom.setBought(true);
 		this.priceAugmentation = Math.pow(50.0D, 1.0D / ((double) this.rooms.size() - 1.0D));
 		
-		for(ItemFrame itemFrame : world.getEntitiesByClasses(ItemFrame.class, GlowItemFrame.class).stream().map(ItemFrame.class::cast).toList()) {
-			for(WeaponType wt : WeaponType.values()) {
-				if(wt.getMaterial().equals(itemFrame.getItem().getType())) {
-					itemFrame.setItem(wt.getItemToSell());
-				}
-			}
-			
-			for(SvAsset asset : SvAsset.values()) {
-				if(asset.getMaterial().equals(itemFrame.getItem().getType())) {
-					itemFrame.setItem(asset.getItem());
-				}
-			}
-		}
-		
 		new BukkitRunnable()
 		{
 			@Override
@@ -213,6 +199,22 @@ public class GameManager
 			}
 			
 			Bukkit.getOnlinePlayers().stream().map(SvPlayer::of).forEach(Surviboard::reInitScoreboard);
+			
+			// can be done now that entities are loaded
+			
+			for(ItemFrame itemFrame : world.getEntitiesByClasses(ItemFrame.class, GlowItemFrame.class).stream().map(ItemFrame.class::cast).toList()) {
+				for(WeaponType wt : WeaponType.values()) {
+					if(wt.getMaterial().equals(itemFrame.getItem().getType())) {
+						itemFrame.setItem(wt.getItemToSell());
+					}
+				}
+				
+				for(SvAsset asset : SvAsset.values()) {
+					if(asset.getMaterial().equals(itemFrame.getItem().getType())) {
+						itemFrame.setItem(asset.getItem());
+					}
+				}
+			}
 		}
 		else {
 			Bukkit.broadcastMessage("§cVeuillez finir la config avant de lancer la partie");
@@ -516,11 +518,13 @@ public class GameManager
 			double bossHealth = this.wave * 60 - 20;
 			double bossWalkSpeed = Waves.getEnnemiesSpeed(this.wave, this.difficulty);
 			
-			for(int i = 0; i < getOnlinePlayers().size() / 3 + 1; i++) {
+			int nbBoss = getOnlinePlayers().size() / 3 + 1;
+			
+			for(int i = 0; i < nbBoss; i++) {
 				Location bossSpawn = spawns.get((new Random()).nextInt(spawns.size()));
 				
 				Enemy boss = Boss.createRandom(bossSpawn, bossHealth, bossWalkSpeed * 1.1D);
-				boss.setReward(this.wave * this.wave * 10);
+				boss.setReward(this.wave * this.wave * 10 / nbBoss);
 			}
 		}
 		

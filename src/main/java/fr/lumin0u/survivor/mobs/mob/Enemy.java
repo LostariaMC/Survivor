@@ -258,7 +258,14 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	{
 		this.ent.remove();
 		this.dead = true;
-		if(killer instanceof SvPlayer)
+		
+		if(this instanceof Boss) {
+			gm.getOnlinePlayers().forEach(sp -> sp.addMoney(this.reward));
+			
+			if(killer instanceof SvPlayer sp)
+				sp.killZombie();
+		}
+		else if(killer instanceof SvPlayer)
 		{
 			((SvPlayer) killer).addMoney((double) this.reward * coinsMultiplier);
 			((SvPlayer) killer).killZombie();
