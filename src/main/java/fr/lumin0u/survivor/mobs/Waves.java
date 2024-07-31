@@ -6,11 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.function.BiFunction;
+import java.util.*;
 
 public class Waves
 {
@@ -25,12 +21,12 @@ public class Waves
 	
 	public static void init() {
 		random = new Random();
-		dogWaves = new ArrayList<>();
+		dogWaves = new LinkedList<>();
 		nbZombies = new HashMap<>();
 		
 		for(Difficulty diff : Difficulty.values())
 		{
-			nbZombies.put(diff, new ArrayList<>());
+			nbZombies.put(diff, new LinkedList<>());
 			nbZombies.get(diff).add(0);
 		}
 		
@@ -54,7 +50,16 @@ public class Waves
 	{
 		for(int i = nbZombies.get(diff).size(); i < wave + 5; ++i)
 		{
-			nbZombies.get(diff).add((int) ((double) wave * Math.sqrt(diff.getFactor()) * 1.3 + 1.5 + Math.random() * (double) (diff.getFactor() * wave)));
+			double w = i;
+			nbZombies.get(diff).add((int) (
+					(
+							w * (1.3 * Math.sqrt(diff.getFactor()))
+							+
+							Math.random() * diff.getFactor() * Math.sqrt(w)
+					)
+					*
+					w / (10 + w)
+			));
 		}
 		
 		return nbZombies.get(diff).get(wave);
@@ -65,14 +70,15 @@ public class Waves
 		return 3.3D * diff.getEnnemyHealthModifier() * (double) wave;
 	}
 	
-	private static BiFunction<Double, Double, Double> speedF =
-		(w, d) -> 0.1 * w / (20 - d + w);
+	private static double speedF(double w, double d) {
+		return 0.1 * w / (20 - d + w);
+	}
 	
 	public static double getEnnemiesSpeed(int wave, Difficulty diff)
 	{
 		double constant = 0.13 + 0.005 * (double) diff.getFactor();
 		
-		return constant + speedF.apply((double) wave, (double) diff.getFactor());
+		return constant + speedF((double) wave, (double) diff.getFactor());
 	}
 	
 	public static boolean isBossWave(int wave)
