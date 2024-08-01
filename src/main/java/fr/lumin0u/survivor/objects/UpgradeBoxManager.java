@@ -9,6 +9,9 @@ import fr.lumin0u.survivor.weapons.Upgradeable;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.perks.Perk;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -150,6 +153,8 @@ public class UpgradeBoxManager
 			weapon.setPerk(perk);
 			sp.refreshWeaponItem(weapon);
 			
+			TextComponent message = Component.text(SurvivorGame.prefix + "§eVous obtenez :");
+			message.append(Component.text(" " + perk.getDisplayName()).hoverEvent(HoverEvent.showText(perk.getDescription().stream().reduce(Component.text(), (c, s) -> c.append(Component.text(s)).appendNewline(), ComponentBuilder::append))));
 			sp.toBukkit().sendMessage(SurvivorGame.prefix + "§eVous obtenez : " + perk.getDisplayName());
 			
 			sp.toBukkit().closeInventory();
@@ -164,8 +169,8 @@ public class UpgradeBoxManager
 					.addLore("§7Les perks confèrent des améliorations")
 					.addLore("§7particulières aux armes")
 					.addLore("§7Un perk coûte §6§l"+Perk.PRICE+"§a$")
-					.addLore("§cVous ne pouvez ajouter qu'un")
-					.addLore("§cseul perk par arme§7, en racheter")
+					.addLore("§7Vous ne pouvez ajouter qu'§cun")
+					.addLore("§cseul perk §7par arme, en racheter")
 					.addLore("§7un retirera l'ancien !")
 					.build());
 			
