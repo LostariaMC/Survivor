@@ -376,12 +376,12 @@ public class GameManager
 		bossBar.onChangeState();
 		Surviboard.updateWave();
 		
-		double nbPlayerXPFactor = 1 - 1.0 / (1.5 + Math.pow(getOnlinePlayers().size() + 0.5, 2));
+		double nbPlayerXPFactor = Math.tanh(0.75 * getOnlinePlayers().size());
 		double difficultyXPFactor = Math.sqrt(difficulty.getFactor()) / 2.24; // sqrt 5
 		double molecules = wave <= 0 ? 0 :
 				difficultyXPFactor * nbPlayerXPFactor
-				* 1.4 // scaling factor (1 min is approx 2 xp)
-				* (Math.log(wave) + 1); // a primitive of ln(x)+1 is xln(x), this is what i wanted
+				* 2 // scaling factor (1 min is approx 2 xp)
+				* Math.pow(wave, 1.5) * (2.5 - (double) wave / (10 + wave)) / (10 + wave); // derivative of (x^1.5) * x/(10+x)
 		
 		for(SvPlayer sp : getOnlinePlayers()) {
 			if(wave >= 9 && sp.toBukkit().getInventory().contains(Material.CARROT))
