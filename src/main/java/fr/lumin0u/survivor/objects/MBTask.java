@@ -3,7 +3,6 @@ package fr.lumin0u.survivor.objects;
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.SurvivorGame;
-import fr.lumin0u.survivor.SvAsset;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.AABB;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -197,14 +196,14 @@ public class MBTask extends BukkitRunnable
 				removeAll();
 				mbm.changeLoc();
 			}
-			else if(sp.getSimpleWeapons().size() >= (sp.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2) && !this.shownWeapon.isSuperWeaponType())
+			else if(sp.getExchangeableWeapons().size() >= sp.getMaxWeaponCount() && !this.shownWeapon.isSuperWeaponType())
 			{
 				Weapon w = sp.getWeaponInHand();
 				if(w != null && !(w instanceof SuperWeapon) && (!(w instanceof Knife) || shownWeapon.isKnife()))
 				{
 					sp.removeWeapon(shownWeapon.isKnife() ? sp.getKnife() : w);
 					sp.toBukkit().getInventory().remove((shownWeapon.isKnife() ? sp.getKnife() : w).getType().getMaterial());
-					shownWeapon.giveNewWeapon(sp).giveItem();
+					sp.giveBuyableWeapon(shownWeapon.getNewWeapon(sp));
 					isItemGiven = true;
 					removeAll();
 				}
@@ -215,7 +214,7 @@ public class MBTask extends BukkitRunnable
 			}
 			else
 			{
-				shownWeapon.giveNewWeapon(sp).giveItem();
+				sp.giveBuyableWeapon(shownWeapon.getNewWeapon(sp));
 				isItemGiven = true;
 				this.removeAll();
 			}

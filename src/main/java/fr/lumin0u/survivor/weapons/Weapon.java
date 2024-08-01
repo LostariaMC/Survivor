@@ -5,6 +5,7 @@ import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
+import fr.lumin0u.survivor.utils.ImmutableItemStack;
 import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.knives.Knife;
 import fr.lumin0u.survivor.weapons.perks.Perk;
@@ -55,29 +56,6 @@ public abstract class Weapon implements IWeapon
 		meta.setUnbreakable(true);
 		meta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
 		this.item.setItemMeta(meta);
-		if(owner.getWeaponTypes().contains(wt)) {
-			owner.getWeaponsByType(this.getClass()).forEach(owner::removeWeapon);
-		}
-		
-		owner.addWeapon(this);
-		/*if(owner instanceof SvPlayer)
-		{
-			new BukkitRunnable()
-			{
-				@Override
-				public void run()
-				{
-					if(owner.canUseWeapon() && !owner.hasItem(Weapon.this))
-					{
-						if(!((SvPlayer) owner).toBukkit().getItemOnCursor().getType().equals(wt.getMaterial()))
-						{
-							owner.removeWeapon(Weapon.this);
-							this.cancel();
-						}
-					}
-				}
-			}.runTaskTimer(Survivor.getInstance(), 1L, 1L);
-		}*/
 	}
 	
 	public ItemStack getItem() {
@@ -114,7 +92,7 @@ public abstract class Weapon implements IWeapon
 	
 	public void reload() {
 		if(!owner.hasItem(this)) {
-			owner.giveWeaponItem(this);
+			owner.refreshWeaponItem(this);
 		}
 		if(ammo > 0) {
 			isReloading = true;
@@ -123,7 +101,7 @@ public abstract class Weapon implements IWeapon
 			if(owner instanceof SvPlayer) {
 				TFSound.RELOAD.playTo((SvPlayer) owner);
 				showCooldown(modifiedReloadTime);
-				owner.giveWeaponItem(Weapon.this);
+				owner.refreshWeaponItem(Weapon.this);
 			}
 			
 			new BukkitRunnable()
@@ -145,7 +123,7 @@ public abstract class Weapon implements IWeapon
 						setAmmo(Math.max(0, getAmmo() - (clipSize - clip)));
 						item.setAmount(1);
 						if(!ownerOffline) {
-							owner.giveWeaponItem(Weapon.this);
+							owner.refreshWeaponItem(Weapon.this);
 						}
 						return;
 					}
@@ -246,12 +224,12 @@ public abstract class Weapon implements IWeapon
 		return this.level;
 	}
 	
-	public void giveItem() {
+	public ImmutableItemStack buildItem() {
 		ItemMeta meta = this.item.getItemMeta();
 		meta.setLore(this.getLore());
 		this.item.setItemMeta(meta);
 		
-		owner.giveWeaponItem(this);
+		return new ImmutableItemStack(item);
 	}
 	
 	public int getMaxAmmo() {

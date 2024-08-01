@@ -2,7 +2,6 @@ package fr.lumin0u.survivor.mobs.mob.zombies;
 
 import fr.lumin0u.survivor.Survivor;
 import fr.lumin0u.survivor.mobs.mob.EnemyWeaponAI;
-import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.GrapplingHook;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -14,8 +13,7 @@ public class ZombieGrappler extends Zombie
 	{
 		super(ZombieType.GRAPPLER, spawnLoc, maxHealth, walkSpeed);
 		
-		GrapplingHook weapon = WeaponType.GRAPPLING_HOOK.giveNewWeapon(this);
-		weapon.giveItem();
+		giveWeapon(new GrapplingHook(this));
 		ai = new EnemyWeaponAI(weapon, true);
 		
 		(new BukkitRunnable()

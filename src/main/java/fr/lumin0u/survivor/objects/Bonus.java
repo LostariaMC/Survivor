@@ -7,7 +7,6 @@ import fr.lumin0u.survivor.mobs.mob.boss.Boss;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.weapons.Weapon;
-import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -172,7 +171,7 @@ public enum Bonus
 					}
 				}
 			}
-			case AIRSTRIKE -> WeaponType.AIRSTRIKE.giveNewWeapon(picker).giveItem();
+			case AIRSTRIKE -> picker.giveAirstrike();
 		}
 		
 	}

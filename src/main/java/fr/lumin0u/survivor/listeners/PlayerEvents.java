@@ -22,15 +22,20 @@ import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.IPlaceable;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
+import fr.lumin0u.survivor.weapons.guns.M1911;
 import fr.lumin0u.survivor.weapons.guns.snipers.Sniper;
 import fr.lumin0u.survivor.weapons.knives.Knife;
+import fr.lumin0u.survivor.weapons.knives.LittleKnife;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.game.events.PlayerJoinGameEvent;
 import fr.worsewarn.cosmox.game.teams.Team;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Cake;
@@ -181,7 +186,7 @@ public class PlayerEvents implements PacketListener, Listener
 			{
 				List<Weapon> needsAmmo = new ArrayList<>();
 				
-				for(Weapon w : player.getSimpleWeapons())
+				for(Weapon w : player.getExchangeableWeapons())
 				{
 					if(w.getAmmo() < w.getMaxAmmo())
 					{
@@ -299,12 +304,12 @@ public class PlayerEvents implements PacketListener, Listener
 					
 					if(!player.getWeaponTypes().contains(wt)) {
 						if(wt.getPrice() <= player.getMoney()) {
-							if(player.getSimpleWeapons().size() >= (player.getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2)) {
+							if(player.getExchangeableWeapons().size() >= player.getMaxWeaponCount()) {
 								Weapon replaced = player.getWeaponInHand();
 								
 								if(replaced != null && !(replaced instanceof SuperWeapon || replaced instanceof Knife)) {
 									player.removeWeapon(replaced);
-									wt.giveNewWeapon(player).giveItem();
+									player.giveBuyableWeapon(wt.getNewWeapon(player));
 									player.addMoney(-wt.getPrice());
 								} else {
 									TFSound.CANT_AFFORD.playTo(player);
@@ -312,7 +317,7 @@ public class PlayerEvents implements PacketListener, Listener
 								}
 							}
 							else {
-								wt.giveNewWeapon(player).giveItem();
+								player.giveBuyableWeapon(wt.getNewWeapon(player));
 								player.addMoney(-wt.getPrice());
 							}
 						}
@@ -483,14 +488,14 @@ public class PlayerEvents implements PacketListener, Listener
 			boolean inWave = gm.isInWave();
 			
 			if(sp.getWeapons().isEmpty()) {
-				WeaponType.LITTLE_KNIFE.giveNewWeapon(sp);
-				WeaponType.M1911.giveNewWeapon(sp);
+				sp.giveKnife(new LittleKnife(sp));
+				sp.giveExchangeableWeapon(new M1911(sp));
 				
 				double n = gm.getWave();
 				sp.addMoney(12.5 * n * n + 87.5 * n); // = \sum_{k=0}^{n} 75 + 25*k
 			}
 			
-			sp.getWeapons().forEach(sp::giveWeaponItem);
+			sp.regiveAllWeapons();
 			
 			if(inWave)
 			{

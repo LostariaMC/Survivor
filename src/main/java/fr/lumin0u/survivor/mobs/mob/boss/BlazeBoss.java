@@ -29,7 +29,7 @@ public class BlazeBoss extends Enemy implements Boss
 	public BlazeBoss(Location spawnLoc, double maxHealth, double walkSpeed) {
 		super(EntityType.BLAZE, spawnLoc, maxHealth, walkSpeed * 0.9, TFSound.simple(Sound.ENTITY_BLAZE_HURT), TFSound.simple(Sound.ENTITY_BLAZE_DEATH), 2);
 		
-		Weapon weapon = WeaponType.BLAZE_GUN.giveNewWeapon(this);
+		giveWeapon(new BlazeGun(this));
 		ai = new EnemyWeaponAI(weapon, true);
 		
 		new BukkitRunnable()

@@ -18,6 +18,8 @@ import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Utils;
 import fr.lumin0u.survivor.weapons.WeaponType;
+import fr.lumin0u.survivor.weapons.guns.M1911;
+import fr.lumin0u.survivor.weapons.knives.LittleKnife;
 import fr.worsewarn.cosmox.API;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.game.GameVariables;
@@ -186,8 +188,8 @@ public class GameManager
 				p.sendMessage(SurvivorGame.prefix + "§cVous recevrez votre approvisionnement à partir de la vague 10");
 				
 				SvPlayer sp = SvPlayer.of(p);
-				WeaponType.LITTLE_KNIFE.giveNewWeapon(sp).giveItem();
-				WeaponType.M1911.giveNewWeapon(sp).giveItem();
+				sp.giveKnife(new LittleKnife(sp));
+				sp.giveExchangeableWeapon(new M1911(sp));
 				p.teleport(spawnpoint);
 				p.setGameMode(GameMode.ADVENTURE);
 				p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 1.0F);
@@ -388,7 +390,7 @@ public class GameManager
 				sp.toBukkit().getInventory().remove(Material.CARROT);
 			
 			if(this.wave >= 9) {
-				sp.getSupply().giveNewWeapon(sp).giveItem();
+				sp.giveSupplyWeapon();
 			}
 			
 			if(this.wave != 0) {

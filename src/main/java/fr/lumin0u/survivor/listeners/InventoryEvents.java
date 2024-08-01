@@ -37,12 +37,12 @@ public class InventoryEvents implements Listener
 		{
 			switch(e.getCurrentItem().getType())
 			{
-				case SNOWBALL -> sp.setSupply(WeaponType.GRENADE);
-				case SLIME_BALL -> sp.setSupply(WeaponType.GRENADEFRAG);
-				case PAPER -> sp.setSupply(WeaponType.MEDIC_KIT);
-				case MAGMA_CREAM -> sp.setSupply(WeaponType.GRENADEFLAME);
-				case GOLD_NUGGET -> sp.setSupply(WeaponType.TURRET);
-				case CAKE -> sp.setSupply(WeaponType.AMMO_BOX);
+				case SNOWBALL -> sp.setSupplyType(WeaponType.GRENADE);
+				case SLIME_BALL -> sp.setSupplyType(WeaponType.GRENADEFRAG);
+				case PAPER -> sp.setSupplyType(WeaponType.MEDIC_KIT);
+				case MAGMA_CREAM -> sp.setSupplyType(WeaponType.GRENADEFLAME);
+				case GOLD_NUGGET -> sp.setSupplyType(WeaponType.TURRET);
+				case CAKE -> sp.setSupplyType(WeaponType.AMMO_BOX);
 			}
 			
 			sp.openSupplyInventory();

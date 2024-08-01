@@ -424,15 +424,15 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	}
 	
 	@Override
-	public void giveWeaponItem(Weapon w)
+	public void refreshWeaponItem(Weapon w)
 	{
-		ent.getEquipment().setItemInHand(w.getItem());
+		ent.getEquipment().setItemInMainHand(w.buildItem());
 	}
 	
-	@Override
-	public void addWeapon(Weapon w)
+	public void giveWeapon(Weapon w)
 	{
 		weapon = w;
+		refreshWeaponItem(w);
 	}
 	
 	@Override
@@ -440,7 +440,7 @@ public abstract class Enemy implements SvDamageable, WeaponOwner
 	{
 		if(Objects.equals(w, weapon)) {
 			weapon = null;
-			ent.getEquipment().setItemInHand(null);
+			ent.getEquipment().setItemInMainHand(null);
 		}
 	}
 	

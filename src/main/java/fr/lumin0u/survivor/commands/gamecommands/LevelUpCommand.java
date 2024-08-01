@@ -36,7 +36,7 @@ public class LevelUpCommand extends AbstractGameCommand
 				}
 			}
 			
-			w.giveItem();
+			player.refreshWeaponItem(w);
 		}
 		
 	}

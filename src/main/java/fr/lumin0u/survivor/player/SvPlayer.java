@@ -6,11 +6,13 @@ import fr.lumin0u.survivor.utils.*;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.knives.Knife;
+import fr.lumin0u.survivor.weapons.superweapons.AirStrike;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import fr.worsewarn.cosmox.game.GameVariables;
 import fr.worsewarn.cosmox.game.teams.Team;
 import net.kyori.adventure.text.Component;
+import org.apache.commons.lang3.stream.Streams;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -33,19 +35,29 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 {
+	public static final int SUPPLY_SLOT = 4;
+	public static final int AIRSTRIKE_SLOT = 7;
+	public static final int SPECIAL_SLOT = 8;
+	
+	
 	private Knife knife;
-	private final List<Weapon> weapons;
-	private final List<SvAsset> assets;
+	private final List<Weapon> exchangeableWeapons;
+	private SuperWeapon supplyWeapon;
+	private AirStrike airstrike;
+	private SuperWeapon specialWeapon;
+	
+	private final Set<SvAsset> assets;
 	private Object actionBar;
 	private LifeState lifeState;
 	private double money;
 	private double reviveTime;
 	private long deathDate;
 	private long instantKillStartDate;
-	private WeaponType supply;
+	private WeaponType supplyType;
 	private Difficulty diffVote = Difficulty.NOT_SET;
 	private int fireTime;
 	private WeaponOwner fireSource;
@@ -58,11 +70,11 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	{
 		super(uid);
 		
-		this.weapons = new ArrayList<>();
-		this.assets = new ArrayList<>();
+		this.exchangeableWeapons = new LinkedList<>();
+		this.assets = new HashSet<>();
 		this.actionBar = null;
 		this.lifeState = LifeState.ALIVE;
-		this.supply = WeaponType.GRENADE;
+		this.supplyType = WeaponType.GRENADE;
 		
 		startLifeRunnable();
 	}
@@ -242,10 +254,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		return this.uid;
 	}
 	
+	public List<Weapon> getExchangeableWeapons() {
+		return new ArrayList<>(this.exchangeableWeapons);
+	}
+	
 	@Override
-	public List<Weapon> getWeapons()
-	{
-		return new ArrayList<>(this.weapons);
+	public Collection<Weapon> getWeapons() {
+		return Stream.concat(Streams.of(exchangeableWeapons), Streams.nonNull(knife, supplyWeapon, airstrike, specialWeapon)).toList();
 	}
 	
 	@Override
@@ -253,13 +268,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	{
 		int place = getInventory().first(w.getType().getMaterial());
 		return place == -1 ? null : getInventory().getItem(place);
-	}
-	
-	public List<Weapon> getSimpleWeapons()
-	{
-		return weapons.stream()
-				.filter(w -> !(w instanceof SuperWeapon || w.equals(this.getKnife())))
-				.toList();
 	}
 	
 	public void setActionBar(Weapon actionBar)
@@ -279,11 +287,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	public Knife getKnife()
 	{
 		return this.knife;
-	}
-	
-	public void setKnife(Knife knife)
-	{
-		this.knife = knife;
 	}
 	
 	public boolean isAlive() {
@@ -528,9 +531,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		setMoney(this.money + money);
 	}
 	
-	public List<SvAsset> getAssets()
+	public Collection<SvAsset> getAssets()
 	{
 		return this.assets;
+	}
+	
+	public int getMaxWeaponCount() {
+		return getAssets().contains(SvAsset.TROIS_ARME) ? 3 : 2;
 	}
 	
 	public AABB bodyCub()
@@ -580,13 +587,13 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		return toBukkit().getEyeLocation();
 	}
 	
-	public WeaponType getSupply() {
-		return this.supply;
+	public WeaponType getSupplyType() {
+		return this.supplyType;
 	}
 	
-	public void setSupply(WeaponType supply)
+	public void setSupplyType(WeaponType supplyType)
 	{
-		this.supply = supply;
+		this.supplyType = supplyType;
 	}
 	
 	public void openSupplyInventory()
@@ -598,12 +605,12 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		inv.setItem(5, MCUtils.newItem(Material.MAGMA_CREAM, "§9Grenade Incendiaire", Arrays.asList("§6Recevez §e3 §6grenades", "§6incendiaires à chaque fin", "§6de vague")));
 		inv.setItem(6, MCUtils.newItem(Material.GOLD_NUGGET, "§9Tourelle", Arrays.asList("§6Recevez §e1 §6tourelle à", "§6chaque fin de vague")));
 		inv.setItem(7, MCUtils.newItem(Material.CAKE, "§9Boite de munitions", Arrays.asList("§6Recevez §e1 §6boite de munitions", "§6chaque fin de vague")));
-		inv.setItem(10, new ItemStack(this.supply.equals(WeaponType.GRENADE) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
-		inv.setItem(11, new ItemStack(this.supply.equals(WeaponType.GRENADEFRAG) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
-		inv.setItem(12, new ItemStack(this.supply.equals(WeaponType.MEDIC_KIT) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
-		inv.setItem(14, new ItemStack(this.supply.equals(WeaponType.GRENADEFLAME) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
-		inv.setItem(15, new ItemStack(this.supply.equals(WeaponType.TURRET) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
-		inv.setItem(16, new ItemStack(this.supply.equals(WeaponType.AMMO_BOX) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
+		inv.setItem(10, new ItemStack(supplyType.equals(WeaponType.GRENADE) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
+		inv.setItem(11, new ItemStack(supplyType.equals(WeaponType.GRENADEFRAG) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
+		inv.setItem(12, new ItemStack(supplyType.equals(WeaponType.MEDIC_KIT) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
+		inv.setItem(14, new ItemStack(supplyType.equals(WeaponType.GRENADEFLAME) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
+		inv.setItem(15, new ItemStack(supplyType.equals(WeaponType.TURRET) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
+		inv.setItem(16, new ItemStack(supplyType.equals(WeaponType.AMMO_BOX) ? Material.GREEN_STAINED_GLASS_PANE :  Material.RED_STAINED_GLASS_PANE));
 		toBukkit().openInventory(inv);
 	}
 	
@@ -615,7 +622,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public Weapon getWeapon(ItemStack item)
 	{
-		return weapons.stream().filter(w -> w.getItem().isSimilar(item)).findAny().orElse(null);
+		return getWeapons().stream().filter(w -> w.getItem().isSimilar(item)).findAny().orElse(null);
 	}
 	
 	public void killZombie()
@@ -635,24 +642,18 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	
 	public void cleanInventory()
 	{
-		List<Weapon> orderedWeapons = new ArrayList<>();
+		Map<Weapon, Integer> exchangeableSlots = new HashMap<>();
 		
 		PlayerInventory inv = this.toBukkit().getInventory();
 		
-		for(int i = 0; i < inv.getSize(); i++)
-		{
-			if(inv.getItem(i) != null && getWeapon(inv.getItem(i)) != null)
-			{
-				orderedWeapons.add(getWeapon(inv.getItem(i)));
-			}
+		for(Weapon w : getExchangeableWeapons()) {
+			exchangeableSlots.put(w, inv.first(w.getItem().getType()));
 		}
 		
 		inv.clear();
 		
-		for(Weapon weapon : orderedWeapons)
-		{
-			weapon.giveItem();
-		}
+		regiveAllWeapons();
+		exchangeableSlots.forEach(this::giveWeaponItem);
 		
 		if(this.getAssets().contains(SvAsset.MASTODONTE))
 		{
@@ -681,7 +682,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		
 		if(GameManager.getInstance().getWave() < 10) {
 			ItemStack itemA = new ItemBuilder(Material.CARROT).setDisplayName("§6Approvisionnement").build();
-			toBukkit().getInventory().setItem(4, itemA);
+			toBukkit().getInventory().setItem(SUPPLY_SLOT, itemA);
 		}
 	}
 	
@@ -755,17 +756,80 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 	@Override
 	public void removeWeapon(Weapon w)
 	{
-		weapons.remove(w);
-		getInventory().remove(w.getItem());
+		exchangeableWeapons.remove(w);
+		
+		if(w.equals(supplyWeapon))
+			supplyWeapon = null;
+		if(w.equals(airstrike))
+			airstrike = null;
+		if(w.equals(specialWeapon))
+			specialWeapon = null;
+		if(w.equals(knife))
+			knife = null;
+		
+		getInventory().remove(w.getItem().getType());
+	}
+	
+	public void regiveAllWeapons() {
+		giveWeaponItem(knife, 0);
+		exchangeableWeapons.forEach(w -> giveWeaponItem(w, -1));
+		if(supplyWeapon != null)
+			giveWeaponItem(supplyWeapon, SUPPLY_SLOT);
+		if(airstrike != null)
+			giveWeaponItem(airstrike, AIRSTRIKE_SLOT);
+		if(specialWeapon != null)
+			giveWeaponItem(specialWeapon, SPECIAL_SLOT);
+	}
+	
+	/**
+	 * Will infer from weapon's type whether it should be given as an exchangeable weapon, a special weapon or a knife.
+	 * */
+	public void giveBuyableWeapon(Weapon weapon) {
+		if(weapon instanceof Knife k) {
+			giveKnife(k);
+		}
+		else if(weapon instanceof SuperWeapon s) {
+			giveSpecialWeapon(s);
+		}
+		else {
+			giveExchangeableWeapon(weapon);
+		}
+	}
+	
+	public void giveKnife(Knife knife) {
+		this.knife = knife;
+		giveWeaponItem(knife, 0);
+	}
+	
+	public void giveExchangeableWeapon(Weapon weapon) {
+		exchangeableWeapons.add(weapon);
+		giveWeaponItem(weapon, -1);
+	}
+	
+	public void giveSpecialWeapon(SuperWeapon weapon) {
+		// removing the last is not necessary
+		specialWeapon = weapon;
+		giveWeaponItem(weapon, SPECIAL_SLOT);
+	}
+	
+	public void giveSupplyWeapon() {
+		// removing the last is not necessary
+		supplyWeapon = supplyType.getNewWeapon(this);
+		giveWeaponItem(supplyWeapon, SUPPLY_SLOT);
+	}
+	
+	public void giveAirstrike() {
+		// removing the last is not necessary
+		airstrike = new AirStrike(this);
+		giveWeaponItem(airstrike, AIRSTRIKE_SLOT);
 	}
 	
 	@Override
-	public void addWeapon(Weapon weapon) {
-		weapons.add(weapon);
+	public void refreshWeaponItem(Weapon weapon) {
+		giveWeaponItem(weapon, -1);
 	}
 	
-	@Override
-	public void giveWeaponItem(Weapon w)
+	public void giveWeaponItem(Weapon w, int defaultPlace)
 	{
 		if(!isOnline())
 			return;
@@ -774,17 +838,17 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		int place = inv.first(w.getItem().getType());
 		inv.remove(w.getItem().getType());
 		
-		if(w.getType().getPlace() != -1)
+		if(defaultPlace != -1)
 		{
-			inv.setItem(w.getType().getPlace(), w.getItem());
+			inv.setItem(defaultPlace, w.buildItem());
 		}
 		else if(place != -1)
 		{
-			inv.setItem(place, w.getItem());
+			inv.setItem(place, w.buildItem());
 		}
 		else
 		{
-			inv.addItem(w.getItem());
+			inv.addItem(w.buildItem());
 		}
 	}
 	

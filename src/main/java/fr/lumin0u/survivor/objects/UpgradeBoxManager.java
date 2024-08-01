@@ -9,7 +9,6 @@ import fr.lumin0u.survivor.weapons.Upgradeable;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.perks.Perk;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -122,7 +121,7 @@ public class UpgradeBoxManager
 			((Upgradeable) weapon).upgrade();
 			weapon.setAmmo(Math.min(weapon.getMaxAmmo(), weapon.getAmmo() + weapon.getMaxAmmo() / 4));
 			weapon.setClip(weapon.getClipSize());
-			weapon.giveItem();
+			sp.refreshWeaponItem(weapon);
 			
 			createAndShow();
 		}
@@ -149,7 +148,7 @@ public class UpgradeBoxManager
 			sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 			sp.addMoney(-Perk.PRICE);
 			weapon.setPerk(perk);
-			weapon.giveItem();
+			sp.refreshWeaponItem(weapon);
 			
 			sp.toBukkit().sendMessage(SurvivorGame.prefix + "§eVous obtenez : " + perk.getDisplayName());
 			
