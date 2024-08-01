@@ -5,7 +5,6 @@ import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
-import fr.lumin0u.survivor.utils.ImmutableItemStack;
 import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.knives.Knife;
 import fr.lumin0u.survivor.weapons.perks.Perk;
@@ -224,12 +223,12 @@ public abstract class Weapon implements IWeapon
 		return this.level;
 	}
 	
-	public ImmutableItemStack buildItem() {
+	public ItemStack buildItem() {
 		ItemMeta meta = this.item.getItemMeta();
 		meta.setLore(this.getLore());
 		this.item.setItemMeta(meta);
 		
-		return new ImmutableItemStack(item);
+		return item.clone();
 	}
 	
 	public int getMaxAmmo() {

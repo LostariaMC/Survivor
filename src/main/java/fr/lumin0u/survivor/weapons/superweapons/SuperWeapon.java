@@ -4,6 +4,7 @@ import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 
 public abstract class SuperWeapon extends Weapon
 {
@@ -22,8 +23,16 @@ public abstract class SuperWeapon extends Weapon
 	public void useAmmo()
 	{
 		super.useAmmo();
+		
 		if(ammo + clip <= 0)
 			owner.removeWeapon(this);
+	}
+	
+	@Override
+	public ItemStack buildItem() {
+		item.setAmount(ammo + clip);
+		
+		return super.buildItem();
 	}
 	
 	@Override
