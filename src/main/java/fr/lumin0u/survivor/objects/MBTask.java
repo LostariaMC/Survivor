@@ -144,7 +144,7 @@ public class MBTask extends BukkitRunnable
 					this.subCounter = 0L;
 					this.superCounter = System.currentTimeMillis();
 				}
-				else if(System.currentTimeMillis() - this.superCounter > (long) (this.nounours ? 2000 : 6000))
+				else if(System.currentTimeMillis() - this.superCounter > (long) (this.nounours ? 3000 : 10000))
 				{
 					if(this.nounours)
 					{
