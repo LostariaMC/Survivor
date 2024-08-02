@@ -11,6 +11,7 @@ import fr.lumin0u.survivor.*;
 import fr.lumin0u.survivor.config.commands.LeaveConfigCommand;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
 import fr.lumin0u.survivor.mobs.mob.boss.PoisonousBoss;
+import fr.lumin0u.survivor.objects.AmmoFrameManager;
 import fr.lumin0u.survivor.objects.Door;
 import fr.lumin0u.survivor.objects.MagicBoxManager;
 import fr.lumin0u.survivor.objects.Room;
@@ -41,7 +42,10 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Cake;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.Switch;
-import org.bukkit.entity.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -294,13 +298,13 @@ public class PlayerEvents implements PacketListener, Listener
 		{
 			GameManager gm = GameManager.getInstance();
 			SvPlayer player = SvPlayer.of(e.getPlayer());
-			if((e.getRightClicked().getType().equals(EntityType.ITEM_FRAME) || e.getRightClicked().getType().equals(EntityType.GLOW_ITEM_FRAME)) && !((ItemFrame) e.getRightClicked()).getItem().getType().equals(Material.AIR) && gm.isStarted() && player.isAlive())
+			if(e.getRightClicked() instanceof ItemFrame itemFrame && !itemFrame.getItem().getType().equals(Material.AIR) && gm.isStarted() && player.isAlive())
 			{
 				e.setCancelled(true);
 				
 				Consumer<WeaponType> tryBuyWeapon = wt -> {
 					
-					((ItemFrame) e.getRightClicked()).setItem(wt.getItemToSell());
+					itemFrame.setItem(wt.getItemToSell());
 					
 					if(!player.getWeaponTypes().contains(wt)) {
 						if(wt.getPrice() <= player.getMoney()) {
@@ -343,27 +347,27 @@ public class PlayerEvents implements PacketListener, Listener
 				};
 				
 				Arrays.stream(WeaponType.values())
-						.filter(wt -> wt.getMaterial().equals(((ItemFrame) e.getRightClicked()).getItem().getType()))
+						.filter(wt -> wt.getMaterial().equals(itemFrame.getItem().getType()))
 						.findFirst()
 						.ifPresent(tryBuyWeapon);
 				
 				for(SvAsset asset : SvAsset.values())
 				{
-					if(asset.getMaterial().equals(((ItemFrame) e.getRightClicked()).getItem().getType()))
+					if(asset.getMaterial().equals(itemFrame.getItem().getType()))
 					{
-						((ItemFrame) e.getRightClicked()).setItem(asset.getItem());
+						itemFrame.setItem(asset.getItem());
 						if(!gm.canPlayerBuyAsset())
 						{
 							ItemStack item = asset.getItem().clone();
 							ItemMeta meta = item.getItemMeta();
 							meta.setDisplayName("§cActivez d'abord l'electricité");
 							item.setItemMeta(meta);
-							((ItemFrame) e.getRightClicked()).setItem(item);
+							itemFrame.setItem(item);
 							(new BukkitRunnable()
 							{
 								@Override
 								public void run() {
-									((ItemFrame) e.getRightClicked()).setItem(asset.getItem());
+									itemFrame.setItem(asset.getItem());
 								}
 							}).runTaskLater(Survivor.getInstance(), 40L);
 							break;
@@ -397,6 +401,17 @@ public class PlayerEvents implements PacketListener, Listener
 							
 							player.cleanInventory();
 						}
+					}
+				}
+				
+				if(AmmoFrameManager.ITEM_TYPE == itemFrame.getItem().getType()) {
+					if(player.getWeaponInHand() != null) {
+						TFSound.AMMO_TAKE.playTo(player);
+						gm.getAmmoFrameManager().refillMax(player, player.getWeaponInHand());
+					}
+					else {
+						TFSound.CANT_AFFORD.playTo(player);
+						player.sendMessage(SurvivorGame.prefix + " §cVeuillez prendre une arme rechargeable en main");
 					}
 				}
 			}

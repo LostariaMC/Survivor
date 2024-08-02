@@ -9,10 +9,7 @@ import fr.lumin0u.survivor.mobs.mob.Wolf;
 import fr.lumin0u.survivor.mobs.mob.boss.Boss;
 import fr.lumin0u.survivor.mobs.mob.zombies.Zombie;
 import fr.lumin0u.survivor.mobs.mob.zombies.ZombieType;
-import fr.lumin0u.survivor.objects.Door;
-import fr.lumin0u.survivor.objects.MagicBoxManager;
-import fr.lumin0u.survivor.objects.Room;
-import fr.lumin0u.survivor.objects.UpgradeBoxManager;
+import fr.lumin0u.survivor.objects.*;
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.utils.MCUtils;
@@ -53,8 +50,11 @@ public class GameManager
 	private int doorPrice;
 	private int wave;
 	private boolean inWave;
+	
 	private final MagicBoxManager magicBoxManager;
 	private final UpgradeBoxManager upgradeBoxManager;
+	private final AmmoFrameManager ammoFrameManager;
+	
 	private List<Location> ammoBoxes;
 	@NotNull
 	private Difficulty difficulty = Difficulty.NOT_SET;
@@ -104,8 +104,10 @@ public class GameManager
 		// TODO electrical
 		spawnpoint = config.spawnpoint.toLocation(world);
 		ammoBoxes = config.ammoBoxes.stream().map(v -> v.toLocation(world)).toList();
+		
 		magicBoxManager = new MagicBoxManager(config.magicBoxes.stream().map(v -> v.toLocation(world)).toList(), this);
 		upgradeBoxManager = new UpgradeBoxManager(config.upgradeMachine.toLocation(world), this);
+		ammoFrameManager = new AmmoFrameManager();
 		
 		rooms = new ArrayList<>(config.getRooms());
 		totalFenceCount = rooms.stream().mapToInt(room -> room.getFences().size()).sum();
@@ -161,8 +163,6 @@ public class GameManager
 		if(this.defaultRoom != null && this.spawnpoint != null) {
 			Bukkit.broadcastMessage(SurvivorGame.prefix + "§6La partie commence !");
 			endWave();
-			magicBoxManager.onGameStart();
-			upgradeBoxManager.onGameStart();
 			
 			for(LivingEntity ent : world.getEntitiesByClass(LivingEntity.class)) {
 				if(!(ent instanceof Player)) {
@@ -202,21 +202,28 @@ public class GameManager
 			
 			Bukkit.getOnlinePlayers().stream().map(SvPlayer::of).forEach(Surviboard::reInitScoreboard);
 			
-			// can be done now that entities are loaded
-			
-			for(ItemFrame itemFrame : world.getEntitiesByClasses(ItemFrame.class, GlowItemFrame.class).stream().map(ItemFrame.class::cast).toList()) {
-				for(WeaponType wt : WeaponType.values()) {
-					if(wt.getMaterial().equals(itemFrame.getItem().getType())) {
-						itemFrame.setItem(wt.getItemToSell());
+			Bukkit.getScheduler().runTaskLater(Survivor.getInstance(), () -> {
+				magicBoxManager.onGameStart();
+				upgradeBoxManager.onGameStart();
+				
+				// can be done now that entities are loaded
+				
+				for(ItemFrame itemFrame : world.getEntitiesByClasses(ItemFrame.class, GlowItemFrame.class).stream().map(ItemFrame.class::cast).toList()) {
+					for(WeaponType wt : WeaponType.values()) {
+						if(wt.getMaterial().equals(itemFrame.getItem().getType())) {
+							itemFrame.setItem(wt.getItemToSell());
+						}
+					}
+					
+					for(SvAsset asset : SvAsset.values()) {
+						if(asset.getMaterial().equals(itemFrame.getItem().getType())) {
+							itemFrame.setItem(asset.getItem());
+						}
 					}
 				}
 				
-				for(SvAsset asset : SvAsset.values()) {
-					if(asset.getMaterial().equals(itemFrame.getItem().getType())) {
-						itemFrame.setItem(asset.getItem());
-					}
-				}
-			}
+				ammoFrameManager.init(spawnpoint);
+			}, 60);
 		}
 		else {
 			Bukkit.broadcastMessage("§cVeuillez finir la config avant de lancer la partie");
@@ -709,6 +716,10 @@ public class GameManager
 	
 	public UpgradeBoxManager getUpgradeBoxManager() {
 		return upgradeBoxManager;
+	}
+	
+	public AmmoFrameManager getAmmoFrameManager() {
+		return ammoFrameManager;
 	}
 	
 	public List<Location> getAmmoBoxes() {

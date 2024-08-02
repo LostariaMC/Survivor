@@ -24,6 +24,8 @@ public abstract class SuperWeapon extends Weapon
 	{
 		super.useAmmo();
 		
+		owner.refreshWeaponItem(this);
+		
 		if(ammo + clip <= 0)
 			owner.removeWeapon(this);
 	}
