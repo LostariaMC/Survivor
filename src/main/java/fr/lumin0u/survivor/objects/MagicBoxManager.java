@@ -9,11 +9,14 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 public class MagicBoxManager
 {
+	private final List<Location> notUsedLocations;
+	
 	private final List<Location> possibleLocations;
 	private Block currentBox;
 	private MBTask mbTask;
@@ -24,6 +27,7 @@ public class MagicBoxManager
 	{
 		this.gm = gm;
 		this.possibleLocations = possibleLocations;
+		this.notUsedLocations = new LinkedList<>(possibleLocations);
 		
 		if(possibleLocations.isEmpty())
 		{
@@ -59,10 +63,29 @@ public class MagicBoxManager
 			this.currentBox.setType(Material.AIR);
 		}
 		
-		do
-		{
-			this.currentBox = this.possibleLocations.get((new Random()).nextInt(this.possibleLocations.size())).getBlock();
-		} while(last != null && this.currentBox.getLocation().equals(last) && this.possibleLocations.size() > 1);
+		if(notUsedLocations.isEmpty()) {
+			this.currentBox = possibleLocations.get(new Random().nextInt(possibleLocations.size())).getBlock();
+		}
+		else {
+			Location selected = null;
+			double selectedDist = 0;
+			
+			Location playerMean = gm.getOnlinePlayers().stream()
+					.map(SvPlayer::getShootLocation)
+					.reduce(Location::add)
+					.map(l -> l.multiply(1.0 / gm.getOnlinePlayers().size()))
+					.orElse(gm.getSpawnpoint());
+			
+			for(Location next : notUsedLocations) {
+				double d = next.distanceSquared(playerMean);
+				if(selected == null || selectedDist > d) {
+					selected = next;
+					selectedDist = d;
+				}
+			}
+			currentBox = selected.getBlock();
+			notUsedLocations.remove(selected);
+		}
 		
 		if(last != null)
 		{

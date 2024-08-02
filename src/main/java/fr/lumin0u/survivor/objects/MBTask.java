@@ -128,7 +128,7 @@ public class MBTask extends BukkitRunnable
 							this.vehicle.setCustomNameVisible(true);
 						}
 						
-						this.nounours = this.random.nextInt(14) == 0;
+						this.nounours = this.random.nextInt(GameManager.getInstance().getOnlinePlayers().size() * 3 + 2) == 0;
 						if(this.nounours)
 						{
 							this.shownWeapon = null;
