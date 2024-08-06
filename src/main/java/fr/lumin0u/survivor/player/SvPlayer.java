@@ -692,9 +692,9 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			return null;
 		
 		BoundingBox bb = toBukkit().getBoundingBox();
-		bb.shift(0, -0.01, 0);
+		bb.shift(0, -0.4, 0);
 		
-		double tpY = toBukkit().getLocation().getY() - 0.01;
+		double tpY = toBukkit().getLocation().getY() - 0.4;
 		boolean any = false;
 		
 		World world = toBukkit().getWorld();

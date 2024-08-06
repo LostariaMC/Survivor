@@ -9,8 +9,6 @@ import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
-import fr.lumin0u.survivor.weapons.knives.Knife;
-import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -190,20 +188,22 @@ public class MBTask extends BukkitRunnable
 		{
 			Location itemLoc = this.shownItem.getLocation();
 			boolean isItemGiven = false;
-			if(nounours)
-			{
+			if(nounours) {
 				clicker.addMoney(MagicBoxManager.boxPrice);
 				removeAll();
 				mbm.changeLoc();
 			}
-			else if(sp.getExchangeableWeapons().size() >= sp.getMaxWeaponCount() && !this.shownWeapon.isSuperWeaponType())
-			{
+			else if(shownWeapon.isSuperWeaponType() || shownWeapon.isKnife() || sp.getExchangeableWeapons().size() < sp.getMaxWeaponCount()) {
+				sp.giveBuyableWeapon(shownWeapon.getNewWeapon(sp));
+				isItemGiven = true;
+				this.removeAll();
+			}
+			else {
 				Weapon w = sp.getWeaponInHand();
-				if(w != null && !(w instanceof SuperWeapon) && (!(w instanceof Knife) || shownWeapon.isKnife()))
-				{
-					sp.removeWeapon(shownWeapon.isKnife() ? sp.getKnife() : w);
-					sp.toBukkit().getInventory().remove((shownWeapon.isKnife() ? sp.getKnife() : w).getType().getMaterial());
-					sp.giveBuyableWeapon(shownWeapon.getNewWeapon(sp));
+				
+				if(sp.getExchangeableWeapons().contains(w)) {
+					sp.removeWeapon(w);
+					sp.giveExchangeableWeapon(shownWeapon.getNewWeapon(sp));
 					isItemGiven = true;
 					removeAll();
 				}
@@ -211,12 +211,6 @@ public class MBTask extends BukkitRunnable
 					TFSound.CANT_AFFORD.playTo(sp);
 					sp.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous avez atteint la limite d'armes. Prenez une arme dans la main pour la remplacer.");
 				}
-			}
-			else
-			{
-				sp.giveBuyableWeapon(shownWeapon.getNewWeapon(sp));
-				isItemGiven = true;
-				this.removeAll();
 			}
 			
 			if(isItemGiven)
