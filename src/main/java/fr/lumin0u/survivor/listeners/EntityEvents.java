@@ -2,10 +2,7 @@ package fr.lumin0u.survivor.listeners;
 
 import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.mobs.mob.Enemy;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
@@ -92,6 +89,12 @@ public class EntityEvents implements Listener
 		{
 			e.setCancelled(true);
 		}
-		
+	}
+	
+	@EventHandler
+	public void onProjectileLaunch(ProjectileLaunchEvent event)
+	{
+		if(event.getEntity().getShooter() instanceof Blaze)
+			event.setCancelled(true);
 	}
 }
