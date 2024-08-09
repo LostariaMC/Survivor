@@ -680,7 +680,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 			inv.setItem(9 + (c++), asset.getItem());
 		}
 		
-		if(GameManager.getInstance().getWave() < 10) {
+		if(GameManager.getInstance().getWave() < 9) {
 			ItemStack itemA = new ItemBuilder(Material.CARROT).setDisplayName("§6Approvisionnement").build();
 			toBukkit().getInventory().setItem(SUPPLY_SLOT, itemA);
 		}
