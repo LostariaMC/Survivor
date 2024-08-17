@@ -27,7 +27,7 @@ public class MoneyCommand implements CommandExecutor
 			
 			try
 			{
-				int amount = Integer.parseInt(args[0]);
+				int amount = args[0].equalsIgnoreCase("all") ? (int) sp.getMoney() : Integer.parseInt(args[0]);
 				
 				tryExchangeMoney(sp, args[1], amount);
 				
@@ -38,7 +38,7 @@ public class MoneyCommand implements CommandExecutor
 			int amount;
 			try
 			{
-				amount = Integer.parseInt(args[1]);
+				amount = args[1].equalsIgnoreCase("all") ? (int) sp.getMoney() : Integer.parseInt(args[1]);
 			} catch(NumberFormatException var9)
 			{
 				sender.sendMessage(SurvivorGame.prefix + "§6" + args[1] + " §cn'est pas considéré comme un nombre");
@@ -72,6 +72,10 @@ public class MoneyCommand implements CommandExecutor
 		else if(amount > source.getMoney())
 		{
 			source.toBukkit().sendMessage(SurvivorGame.prefix + "§cVous ne possédez pas cet argent");
+		}
+		else if(target.is(source))
+		{
+			source.sendMessage(SurvivorGame.prefix + "§aNon transmis.");
 		}
 		else
 		{
