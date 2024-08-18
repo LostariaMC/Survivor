@@ -119,6 +119,10 @@ public class UpgradeBoxManager
 				return;
 			}
 			
+			sp.toCosmox().addAchievementEarned(SurvivorGame.UPGRADE_ACHIEVEMENT);
+			if(weapon.getLevel() == 4) {
+				sp.toCosmox().addAchievementEarned(SurvivorGame.UPGRADE5_ACHIEVEMENT);
+			}
 			sp.toBukkit().playSound(sp.toBukkit().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 			sp.addMoney(-((Upgradeable) weapon).getNextLevelPrice());
 			((Upgradeable) weapon).upgrade();

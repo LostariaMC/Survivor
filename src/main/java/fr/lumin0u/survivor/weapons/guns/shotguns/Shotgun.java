@@ -11,7 +11,7 @@ public abstract class Shotgun extends Gun
 	
 	public Shotgun(WeaponOwner owner, WeaponType wt)
 	{
-		super(owner, wt);
+		super(owner, wt, TFSound.SHOTGUN_SHOT);
 		this.shots = wt.get("shots");
 	}
 	
@@ -42,7 +42,6 @@ public abstract class Shotgun extends Gun
 	
 	@Override
 	public void shoot() {
-		TFSound.SHOTGUN_SHOT.play(owner.getShootLocation());
 		for(int i = 0; i < shots; ++i) {
 			super.shoot();
 		}

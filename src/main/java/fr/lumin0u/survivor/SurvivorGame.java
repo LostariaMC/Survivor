@@ -3,6 +3,7 @@ package fr.lumin0u.survivor;
 import fr.lumin0u.survivor.utils.ImmutableItemStack;
 import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.lumin0u.survivor.utils.SvStatistics;
+import fr.worsewarn.cosmox.api.achievements.Achievement;
 import fr.worsewarn.cosmox.api.statistics.Statistic;
 import fr.worsewarn.cosmox.game.Game;
 import fr.worsewarn.cosmox.game.GameVariables;
@@ -24,6 +25,11 @@ public class SurvivorGame
 {
 	public static String prefix = "§fSurvivor (!) ";
 	public static final ImmutableItemStack DIFF_VOTE_ITEM = new ItemBuilder(Material.SKELETON_SKULL).setDisplayName("§eChoix de la difficulté").setLore("§7Si l'host choisit une difficulté,", "§7votre vote ne sera pas pris", "§7en compte").buildImmutable();
+	
+	public static final Achievement SURVIVOR_ACHIEVEMENT = new Achievement(3600, "Survivor", Material.ZOMBIE_HEAD, "Terminer tous les succès en Survivor", 0);
+	public static final Achievement UPGRADE_ACHIEVEMENT = new Achievement(3601, "Amélioration", Material.HONEY_BOTTLE, "Améliorer une arme", 3600);
+	public static final Achievement UPGRADE5_ACHIEVEMENT = new Achievement(3602, "Eradication", Material.EXPERIENCE_BOTTLE, "Améliorer une arme niveau 5", 3601);
+	public static final Achievement TRIPLE_KILL_ACHIEVEMENT = new Achievement(3603, "Une balle, 3 zombies", Material.SPECTRAL_ARROW, "Tuez 3 zombies en une balle", 3600);
 	
 	/*
 	 * %y = sum of integers of a category
@@ -73,7 +79,12 @@ public class SurvivorGame
 		Game game = new Game("survivor", "Survivor", ChatColor.DARK_GREEN, Material.ZOMBIE_HEAD, Arrays.asList(Team.RANDOM), 1, true, true,
 				statistics,
 				/*Achievements*/
-				List.of(),
+				List.of(
+						SURVIVOR_ACHIEVEMENT,
+						UPGRADE_ACHIEVEMENT,
+						UPGRADE5_ACHIEVEMENT,
+						TRIPLE_KILL_ACHIEVEMENT
+				),
 				/*Description*/
 				List.of(
 						" ",

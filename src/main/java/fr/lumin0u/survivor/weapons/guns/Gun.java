@@ -1,6 +1,9 @@
 package fr.lumin0u.survivor.weapons.guns;
 
+import fr.lumin0u.survivor.GameManager;
 import fr.lumin0u.survivor.Survivor;
+import fr.lumin0u.survivor.SurvivorGame;
+import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.IGun;
@@ -72,6 +75,15 @@ public abstract class Gun extends Weapon implements IGun
 	}
 	
 	@Override
+    public void shoot() {
+		int nbZombies = GameManager.getInstance().getRemainingEnnemies();
+		IGun.super.shoot();
+		if(owner instanceof SvPlayer player && nbZombies - GameManager.getInstance().getRemainingEnnemies() >= 3) {
+			player.toCosmox().addAchievementEarned(SurvivorGame.TRIPLE_KILL_ACHIEVEMENT);
+		}
+	}
+	
+	@Override
 	public void leftClick() {
 	}
 	
@@ -82,8 +94,8 @@ public abstract class Gun extends Weapon implements IGun
 	@Override
 	public List<String> getLore() {
 		List<String> lore = super.getLore();
-		lore.add("§6Dégats par balle : §a" + String.format("%.2f", this.dmg) + (!isUpgradeable() ? "" : " §8\u279D " + String.format("%.2f", getDamageAtLevel(level + 1))));
-		lore.add("§6Range : §a" + String.format("%.2f", this.range) + (!isUpgradeable() ? "" : " §8\u279D " + String.format("%.2f", getRangeAtLevel(level + 1))));
+		lore.add("§6Dégats par balle : §a" + String.format("%.2f", this.dmg) + (!isUpgradeable() ? "" : " §8➝ " + String.format("%.2f", getDamageAtLevel(level + 1))));
+		lore.add("§6Range : §a" + String.format("%.2f", this.range) + (!isUpgradeable() ? "" : " §8➝ " + String.format("%.2f", getRangeAtLevel(level + 1))));
 		
 		lore.add("§6Délai entre 2 tirs : §a" + String.format("%.2f", (float) this.wt.getRpm() / 20) + "s");
 		return lore;
