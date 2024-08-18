@@ -81,6 +81,7 @@ public abstract class Weapon implements IWeapon
 	}
 	
 	public void useAmmo() {
+		--this.clip;
 		if(this.clip <= 0) {
 			this.reload();
 		}
