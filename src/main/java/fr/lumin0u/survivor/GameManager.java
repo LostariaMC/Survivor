@@ -375,6 +375,9 @@ public class GameManager
 	}
 	
 	public void endWave() {
+		if(gameEnded)
+			return;
+		
 		this.dogWave = false;
 		this.mayBeEndWave = false;
 		inWave = false;
