@@ -10,11 +10,13 @@ public class SPAS12 extends Shotgun implements Upgradeable
 		super(owner, WeaponType.SPAS12);
 	}
 	
-	public int getNextLevelPrice() {
+	@Override
+    public int getNextLevelPrice() {
 		return super.getNextLevelPrice();
 	}
 
-	public void upgrade() {
+	@Override
+    public void upgrade() {
 		super.upgrade();
 	}
 }

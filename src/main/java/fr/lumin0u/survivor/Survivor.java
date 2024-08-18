@@ -69,6 +69,7 @@ public class Survivor extends JavaPlugin
 	public void onEnable()
 	{
 		/*
+		* stats finale (nouveaux joueurs)
 		*/
 		
 		protocolManager = ProtocolLibrary.getProtocolManager();

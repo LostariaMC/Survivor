@@ -14,6 +14,9 @@ import org.bukkit.Particle.DustOptions;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Random;
 
 public interface IGun extends IWeapon
@@ -33,35 +36,39 @@ public interface IGun extends IWeapon
 	}
 	
 	public static void rawShoot(WeaponOwner shooter, Weapon weapon, Ray ray, double baseDmg) {
+		rawShoot(shooter, weapon, ray, baseDmg, false);
+	}
+	
+	public static void rawShoot(WeaponOwner shooter, Weapon weapon, Ray ray, double baseDmg, boolean perforant) {
 		final int rSize = ray.getPoints().size();
 		boolean fireBullet = Perk.FIRE_BULLET.testRandomDropAndHas(weapon);
 		boolean explosiveBullet = Perk.EXPLOSIVE_BULLETS.testRandomDropAndHas(weapon);
 		boolean critBullet = Perk.CRIT_BULLETS.testRandomDropAndHas(weapon);
 		
-		double dmg = critBullet ? baseDmg * 3.5 : baseDmg;
-		
-		Iterable<? extends SvDamageable> targets = shooter.getTargetType().getDamageables(GameManager.getInstance());
+		Collection<? extends SvDamageable> targets = new ArrayList<>(shooter.getTargetType().getDamageables(GameManager.getInstance()));
 		
 		new BukkitRunnable()
 		{
 			int i = 0;
-			int lastStop = 0;
 			double m = 0;
 			double j = 0;
 			Random ra = new Random();
+			double dmg = critBullet ? baseDmg * 3.5 : baseDmg;
+			Collection<SvDamageable> hit = new LinkedList<>();
 			
 			@Override
 			public void run()
 			{
-				for(; (double) this.i < Math.min((double) ray.getPoints().size(), 50 + (double) this.lastStop); ++this.i)
+				int targetI = Math.min(rSize, 50 + i);
+				for(; i < targetI; i++)
 				{
-					Location point = (Location) ray.getPoints().get(this.i);
-					this.m += this.ra.nextBoolean() ? 0.012 : -0.012;
-					this.j += this.ra.nextBoolean() ? this.ra.nextDouble() * 2.4 : -(this.ra.nextDouble() * 2.4);
-					this.m = Math.abs(this.m);
+					Location point = ray.getPoints().get(this.i);
+					m += ra.nextBoolean() ? 0.012 : -0.012;
+					j += ra.nextBoolean() ? ra.nextDouble() * 2.4 : -(ra.nextDouble() * 2.4);
+					m = Math.abs(m);
 					Vector x1 = (new Vector(-ray.getIncrease().normalize().getZ(), 0, ray.getIncrease().normalize().getX())).normalize();
 					Vector x2 = ray.getIncrease().normalize().crossProduct(x1).normalize();
-					Location effectLoc = point.clone().add(x1.clone().multiply(this.m * Math.sin(this.j / ray.getLength() * Math.PI * 2.0D))).add(x2.clone().multiply(this.m * Math.cos(this.j / ray.getLength() * Math.PI * 2.0D)));
+					Location effectLoc = point.clone().add(x1.clone().multiply(m * Math.sin(j / ray.getLength() * Math.PI * 2.0D))).add(x2.clone().multiply(m * Math.cos(j / ray.getLength() * Math.PI * 2.0D)));
 					if(ray.getPoints().indexOf(point) >= 3)
 					{
 						if(ray.getPoints().indexOf(point) == 3)
@@ -94,7 +101,7 @@ public interface IGun extends IWeapon
 							
 							for(SvDamageable ent : targets)
 							{
-								if(!ent.isAlive())
+								if(!ent.isAlive() || hit.contains(ent))
 									continue;
 								
 								if(ent.getBodyHitbox().contains(point) || ent.getHeadHitbox().contains(point))
@@ -111,19 +118,22 @@ public interface IGun extends IWeapon
 									if(fireBullet) {
 										ent.setFireTime(60, shooter, weapon);
 									}
-									this.cancel();
-									return;
+									
+									if(perforant && dmg > 10) {
+										dmg *= 0.7;
+										hit.add(ent);
+									}
+									else {
+										this.cancel();
+										return;
+									}
 								}
 							}
 						}
 					}
 				}
 				
-				if(this.i < rSize - 1)
-				{
-					this.lastStop = this.i;
-				}
-				else
+				if(this.i >= rSize - 1)
 				{
 					Location lastPoint = ray.getPoints().size() > 3 ? ray.getPoints().get(ray.getPoints().size() - 4) : ray.getStart();
 					
