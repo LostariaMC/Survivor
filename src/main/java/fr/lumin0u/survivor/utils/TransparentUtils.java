@@ -134,7 +134,7 @@ public class TransparentUtils
 		l2 = l2.clone();
 		Vector line = MCUtils.vectorFrom(l1, l2);
 		
-		RayTraceResult rayTrace = l1.getWorld().rayTraceBlocks(l1, line, l1.distance(l2), FluidCollisionMode.NEVER, true);
+		RayTraceResult rayTrace = l1.getWorld().rayTraceBlocks(l1, line, l1.distance(l2), FluidCollisionMode.NEVER, true);// TODO , b -> emptyBlocks.contains(b.getType()));
 		
 		while(rayTrace != null)
 		{
