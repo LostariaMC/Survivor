@@ -36,6 +36,7 @@ public class Survivor extends JavaPlugin
 	private PlayerEvents playerListener;
 	private EntityEvents entityListener;
 	private InventoryEvents inventoryListener;
+	private CosmoxEvents cosmoxListener;
 	public static int currentTick;
 	private ProtocolManager protocolManager;
 	private API cosmoxAPI;
@@ -82,7 +83,8 @@ public class Survivor extends JavaPlugin
 			cosmoxAPI.registerNewGame(survivorGame);
 		}
 		
-		getServer().getPluginManager().registerEvents(new CosmoxEvents(), this);
+		cosmoxListener = new CosmoxEvents();
+		getServer().getPluginManager().registerEvents(cosmoxListener, this);
 		
 		FileConfiguration transparentConfig = MCUtils.configFromFileName("transparents");
 		transparentConfig.set("CAKE_BLOCK.d*", "000040");
@@ -142,6 +144,10 @@ public class Survivor extends JavaPlugin
 		HandlerList.unregisterAll(entityListener);
 		HandlerList.unregisterAll(playerListener);
 		HandlerList.unregisterAll(inventoryListener);
+	}
+	
+	public CosmoxEvents getCosmoxListener() {
+		return cosmoxListener;
 	}
 	
 	@Override

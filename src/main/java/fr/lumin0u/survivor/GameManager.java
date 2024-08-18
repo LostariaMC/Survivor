@@ -70,8 +70,6 @@ public class GameManager
 	private final GameBossBar bossBar;
 	private boolean gameEnded;
 	
-	private int totalFenceCount;
-	
 	private static GameManager instance;
 	
 	public GameManager(GameMap map) {
@@ -110,7 +108,6 @@ public class GameManager
 		ammoFrameManager = new AmmoFrameManager();
 		
 		rooms = new ArrayList<>(config.getRooms());
-		totalFenceCount = rooms.stream().mapToInt(room -> room.getFences().size()).sum();
 		
 		for(Room room : rooms)
 			room.setWorld(world);
@@ -161,7 +158,6 @@ public class GameManager
 		}
 		
 		if(this.defaultRoom != null && this.spawnpoint != null) {
-			Bukkit.broadcastMessage(SurvivorGame.prefix + "§6La partie commence !");
 			endWave();
 			
 			for(LivingEntity ent : world.getEntitiesByClass(LivingEntity.class)) {
@@ -183,13 +179,14 @@ public class GameManager
 				
 				p.setMaxHealth(this.difficulty.getMaxHealth());
 				p.getInventory().clear();
-				ItemStack itemA = new ItemBuilder(Material.CARROT).setDisplayName("§6Approvisionnement").build();
+				ItemStack itemA = new ItemBuilder(Material.CARROT).setDisplayName("§6Approvisionnement").setLore("§7Vous recevrez votre approvisionnement", "§7à partir de la vague 10").build();
 				p.getInventory().setItem(4, itemA);
-				p.sendMessage(SurvivorGame.prefix + "§cVous recevrez votre approvisionnement à partir de la vague 10");
+				p.sendMessage(SurvivorGame.prefix + "§cVous recevrez votre §lapprovisionnement §cà partir de la §lvague 10");
 				
 				SvPlayer sp = SvPlayer.of(p);
 				sp.giveKnife(new LittleKnife(sp));
 				sp.giveExchangeableWeapon(new M1911(sp));
+				sp.cleanInventory();
 				p.teleport(spawnpoint);
 				p.setGameMode(GameMode.ADVENTURE);
 				p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 1.0F);
@@ -251,7 +248,10 @@ public class GameManager
 	}
 	
 	public int getTotalFenceCount() {
-		return totalFenceCount;
+		return rooms.stream()
+				.filter(Room::isBought)
+				.mapToInt(room -> room.getFences().size())
+				.sum();
 	}
 	
 	/** @return non-spec players, maybe offline */
@@ -264,7 +264,7 @@ public class GameManager
 				.toList();
 	}
 	
-	/** @return non-spec players */
+	/** @return non-spec players who are online */
 	public Collection<SvPlayer> getOnlinePlayers() {
 		return Bukkit.getOnlinePlayers().stream()
 				.map(SvPlayer::of)

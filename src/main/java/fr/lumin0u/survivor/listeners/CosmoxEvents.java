@@ -41,10 +41,10 @@ public class CosmoxEvents implements Listener
 			difficultyPanel.setItem(i, grayGlass);
 		}
 		
-		difficultyPanel.setItem(2, Difficulty.EASY.getItemRep());
-		difficultyPanel.setItem(3, Difficulty.NORMAL.getItemRep());
-		difficultyPanel.setItem(5, Difficulty.CLASSIC.getItemRep());
-		difficultyPanel.setItem(6, Difficulty.HARDCORE.getItemRep());
+		difficultyPanel.setItem(2, Difficulty.EASY.getItemRep(0));
+		difficultyPanel.setItem(3, Difficulty.NORMAL.getItemRep(0));
+		difficultyPanel.setItem(5, Difficulty.CLASSIC.getItemRep(0));
+		difficultyPanel.setItem(6, Difficulty.HARDCORE.getItemRep(0));
 	}
 	
 	@EventHandler
@@ -88,7 +88,7 @@ public class CosmoxEvents implements Listener
 		if(difficultyPanel.equals(event.getClickedInventory())) {
 			event.setCancelled(true);
 			
-			Optional<Difficulty> clicked = Arrays.stream(Difficulty.values()).filter(d -> MCUtils.areSimilar(d.getItemRep(), event.getCurrentItem())).findAny();
+			Optional<Difficulty> clicked = Arrays.stream(Difficulty.values()).filter(d -> event.getCurrentItem() != null && event.getCurrentItem().getType() == d.getSkullType()).findAny();
 			clicked.ifPresent(diff ->
 			{
 				event.getWhoClicked().sendMessage(SurvivorGame.prefix + "§7Vous votez pour la difficulté " + diff.getColoredDisplayName());
@@ -111,5 +111,17 @@ public class CosmoxEvents implements Listener
 	public void onUseLobbyItem(GameDefaultItemUseEvent event) {
 		if(event.getIdentifier().equals("diffVoteItem"))
 			event.getPlayer().openInventory(difficultyPanel);
+	}
+	
+	public void updateVoteCount(Difficulty diff, int votes) {
+		int place = switch(diff) {
+            case NOT_SET -> 0;
+            case EASY -> 2;
+            case NORMAL -> 3;
+            case CLASSIC -> 5;
+            case HARDCORE -> 6;
+        };
+		
+		difficultyPanel.setItem(place, diff.getItemRep(votes));
 	}
 }
