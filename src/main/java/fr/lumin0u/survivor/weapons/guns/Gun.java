@@ -79,7 +79,7 @@ public abstract class Gun extends Weapon implements IGun
 		int nbZombies = GameManager.getInstance().getRemainingEnnemies();
 		IGun.super.shoot();
 		if(owner instanceof SvPlayer player && nbZombies - GameManager.getInstance().getRemainingEnnemies() >= 3) {
-			player.toCosmox().addAchievementEarned(SurvivorGame.TRIPLE_KILL_ACHIEVEMENT);
+			player.toCosmox().grantAdvancement(SurvivorGame.TRIPLE_KILL_ACHIEVEMENT.getId());
 		}
 	}
 	
