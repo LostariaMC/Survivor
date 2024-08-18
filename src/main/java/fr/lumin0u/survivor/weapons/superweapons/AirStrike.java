@@ -19,6 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -45,6 +46,13 @@ public class AirStrike extends SuperWeapon
 	
 	@Override
 	public void leftClick() {
+	}
+	
+	@Override
+	public List<String> getLore() {
+		List<String> lore = super.getLore();
+		lore.add("§e§lUtilisable en étant au sol");
+		return lore;
 	}
 	
 	private void fireball(Location loc) {
