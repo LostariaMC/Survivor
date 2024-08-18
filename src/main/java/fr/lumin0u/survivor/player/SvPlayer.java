@@ -331,19 +331,18 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		this.deathDate = Survivor.getCurrentTick();
 		
 		Location as1Location = player.getEyeLocation().add(0, 1.2, 0);
-		final Entity as1 = MCUtils.oneConsistentFlyingText(as1Location, "§4JE SUIS EN TRAIN DE MOURIR");
 		final Entity as2;
 		
 		if(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == 1 && Calendar.getInstance().get(Calendar.MONTH) == Calendar.APRIL)
 		{
-			as2 = MCUtils.oneConsistentFlyingText(as1Location.clone().add(0, -0.3, 0), "§aSAUVE MOI EN FAISANT ALT+F4");
+			as2 = MCUtils.oneConsistentFlyingText(as1Location, "§aSAUVE MOI EN FAISANT ALT+F4");
 		}
 		else
 		{
-			as2 = MCUtils.oneConsistentFlyingText(as1Location.clone().add(0, -0.3, 0), "§aSAUVE MOI EN SNEAKANT");
+			as2 = MCUtils.oneConsistentFlyingText(as1Location, "§a§lSNEAK §2POUR ME SAUVER");
 		}
 		
-		final TextDisplay as3 = MCUtils.oneConsistentFlyingText(as1Location.clone().add(0, -0.6, 0), "§4· · · · · ·");
+		final TextDisplay as3 = MCUtils.oneConsistentFlyingText(as1Location.clone().add(0, -0.3, 0), "§4· · · · · ·");
 		player.setVelocity(new Vector(0, 0, 0));
 		LainBodies.lie(player);
 		
@@ -374,7 +373,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 					Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + getName() + "§c est mort !");
 					TFSound.PLAYER_DEATH.play(getFeets());
 					lifeState = LifeState.DEAD;
-					as1.remove();
 					as2.remove();
 					as3.remove();
 					
@@ -411,7 +409,6 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 				private void revive() {
 					lifeState = LifeState.ALIVE;
 					toBukkit().setGameMode(GameMode.ADVENTURE);
-					as1.remove();
 					as2.remove();
 					as3.remove();
 					cleanInventory();
@@ -435,6 +432,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 					
 					if(!isOnline())
 					{
+						playDead();
 						lifeState = LifeState.DEAD;
 						LainBodies.wakeUp(uid);
 					}
@@ -455,7 +453,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 						List<SvPlayer> savers = new ArrayList<>();
 						
 						for(SvPlayer sp : GameManager.getInstance().getOnlinePlayers()) {
-							if(sp.toBukkit().isSneaking() && sp.toBukkit().getLocation().distance(deathLoc) < 5 && sp.isAlive()) {
+							if(sp.toBukkit().isSneaking() && sp.toBukkit().getLocation().distanceSquared(toBukkit().getLocation()) < 25 && sp.isAlive()) {
 								savers.add(sp);
 								int difficultyV = GameManager.getInstance().getDifficulty().ordinal();
 								reviveTime -= (sp.getAssets().contains(SvAsset.QUICK_REVIVE) ? 28 : 15) - difficultyV;
