@@ -233,7 +233,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		
 		Weapon weapon = getWeaponInHand();
 		
-		if(weapon != null && canUseWeapon()) {
+		if(weapon != null && (canUseWeapon() || (weapon.getType() == WeaponType.AIRSTRIKE && !isDead()))) {
 			int rpm = weapon.getType().getRpm();
 			
 			weapon.impulseRightClick();
