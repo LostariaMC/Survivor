@@ -30,10 +30,7 @@ public class Barbecue extends HeatSender
 		
 		for(int i = 0; i < 100; ++i)
 		{
-			double x = loc.getDirection().getX() + (double) (ra.nextBoolean() ? -1 : 1) * ra.nextDouble() * accuracy / 6.0D;
-			double y = loc.getDirection().getY() + (double) (ra.nextBoolean() ? -1 : 1) * ra.nextDouble() * accuracy / 6.0D;
-			double z = loc.getDirection().getZ() + (double) (ra.nextBoolean() ? -1 : 1) * ra.nextDouble() * accuracy / 6.0D;
-			Vector v = (new Vector(x, y, z)).multiply(range * ra.nextDouble() * 0.1D);
+			Vector v = loc.getDirection().multiply(range * ra.nextDouble() * 0.1D);
 			
 			loc.getWorld().spawnParticle(particle, loc.clone().add(loc.getDirection()), 0, (float) v.getX(), (float) v.getY(), (float) v.getZ());
 		}
