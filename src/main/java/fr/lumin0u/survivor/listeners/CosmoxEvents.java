@@ -93,6 +93,7 @@ public class CosmoxEvents implements Listener
 			{
 				event.getWhoClicked().sendMessage(SurvivorGame.prefix + "§7Vous votez pour la difficulté " + diff.getColoredDisplayName());
 				SvPlayer.of(event.getWhoClicked()).setDiffVote(diff);
+				updateVoteCount(diff, (int) Survivor.getInstance().getLoadedSvPlayers().stream().filter(sp -> sp.getDiffVote() == diff).count());
 			});
 		}
 	}
