@@ -7,7 +7,6 @@ import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.knives.Knife;
-import fr.lumin0u.survivor.weapons.perks.Perk;
 import fr.lumin0u.survivor.weapons.superweapons.SuperWeapon;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -82,8 +81,6 @@ public abstract class Weapon implements IWeapon
 	}
 	
 	public void useAmmo() {
-		if(!Perk.FREE_BULLETS.testRandomDropAndHas(this))
-			--this.clip;
 		if(this.clip <= 0) {
 			this.reload();
 		}
@@ -118,8 +115,11 @@ public abstract class Weapon implements IWeapon
 						isReloading = false;
 						this.cancel();
 						int clip = getClip();
-						setClip(Math.min(getAmmo() + clip, clipSize));
-						setAmmo(Math.max(0, getAmmo() - (clipSize - clip)));
+						
+						boolean freeBullets = hasPerk(Perk.FREE_BULLETS);
+						setClip(freeBullets ? clipSize : Math.min(getAmmo() + clip, clipSize));
+						if(!freeBullets)
+							setAmmo(Math.max(0, getAmmo() - (clipSize - clip)));
 						item.setAmount(1);
 						if(!ownerOffline) {
 							owner.refreshWeaponItem(Weapon.this);
@@ -173,7 +173,7 @@ public abstract class Weapon implements IWeapon
 	}
 	
 	public String getActionBar() {
-		return "§9" + this.wt.getName() + (this.level > 0 ? " §5" + this.level + "§9" : "") + " §6" + this.clip + "§7/§6" + this.ammo;
+		return "§9" + this.wt.getName() + (this.level > 0 ? " §5" + this.level + "§9" : "") + " §6" + this.clip + "§7/§6" + (hasPerk(Perk.FREE_BULLETS) ? "∞" : this.ammo);
 	}
 	
 	/*public void action()
@@ -207,6 +207,10 @@ public abstract class Weapon implements IWeapon
 	protected void upgrade() {
 		++this.level;
 		this.maxAmmo = getMaxAmmoAtLevel(this.level);
+		if(wt.getRepeatingType() == RepeatingType.BURSTS) {
+			int shots = wt.get("shots");
+			maxAmmo = (maxAmmo / shots) * shots;
+		}
 		this.clipSize = getClipSizeAtLevel(this.level);
 		this.reloadTime = getReloadTimeAtLevel(this.level);
 		ItemMeta meta = this.item.getItemMeta();

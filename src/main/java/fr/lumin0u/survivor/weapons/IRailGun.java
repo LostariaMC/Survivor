@@ -7,7 +7,6 @@ import fr.lumin0u.survivor.player.SvDamageable;
 import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Ray;
-import fr.lumin0u.survivor.weapons.perks.Perk;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;

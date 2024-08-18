@@ -1,7 +1,6 @@
-package fr.lumin0u.survivor.weapons.perks;
+package fr.lumin0u.survivor.weapons;
 
 import fr.lumin0u.survivor.utils.Utils;
-import fr.lumin0u.survivor.weapons.Weapon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +19,11 @@ public abstract class Perk
 			return random.nextInt(20) == 0;
 		}
 	};
-	public static final Perk FREE_BULLETS = new Perk("balles gratuites", "§aballes gratuites", List.of("Une chance de ne pas", "consommer de munitions"))
+	public static final Perk FREE_BULLETS = new Perk("munitions infinies", "§bmunitions infinies", List.of("Recharger ne consomme pas", "de munitions"))
 	{
 		@Override
 		public boolean testRandomDrop(Random random) {
-			return random.nextInt(5) == 0;
+			return true;
 		}
 	};
 	public static final Perk FASTER_RELOAD = new Perk("recharge rapide", "§frecharge rapide", List.of("L'arme recharge plus vite"))
@@ -41,7 +40,7 @@ public abstract class Perk
 			return random.nextInt(20) == 0;
 		}
 	};
-	public static final Perk EXPLOSIVE_BULLETS = new Perk("balles explosives", "§cballes explosives", List.of("Une chance de tirer", "une balle explosive"))
+	public static final Perk EXPLOSIVE_BULLETS = new Perk("balles explosives", "§4balles explosives", List.of("Une chance de tirer", "une balle explosive"))
 	{
 		@Override
 		public boolean testRandomDrop(Random random) {
