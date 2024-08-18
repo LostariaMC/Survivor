@@ -7,6 +7,7 @@ import fr.lumin0u.survivor.player.WeaponOwner;
 import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Ray;
 import fr.lumin0u.survivor.weapons.guns.Gun;
+import fr.lumin0u.survivor.weapons.guns.snipers.Sniper;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -14,8 +15,8 @@ import org.bukkit.Particle.DustOptions;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -32,7 +33,7 @@ public interface IGun extends IWeapon
 		WeaponOwner shooter = getOwner();
 		Ray ray = new Ray(shooter.getShootLocation(), shooter.getShootLocation().getDirection().multiply(0.2D), getRange(), getAccuracy());
 		
-		rawShoot(shooter, (Weapon) this, ray, getDmg());
+		rawShoot(shooter, (Weapon) this, ray, getDmg(), this instanceof Sniper);
 	}
 	
 	public static void rawShoot(WeaponOwner shooter, Weapon weapon, Ray ray, double baseDmg) {
@@ -45,7 +46,7 @@ public interface IGun extends IWeapon
 		boolean explosiveBullet = Perk.EXPLOSIVE_BULLETS.testRandomDropAndHas(weapon);
 		boolean critBullet = Perk.CRIT_BULLETS.testRandomDropAndHas(weapon);
 		
-		Collection<? extends SvDamageable> targets = new ArrayList<>(shooter.getTargetType().getDamageables(GameManager.getInstance()));
+		Collection<? extends SvDamageable> targets = new HashSet<>(shooter.getTargetType().getDamageables(GameManager.getInstance()));
 		
 		new BukkitRunnable()
 		{

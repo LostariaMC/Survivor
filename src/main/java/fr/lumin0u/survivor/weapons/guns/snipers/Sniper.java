@@ -2,8 +2,6 @@ package fr.lumin0u.survivor.weapons.guns.snipers;
 
 import fr.lumin0u.survivor.player.SvPlayer;
 import fr.lumin0u.survivor.player.WeaponOwner;
-import fr.lumin0u.survivor.utils.Ray;
-import fr.lumin0u.survivor.weapons.IGun;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.guns.Gun;
 import org.bukkit.Material;
@@ -49,12 +47,5 @@ public abstract class Sniper extends Gun
 	public double getAccuracy()
 	{
 		return super.getAccuracy() * (double) (this.scopeActive ? 1 : 2);
-	}
-	
-	@Override
-	public void shoot() {
-		Ray ray = new Ray(owner.getShootLocation(), owner.getShootLocation().getDirection().multiply(0.2D), getRange(), getAccuracy());
-		
-		IGun.rawShoot(owner, this, ray, getDmg(), true);
 	}
 }
