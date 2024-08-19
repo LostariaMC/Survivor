@@ -2,7 +2,6 @@ package fr.lumin0u.survivor;
 
 import fr.lumin0u.survivor.utils.ImmutableItemStack;
 import fr.lumin0u.survivor.utils.ItemBuilder;
-import fr.lumin0u.survivor.utils.SvStatistics;
 import fr.worsewarn.cosmox.api.achievements.Achievement;
 import fr.worsewarn.cosmox.api.statistics.Statistic;
 import fr.worsewarn.cosmox.game.Game;
@@ -31,6 +30,13 @@ public class SurvivorGame
 	public static final Achievement UPGRADE5_ACHIEVEMENT = new Achievement(3602, "Eradication", Material.EXPERIENCE_BOTTLE, "Améliorer une arme niveau 5", 3601);
 	public static final Achievement TRIPLE_KILL_ACHIEVEMENT = new Achievement(3603, "Une balle, 3 zombies", Material.SPECTRAL_ARROW, "Tuez 3 zombies en une balle", 3600);
 	
+	public static final String DOWNFALLS_STAT = "downfalls";
+	public static final String REANIMATIONS_STAT = "reanimations";
+	public static final String WAVE_REACHED_EASY_STAT = "wavereachedeasy";
+	public static final String WAVE_REACHED_NORMAL_STAT = "wavereachednormal";
+	public static final String WAVE_REACHED_HARD_STAT = "wavereachedhard";
+	public static final String WAVE_REACHED_EXPERT_STAT = "wavereachedexpert";
+	
 	/*
 	 * %y = sum of integers of a category
 	 * %b = value of parameter (boolean)
@@ -57,9 +63,13 @@ public class SurvivorGame
 				new Statistic("Temps de jeu", GameVariables.TIME_PLAYED, true),
 				new Statistic("Parties jouées", GameVariables.GAMES_PLAYED),
 				new Statistic("Zombies tués", GameVariables.KILLS, true, true),
-				new Statistic("Chutes au sol", SvStatistics.DOWNFALLS, true, true),
+				new Statistic("Chutes au sol", DOWNFALLS_STAT, true, true),
 				new Statistic("Morts", GameVariables.DEATHS, true, true),
-				new Statistic("Réanimations", SvStatistics.REANIMATIONS, true, true)
+				new Statistic("Réanimations", REANIMATIONS_STAT, true, true),
+				new Statistic("Meilleure vague (easy)", WAVE_REACHED_EASY_STAT, false, true).uploadOnlyIfSuperior(),
+				new Statistic("Meilleure vague (normal)", WAVE_REACHED_NORMAL_STAT, false, true).uploadOnlyIfSuperior(),
+				new Statistic("Meilleure vague (hard)", WAVE_REACHED_HARD_STAT, false, true).uploadOnlyIfSuperior(),
+				new Statistic("Meilleure vague (expert)", WAVE_REACHED_EXPERT_STAT, false, true).uploadOnlyIfSuperior()
 		));
 		
 		/*statistics.addAll(Arrays.stream(WeaponType.values())

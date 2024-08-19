@@ -2,7 +2,10 @@ package fr.lumin0u.survivor.player;
 
 import fr.lumin0u.survivor.Difficulty;
 import fr.lumin0u.survivor.*;
-import fr.lumin0u.survivor.utils.*;
+import fr.lumin0u.survivor.utils.AABB;
+import fr.lumin0u.survivor.utils.ItemBuilder;
+import fr.lumin0u.survivor.utils.MCUtils;
+import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.Weapon;
 import fr.lumin0u.survivor.weapons.WeaponType;
 import fr.lumin0u.survivor.weapons.knives.Knife;
@@ -346,7 +349,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 		player.setVelocity(new Vector(0, 0, 0));
 		LainBodies.lie(player);
 		
-		toCosmox().addStatistic(SvStatistics.DOWNFALLS, 1);
+		toCosmox().addStatistic(SurvivorGame.DOWNFALLS_STAT, 1);
 		
 		reviveTime = 1000;
 		boolean everyoneIsDead = true;
@@ -500,7 +503,7 @@ public class SvPlayer extends WrappedPlayer implements WeaponOwner, SvDamageable
 							{
 								Bukkit.broadcastMessage(SurvivorGame.prefix + "§6" + getName() + "§a a été réanimé !");
 								revive();
-								savers.forEach(sp -> sp.toCosmox().addStatistic(SvStatistics.REANIMATIONS, 1));
+								savers.forEach(sp -> sp.toCosmox().addStatistic(SurvivorGame.REANIMATIONS_STAT, 1));
 								cancel();
 							}
 						}

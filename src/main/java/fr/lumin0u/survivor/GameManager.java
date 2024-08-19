@@ -406,8 +406,10 @@ public class GameManager
 				MCUtils.sendTitle(sp.toBukkit(), 10, 40, 20, "§2Vague " + this.wave, "§acomplétée");
 			}
 			
-			if(!SurvivorCommand.isCheating())
+			if(!SurvivorCommand.isCheating()) {
 				sp.toCosmox().addMolecules(molecules, "Vague " + wave);
+				sp.toCosmox().setStatistic(difficulty.getBestWaveStatKey(), wave);
+			}
 			
 			sp.addMoney(75 + 25 * this.wave);
 			sp.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, waveDelay, 5));

@@ -90,4 +90,19 @@ public enum Difficulty
 	{
 		return this.color + this.displayName;
 	}
+	
+	public String getBestWaveStatKey() {
+		return switch(this) {
+            case NOT_SET ->
+                    "";
+            case EASY ->
+                    SurvivorGame.WAVE_REACHED_EASY_STAT;
+            case NORMAL ->
+					SurvivorGame.WAVE_REACHED_NORMAL_STAT;
+            case CLASSIC ->
+					SurvivorGame.WAVE_REACHED_HARD_STAT;
+            case HARDCORE ->
+					SurvivorGame.WAVE_REACHED_EXPERT_STAT;
+        };
+	}
 }
