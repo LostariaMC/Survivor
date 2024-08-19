@@ -36,4 +36,9 @@ public class RailGun extends Gun implements Upgradeable, IRailGun
 	public Color getRailColor() {
 		return Color.fromRGB(1, 200, 0);
 	}
+	
+	@Override
+	public void shoot() {
+		IRailGun.super.shoot();
+	}
 }

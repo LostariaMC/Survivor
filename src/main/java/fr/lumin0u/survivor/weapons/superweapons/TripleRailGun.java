@@ -55,4 +55,9 @@ public class TripleRailGun extends SuperGun implements IRailGun
 	public Color getRailColor() {
 		return Color.fromRGB(1, 200, 0);
 	}
+	
+	@Override
+	public void shoot() {
+		IRailGun.super.shoot();
+	}
 }
