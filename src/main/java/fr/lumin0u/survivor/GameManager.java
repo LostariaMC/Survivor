@@ -392,7 +392,7 @@ public class GameManager
 		double difficultyXPFactor = Math.sqrt(difficulty.getFactor()) / 2.24; // sqrt 5
 		double molecules = wave <= 0 ? 0 :
 				difficultyXPFactor * nbPlayerXPFactor
-				* 2 // scaling factor (1 min is approx 2 xp)
+				* 1.4 // scaling factor (1 min is approx 2 xp)
 				* Math.pow(wave, 1.5) * (2.5 - (double) wave / (10 + wave)) / (10 + wave); // derivative of (x^1.5) * x/(10+x)
 		
 		for(SvPlayer sp : getOnlinePlayers()) {
