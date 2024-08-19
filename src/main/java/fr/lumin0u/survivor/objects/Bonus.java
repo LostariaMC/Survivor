@@ -160,7 +160,7 @@ public enum Bonus
 					}
 				}
 				
-				picker.addMoney((double) count * 0.2 * gm.getWave());
+				picker.addMoney((double) count / gm.getTotalFenceCount() * 100 * Math.sqrt(gm.getWave()));
 			}
 			case MUNMAX -> {
 				for(SvPlayer sp : gm.getPlayers())
