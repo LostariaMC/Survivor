@@ -139,7 +139,7 @@ public class GameManager
 			
 			@Override
 			public void run() {
-				for(SvPlayer player : getPlayers()) {
+				for(SvPlayer player : getOnlinePlayers()) {
 					Surviboard.updatePlayerLine(player);
 				}
 				if(t%2 == 0) {
@@ -154,7 +154,7 @@ public class GameManager
 	
 	public void startGame() {
 		if(difficulty == Difficulty.NOT_SET) {
-			difficulty = getPlayers().stream()
+			difficulty = getOnlinePlayers().stream()
 					.map(SvPlayer::getDiffVote)
 					.filter(diff -> diff != Difficulty.NOT_SET)
 					.collect(Utils.randomCollector())

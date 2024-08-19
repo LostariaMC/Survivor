@@ -77,7 +77,7 @@ public class Surviboard
 		scoreboard.updateLine(i++, "§7» Difficulté : " + gm.getDifficulty().getColoredDisplayName());
 		scoreboard.updateLine(i++, "§1");
 		
-		for(SvPlayer other : gm.getPlayers().stream().sorted(HASH_COMPARATOR).toList())
+		for(SvPlayer other : gm.getOnlinePlayers().stream().sorted(HASH_COMPARATOR).toList())
 		{
 			if(i > 10)
 				break;
@@ -96,7 +96,7 @@ public class Surviboard
 		
 		GameManager gm = GameManager.getInstance();
 		
-		int line = 4 + gm.getPlayers().stream().sorted(Surviboard.HASH_COMPARATOR).toList().indexOf(sp);
+		int line = 4 + gm.getOnlinePlayers().stream().sorted(Surviboard.HASH_COMPARATOR).toList().indexOf(sp);
 		updateScoreboardScore(sp);
 		
 		//Bukkit.broadcastMessage("\nfrom " + sp.getName() + ": line is " + line);
@@ -131,7 +131,7 @@ public class Surviboard
 		
 		scoreboard.updateLine(i++, "§6Vague§8: §e" + gm.getWave() + (gm.isInWave() ? "" : " ➝ " + (gm.getWave() + 1)));
 		
-		for(SvPlayer other : gm.getPlayers())
+		for(SvPlayer other : gm.getOnlinePlayers())
 		{
 			scoreboard.updateLine(i++, (!other.isAlive() ? (other.isOnGround() ? "§c" : "§8✞ ") : "§6") + other.getName() + "§8: §e" + other.getMoney() + "$");
 		}

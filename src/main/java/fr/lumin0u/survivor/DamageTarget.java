@@ -18,7 +18,7 @@ public enum DamageTarget
 		{
 			case PLAYERS -> new ArrayList<>(gm.getOnlinePlayers());
 			case ZOMBIES -> new ArrayList<>(gm.getMobs());
-			case ALL -> Stream.concat(gm.getPlayers().stream(), gm.getMobs().stream()).toList();
+			case ALL -> Stream.concat(gm.getOnlinePlayers().stream(), gm.getMobs().stream()).toList();
 		};
 	}
 	
