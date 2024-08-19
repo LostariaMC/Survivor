@@ -3,6 +3,7 @@ package fr.lumin0u.survivor;
 import fr.lumin0u.survivor.utils.ImmutableItemStack;
 import fr.lumin0u.survivor.utils.ItemBuilder;
 import fr.worsewarn.cosmox.api.achievements.Achievement;
+import fr.worsewarn.cosmox.api.statistics.AggregationFunction;
 import fr.worsewarn.cosmox.api.statistics.Statistic;
 import fr.worsewarn.cosmox.game.Game;
 import fr.worsewarn.cosmox.game.GameVariables;
@@ -66,10 +67,10 @@ public class SurvivorGame
 				new Statistic("Chutes au sol", DOWNFALLS_STAT, true, true),
 				new Statistic("Morts", GameVariables.DEATHS, true, true),
 				new Statistic("Réanimations", REANIMATIONS_STAT, true, true),
-				new Statistic("Meilleure vague (easy)", WAVE_REACHED_EASY_STAT, false, true).uploadOnlyIfSuperior(),
-				new Statistic("Meilleure vague (normal)", WAVE_REACHED_NORMAL_STAT, false, true).uploadOnlyIfSuperior(),
-				new Statistic("Meilleure vague (hard)", WAVE_REACHED_HARD_STAT, false, true).uploadOnlyIfSuperior(),
-				new Statistic("Meilleure vague (expert)", WAVE_REACHED_EXPERT_STAT, false, true).uploadOnlyIfSuperior()
+				new Statistic("Meilleure vague (easy)", WAVE_REACHED_EASY_STAT, false, false, true, AggregationFunction.MAX),
+				new Statistic("Meilleure vague (normal)", WAVE_REACHED_NORMAL_STAT, false, false, true, AggregationFunction.MAX),
+				new Statistic("Meilleure vague (hard)", WAVE_REACHED_HARD_STAT, false, false, true, AggregationFunction.MAX),
+				new Statistic("Meilleure vague (expert)", WAVE_REACHED_EXPERT_STAT, false, false, true, AggregationFunction.MAX)
 		));
 		
 		/*statistics.addAll(Arrays.stream(WeaponType.values())
