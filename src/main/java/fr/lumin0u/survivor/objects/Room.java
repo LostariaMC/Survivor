@@ -160,7 +160,7 @@ public class Room
 			d.removeArmorStands();
 		}
 		
-		GameManager.getInstance().augmentPrice();
+		GameManager.getInstance().onDoorBought();
 		Bukkit.broadcastMessage(SurvivorGame.prefix + "§5" + Bukkit.getOfflinePlayer(sp.getPlayerUid()).getName() + " §ea acheté §6" + getName());
 		
 		for(Location block : getAdditionalBlocks())

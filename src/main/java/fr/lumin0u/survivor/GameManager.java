@@ -227,7 +227,19 @@ public class GameManager
 		}
 	}
 	
-	public void augmentPrice() {
+	// memoisation
+	private int totalFenceCount;
+	
+	public int getTotalFenceCount() {
+		return totalFenceCount;
+	}
+	
+	public void onDoorBought() {
+		totalFenceCount = rooms.stream()
+				.filter(Room::isBought)
+				.mapToInt(room -> room.getFences().size())
+				.sum();
+		
 		this.doorPrice = (int) ((double) this.doorPrice * this.priceAugmentation);
 		
 		for(Room room : this.rooms) {
@@ -235,23 +247,10 @@ public class GameManager
 				room.updateDoors();
 			}
 		}
-		
 	}
-	
-	/*public long getTimer()
-	{
-		return this.startDate == 0L ? 0L : System.currentTimeMillis() - this.startDate;
-	}*/
 	
 	public int getDoorPrice() {
 		return this.doorPrice;
-	}
-	
-	public int getTotalFenceCount() {
-		return rooms.stream()
-				.filter(Room::isBought)
-				.mapToInt(room -> room.getFences().size())
-				.sum();
 	}
 	
 	/** @return non-spec players, maybe offline */
