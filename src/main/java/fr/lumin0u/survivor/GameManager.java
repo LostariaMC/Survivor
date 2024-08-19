@@ -70,6 +70,9 @@ public class GameManager
 	private final GameBossBar bossBar;
 	private boolean gameEnded;
 	
+	// memoisation
+	private int totalFenceCount;
+	
 	private static GameManager instance;
 	
 	public GameManager(GameMap map) {
@@ -116,6 +119,7 @@ public class GameManager
 				.filter(room -> room.getName().equals("default"))
 				.findAny()
 				.orElseThrow(() -> new IllegalArgumentException("La map %s ne contient pas de salle \"default\"".formatted(map.getName())));
+		totalFenceCount = defaultRoom.getFences().size();
 		
 		this.defaultRoom.setBought(true);
 		this.priceAugmentation = Math.pow(50.0D, 1.0D / ((double) this.rooms.size() - 1.0D));
@@ -226,9 +230,6 @@ public class GameManager
 			Bukkit.broadcastMessage("§cVeuillez finir la config avant de lancer la partie");
 		}
 	}
-	
-	// memoisation
-	private int totalFenceCount;
 	
 	public int getTotalFenceCount() {
 		return totalFenceCount;
