@@ -30,7 +30,7 @@ public class MedicKit extends SuperWeapon implements SupplyWeapon
 		
 		for(SvPlayer sp : GameManager.getInstance().getOnlinePlayers())
 		{
-			if(sp.toBukkit().getLocation().distance(owner.getShootLocation()) < 20.0D)
+			if(sp.toBukkit().getLocation().distanceSquared(owner.getShootLocation()) < 20*20)
 			{
 				sp.toBukkit().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20 * 20, 2, true));
 			}

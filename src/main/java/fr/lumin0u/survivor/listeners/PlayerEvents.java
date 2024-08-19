@@ -136,7 +136,7 @@ public class PlayerEvents implements PacketListener, Listener
 			
 			if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock().getBlockData() instanceof Gate && gm.isStarted() && player.isAlive())
 			{
-				boolean zombieNear = gm.getMobs().stream().anyMatch(m -> m.getEntity().getLocation().distance(e.getClickedBlock().getLocation()) < 4.0D);
+				boolean zombieNear = gm.getMobs().stream().anyMatch(m -> m.getEntity().getLocation().distanceSquared(e.getClickedBlock().getLocation()) < 4*4);
 				
 				Room room = gm.getRooms().stream().filter(r -> r.getFences().contains(e.getClickedBlock().getLocation())).findFirst().get();
 				
@@ -458,7 +458,7 @@ public class PlayerEvents implements PacketListener, Listener
 				}
 			}
 			
-			if(sp.isSpectator() && !e.getPlayer().getWorld().equals(GameManager.getInstance().getWorld()) || Bukkit.getOnlinePlayers().stream().filter(player -> !player.getGameMode().equals(GameMode.SPECTATOR)).mapToDouble(player -> player.getLocation().distance(e.getTo())).min().orElse(0) > 100)
+			if(sp.isSpectator() && !e.getPlayer().getWorld().equals(GameManager.getInstance().getWorld()) || Bukkit.getOnlinePlayers().stream().filter(player -> !player.getGameMode().equals(GameMode.SPECTATOR)).mapToDouble(player -> player.getLocation().distanceSquared(e.getTo())).min().orElse(0) > 100*100)
 				e.getPlayer().teleport(Bukkit.getOnlinePlayers().stream().filter(player -> !player.getGameMode().equals(GameMode.SPECTATOR)).findFirst().get());
 		}
 	}

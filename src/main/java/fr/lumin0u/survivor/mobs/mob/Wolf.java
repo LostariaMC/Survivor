@@ -64,7 +64,7 @@ public class Wolf extends Enemy
 				
 				sp = (SvPlayer) var1.next();
 				p = sp.toBukkit();
-			} while(this.target != null && !(p.getLocation().distance(this.ent.getLocation()) < this.target.toBukkit().getLocation().distance(this.ent.getLocation())));
+			} while(this.target != null && !(p.getLocation().distanceSquared(this.ent.getLocation()) < this.target.toBukkit().getLocation().distanceSquared(this.ent.getLocation())));
 			
 			if(sp.isAlive() && p.getGameMode().equals(GameMode.ADVENTURE))
 			{

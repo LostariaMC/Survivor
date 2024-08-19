@@ -9,7 +9,6 @@ import fr.lumin0u.survivor.utils.MCUtils;
 import fr.lumin0u.survivor.utils.Ray;
 import fr.lumin0u.survivor.utils.TFSound;
 import fr.lumin0u.survivor.weapons.WeaponType;
-import fr.lumin0u.survivor.weapons.guns.Gun;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 
@@ -30,7 +29,7 @@ public class GrapplingHook extends Gun
 	@Override
 	public boolean aiHelp_MayShoot(Enemy mob, SvPlayer target)
 	{
-		return mob.getEntity().getEyeLocation().distance(target.getShootLocation()) < DISTANCE;
+		return mob.getEntity().getEyeLocation().distanceSquared(target.getShootLocation()) < DISTANCE*DISTANCE;
 	}
 	
 	@Override

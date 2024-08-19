@@ -92,7 +92,7 @@ public class BlazeBoss extends Enemy implements Boss
 		{
 			Location targetLoc = target.toBukkit().getLocation();
 			
-			if(targetLoc.distance(this.ent.getLocation()) < 100.0D)
+			if(targetLoc.distanceSquared(this.ent.getLocation()) < 100*100)
 			{
 				((Blaze) ent).getPathfinder().moveTo(targetLoc);
 				ent.setTarget(target.toBukkit());

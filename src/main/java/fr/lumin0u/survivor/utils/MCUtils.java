@@ -15,8 +15,6 @@ import fr.worsewarn.cosmox.api.players.WrappedPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TextComponent.Builder;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.Title.Times;
 import net.kyori.adventure.util.Ticks;
@@ -121,9 +119,10 @@ public class MCUtils
 	public static Vector explosionVector(Location ent, Location l, double radius)
 	{
 		Location entLoc = ent.clone();
-		double x = (entLoc.getX() - l.getX()) / entLoc.distance(l) * (radius - entLoc.distance(l));
-		double y = (entLoc.getY() - l.getY()) / entLoc.distance(l) * (radius - entLoc.distance(l));
-		double z = (entLoc.getZ() - l.getZ()) / entLoc.distance(l) * (radius - entLoc.distance(l));
+		double distance = entLoc.distance(l);
+		double x = (entLoc.getX() - l.getX()) / distance * (radius - distance);
+		double y = (entLoc.getY() - l.getY()) / distance * (radius - distance);
+		double z = (entLoc.getZ() - l.getZ()) / distance * (radius - distance);
 		return (new Vector(x, y, z)).multiply(0.03D);
 	}
 	
@@ -346,7 +345,7 @@ public class MCUtils
 		
 		for(Player player : l.getWorld().getPlayers())
 		{
-			if(player.getEyeLocation().distance(l) < minDistance)
+			if(player.getEyeLocation().distanceSquared(l) < minDistance*minDistance)
 			{
 				PacketContainer packet = new PacketContainer(Play.Server.ENTITY_DESTROY, new PacketPlayOutEntityDestroy(as.getEntityId()));
 				WrappedPlayer.of(player).sendPacket(packet);
@@ -552,7 +551,7 @@ public class MCUtils
 	
 	public static String pointingArrow(Location from, Location to)
 	{
-		if(from.getWorld() != to.getWorld() || from.distance(to) < 0.1)
+		if(from.getWorld() != to.getWorld() || from.distanceSquared(to) < 0.1*0.1)
 			return "\u2022";
 		
 		Location nulLoc = new Location(null, 0, 0, 0);

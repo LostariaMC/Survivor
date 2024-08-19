@@ -154,7 +154,7 @@ public class Zombie extends Enemy
 		for(SvPlayer sp : gm.getOnlinePlayers())
 		{
 			Player p = sp.toBukkit();
-			if(target == null || p.getLocation().distance(this.ent.getLocation()) < target.toBukkit().getLocation().distance(this.ent.getLocation()))
+			if(target == null || p.getLocation().distanceSquared(this.ent.getLocation()) < target.toBukkit().getLocation().distanceSquared(this.ent.getLocation()))
 			{
 				if(sp.isAlive() && p.getGameMode().equals(GameMode.ADVENTURE))
 				{
@@ -169,7 +169,7 @@ public class Zombie extends Enemy
 		{
 			Location targetLoc = target.toBukkit().getLocation();
 			
-			if(targetLoc.distance(this.ent.getLocation()) < 100.0D)
+			if(targetLoc.distanceSquared(this.ent.getLocation()) < 100*100)
 			{
 				this.ent.setTarget(target.toBukkit());
 				return;

@@ -55,8 +55,10 @@ public class Ray {
             RayTraceResult collisionResult = TransparentUtils.collisionBetween(this.start, wantedEndPoint);
             
             Location endPoint = collisionResult == null ? wantedEndPoint : collisionResult.getHitPosition().toLocation(point.getWorld());
-
-            for(int i = 0; (double)i < this.start.distance(endPoint) * (1.0D / increase.length()); ++i) {
+            
+            double travelDist = start.distance(endPoint);
+            
+            for(int i = 0; (double)i < travelDist * (1.0D / increase.length()); ++i) {
                 point.add(increase);
                 increase.setY(increase.getY());
                 this.points.add(point.clone());

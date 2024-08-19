@@ -211,9 +211,9 @@ public class TransparentUtils
 		boolean containsVy = c.boundsContains(vy);
 		boolean containsVz = c.boundsContains(vz);
 		
-		if(!containsVx || containsVy && !(vx.distance(l1) < vy.distance(l1)) || containsVz && !(vx.distance(l1) < vz.distance(l1)))
+		if(!containsVx || containsVy && !(vx.distanceSquared(l1) < vy.distanceSquared(l1)) || containsVz && !(vx.distance(l1) < vz.distance(l1)))
 		{
-			if(!containsVy || containsVz && !(vy.distance(l1) < vz.distance(l1)))
+			if(!containsVy || containsVz && !(vy.distanceSquared(l1) < vz.distanceSquared(l1)))
 			{
 				return containsVz ? new TransparentUtils.CollisionResult(true, vz.toLocation(null), null, line.getZ() > 0.0D ? BlockFace.NORTH : BlockFace.SOUTH) : new TransparentUtils.CollisionResult(false, null, null, null);
 			}

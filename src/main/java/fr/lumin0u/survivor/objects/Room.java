@@ -69,7 +69,7 @@ public class Room
 				
 				for(Enemy m : GameManager.getInstance().getMobs()) {
 					for(Location fence : getFences()) {
-						if(fence.distance(m.getEntity().getLocation()) < 4.0D && fence.getBlock().getBlockData() instanceof Fence && !fencesDone.contains(fence)) {
+						if(fence.distanceSquared(m.getEntity().getLocation()) < 4*4 && fence.getBlock().getBlockData() instanceof Fence && !fencesDone.contains(fence)) {
 							fencesDone.add(fence);
 							if(r.nextInt(7) == 0) {
 								placeGate(fence);

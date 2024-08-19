@@ -68,7 +68,7 @@ public enum Bonus
 				
 				for(SvPlayer p : GameManager.getInstance().getOnlinePlayers())
 				{
-					if(p.toBukkit().getGameMode().equals(GameMode.ADVENTURE) && p.toBukkit().getLocation().distance(it.getLocation()) < 2.5D)
+					if(p.toBukkit().getGameMode().equals(GameMode.ADVENTURE) && p.toBukkit().getLocation().distanceSquared(it.getLocation()) < 2.5*2.5)
 					{
 						Bonus.this.onPickup(p);
 						i = imax;

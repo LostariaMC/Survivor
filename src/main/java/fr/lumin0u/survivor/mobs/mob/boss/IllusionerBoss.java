@@ -64,7 +64,7 @@ public class IllusionerBoss extends Enemy implements Boss
 		for(SvPlayer sp : gm.getOnlinePlayers())
 		{
 			Player p = sp.toBukkit();
-			if(target == null || p.getLocation().distance(this.ent.getLocation()) < target.toBukkit().getLocation().distance(this.ent.getLocation()))
+			if(target == null || p.getLocation().distanceSquared(this.ent.getLocation()) < target.toBukkit().getLocation().distanceSquared(this.ent.getLocation()))
 			{
 				if(sp.isAlive() && p.getGameMode().equals(GameMode.ADVENTURE))
 				{
@@ -79,7 +79,7 @@ public class IllusionerBoss extends Enemy implements Boss
 		{
 			Location targetLoc = target.toBukkit().getLocation();
 			
-			if(targetLoc.distance(this.ent.getLocation()) < 100.0D)
+			if(targetLoc.distanceSquared(this.ent.getLocation()) < 100*100)
 			{
 				if(!ent.getPathfinder().hasPath()) {
 					PathResult path = ent.getPathfinder().findPath(targetLoc);

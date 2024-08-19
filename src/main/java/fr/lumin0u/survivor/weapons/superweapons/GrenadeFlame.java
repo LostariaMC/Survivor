@@ -27,7 +27,7 @@ public class GrenadeFlame extends AbstractGrenade implements SupplyWeapon
 		GameManager gm = GameManager.getInstance();
 		for(SvDamageable m : owner.getTargetType().getDamageables(gm))
 		{
-			if(m.getFeets().distance(loc) < 20.0D && TransparentUtils.solidBetween(m.getFeets().add(0, 1, 0), loc) < 3)
+			if(m.getFeets().distanceSquared(loc) < 20*20 && TransparentUtils.solidBetween(m.getFeets().add(0, 1, 0), loc) < 3)
 			{
 				m.setFireTime((long) (320 - (int) (2.0D * m.getFeets().distance(loc))), owner, this);
 			}

@@ -107,8 +107,8 @@ public class TurretRunnable extends BukkitRunnable
 									} while(m.isDead());
 									
 									l = m.getBodyHitbox().midpoint().toLocation(tur.getWorld());
-								} while(!(l.distance(tur) < 20.0D));
-							} while(target != null && !(l.distance(tur) < target.getBodyHitbox().midpoint().distance(tur.toVector())));
+								} while(!(l.distanceSquared(tur) < 20*20));
+							} while(target != null && !(l.distanceSquared(tur) < target.getBodyHitbox().midpoint().distanceSquared(tur.toVector())));
 							
 							if(!TransparentUtils.anySolidBetween(l, tur))
 							{
