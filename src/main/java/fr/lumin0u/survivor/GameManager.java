@@ -303,48 +303,6 @@ public class GameManager
 		return this.dogWave;
 	}
 	
-	/*@Deprecated
-	public void saveInConfig()
-	{
-		try
-		{
-			if(this.spawnpoint != null)
-			{
-				this.config.set(this.world.getName() + ".spawnpoint", MCUtils.locToString(this.spawnpoint));
-			}
-			
-			if(this.lobby != null)
-			{
-				this.config.set("lobby", MCUtils.locToString(this.lobby));
-			}
-			
-			Writer writer = new FileWriter(this.mapsFile);
-			this.gson.toJson(this.worldRooms, writer);
-			writer.flush();
-			writer.close();
-			List<String> ammoBoxes = new ArrayList<>();
-			
-			for(Location b : this.ammoBoxes)
-			{
-				ammoBoxes.add(MCUtils.locToString(b));
-			}
-			
-			this.config.set(this.world.getName() + ".ammoBoxes", ammoBoxes);
-			Survivor.getInstance().saveConfig();
-		} catch(Exception var6)
-		{
-			var6.printStackTrace();
-		}
-		
-		try
-		{
-			this.mbm.saveInConfig();
-		} catch(Exception var5)
-		{
-			var5.printStackTrace();
-		}
-	}*/
-	
 	public Room getDefaultRoom() {
 		return this.defaultRoom;
 	}
@@ -748,11 +706,6 @@ public class GameManager
 	}
 	
 	public Difficulty getDifficulty() {
-		/*if(this.difficulty == null)
-		{
-			this.calculateDifficulty();
-		}*/
-		
 		return this.difficulty;
 	}
 	
