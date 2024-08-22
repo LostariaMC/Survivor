@@ -146,6 +146,7 @@ public class Room
 	public void buy(SvPlayer sp)
 	{
 		setBought(true);
+		startZombieVsFencesTask();
 		sp.addMoney(-getPrice());
 		
 		for(Door d : getDoors())

@@ -122,6 +122,7 @@ public class GameManager
 		totalFenceCount = defaultRoom.getFences().size();
 		
 		this.defaultRoom.setBought(true);
+		this.defaultRoom.startZombieVsFencesTask();
 		this.priceAugmentation = Math.pow(50.0D, 1.0D / ((double) this.rooms.size() - 1.0D));
 		
 		new BukkitRunnable()
@@ -197,7 +198,6 @@ public class GameManager
 			}
 			
 			for(Room room : this.rooms) {
-				room.startZombieVsFencesTask();
 				room.updateDoors();
 			}
 			
@@ -232,7 +232,7 @@ public class GameManager
 	}
 	
 	public int getTotalFenceCount() {
-		return totalFenceCount;
+		return Math.max(1, totalFenceCount);
 	}
 	
 	public void onDoorBought() {
