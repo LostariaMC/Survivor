@@ -31,7 +31,7 @@ import static java.lang.Math.PI;
 public enum WeaponType
 {
 	LITTLE_KNIFE(LittleKnife.class, LittleKnife::new, RepeatingType.NONE, "Pelle", Material.IRON_SHOVEL, 100, 1, 5, 100, false, -1, 10, Map.of("dmg", 4.2D)),
-	BUCHER_KNIFE(BucherKnife.class, BucherKnife::new, RepeatingType.NONE, "Pelle Lourde", Material.NETHERITE_SHOVEL, 30, 1, 10, 300, true, -1, 20, Map.of("dmg", 18.9D)),
+	BUCHER_KNIFE(BucherKnife.class, BucherKnife::new, RepeatingType.NONE, "Pelle Lourde", Material.NETHERITE_SHOVEL, 30, 1, 10, 800, true, -1, 20, Map.of("dmg", 18.9D)),
 	
 	M1911(M1911.class, M1911::new, RepeatingType.SEMIAUTOMATIC, "M1911", Material.WOODEN_PICKAXE, 160, 10, 40/*, new McSound("guns.m1911", 30)*/, 250, false, -1, 4, Map.of("dmg", 2.8D, "range", 30.0D, "accuracy", PI / 120)),
 	FAMAS(Famas.class, Famas::new, RepeatingType.AUTOMATIC, "Famas", Material.GOLDEN_AXE, 420, 30, 86/*, new McSound("guns.famas", 80)*/, 3500, true, -1, 5, Map.of("dmg", 5.6D, "range", 60.0D, "accuracy", PI / 160)),
@@ -46,7 +46,7 @@ public enum WeaponType
 	SPAS12(SPAS12.class, SPAS12::new, RepeatingType.SEMIAUTOMATIC, "SPAS-12", Material.GOLDEN_SHOVEL, 70, 1, 47/*, new McSound("guns.spas12", 80)*/, 1400, true, -1, 30, Map.of("dmg", 5.7D, "range", 7.5D, "accuracy", PI / 50, "shots", 8)),
 	MCS(MCS.class, MCS::new, RepeatingType.SEMIAUTOMATIC, "MCS", Material.STONE_PICKAXE, 80, 4, 84/*, new McSound("guns.olympia", 80)*/, 3300, true, -1, 30, Map.of("dmg", 6.9D, "range", 20.0D, "accuracy", PI / 60, "shots", 5)),
 	DOUBLE_BARREL(DoubleBarrel.class, DoubleBarrel::new, RepeatingType.SEMIAUTOMATIC, "Double Barrel", Material.DIAMOND_SHOVEL, 60, 2, 70/*, new McSound("guns.doublebarrel", 80)*/, 1, true, -1, 30, Map.of("dmg", 5.8D, "range", 20.0D, "accuracy", PI / 35, "shots", 7, "kbMul", 1.4)),
-	DRAGUNOV(Dragunov.class, Dragunov::new, RepeatingType.SEMIAUTOMATIC, "Dragunov", Material.GOLD_INGOT, 110, 5, 98/*, new McSound("guns.sniper", 60)*/, 1, true, -1, 20, Map.of("dmg", 43.7D, "range", 300.0D, "accuracy", PI / 600)),
+	DRAGUNOV(Dragunov.class, Dragunov::new, RepeatingType.SEMIAUTOMATIC, "Dragunov", Material.GOLD_INGOT, 110, 5, 98/*, new McSound("guns.sniper", 60)*/, 2000, true, -1, 20, Map.of("dmg", 43.7D, "range", 300.0D, "accuracy", PI / 600)),
 	MOSIN(MosinSniper.class, MosinSniper::new, RepeatingType.SEMIAUTOMATIC, "Mosin", Material.GOLDEN_PICKAXE, 60, 1, 41/*, new McSound("guns.dragunov", 80)*/, 2500, true, -1, 20, Map.of("dmg", 137.0D, "range", 300.0D, "accuracy", PI / 600)),
 	REVOLVER(Revolver.class, Revolver::new, RepeatingType.SEMIAUTOMATIC, "Revolver", Material.DIAMOND_PICKAXE, 160, 6, 23/*, new McSound("guns.magnum", 50)*/, 1, true, -1, 15, Map.of("dmg", 17.4D, "range", 35.0D, "accuracy", PI / 300)),
 	THOMPSON(Thompson.class, Thompson::new, RepeatingType.AUTOMATIC, "Thompson", Material.NETHERITE_PICKAXE, 400, 25, 95/*, new McSound("guns.thompson", 70)*/, 3000, true, -1, 4, Map.of("dmg", 5.7D, "range", 50.0D, "accuracy", PI / 90)),

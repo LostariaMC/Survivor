@@ -93,7 +93,8 @@ public class CosmoxEvents implements Listener
 			{
 				SvPlayer player = SvPlayer.of(event.getWhoClicked());
 				event.getWhoClicked().sendMessage(SurvivorGame.prefix + "§7Vous votez pour la difficulté " + diff.getColoredDisplayName());
-				updateVoteCount(player.getDiffVote(), (int) Survivor.getInstance().getLoadedSvPlayers().stream().filter(sp -> sp.getDiffVote() == player.getDiffVote()).count() - 1);
+				if(player.getDiffVote() != Difficulty.NOT_SET)
+					updateVoteCount(player.getDiffVote(), (int) Survivor.getInstance().getLoadedSvPlayers().stream().filter(sp -> sp.getDiffVote() == player.getDiffVote()).count() - 1);
 				player.setDiffVote(diff);
 				updateVoteCount(diff, (int) Survivor.getInstance().getLoadedSvPlayers().stream().filter(sp -> sp.getDiffVote() == diff).count());
 			});
