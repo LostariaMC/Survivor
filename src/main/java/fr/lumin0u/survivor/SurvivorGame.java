@@ -33,6 +33,8 @@ public class SurvivorGame
 	
 	public static final String DOWNFALLS_STAT = "downfalls";
 	public static final String REANIMATIONS_STAT = "reanimations";
+	public static final String WAVES_STAT = "waves";
+	public static final String DOORS_STAT = "doors";
 	public static final String WAVE_REACHED_EASY_STAT = "wavereachedeasy";
 	public static final String WAVE_REACHED_NORMAL_STAT = "wavereachednormal";
 	public static final String WAVE_REACHED_HARD_STAT = "wavereachedhard";
@@ -67,6 +69,8 @@ public class SurvivorGame
 				new Statistic("Chutes au sol", DOWNFALLS_STAT, true, true),
 				new Statistic("Morts", GameVariables.DEATHS, true, true),
 				new Statistic("Réanimations", REANIMATIONS_STAT, true, true),
+				new Statistic("Vagues terminées", WAVES_STAT, true, true),
+				new Statistic("Portes ouvertes", DOORS_STAT, true, true),
 				new Statistic("Meilleure vague (easy)", WAVE_REACHED_EASY_STAT, false, false, true, AggregationFunction.MAX),
 				new Statistic("Meilleure vague (normal)", WAVE_REACHED_NORMAL_STAT, false, false, true, AggregationFunction.MAX),
 				new Statistic("Meilleure vague (hard)", WAVE_REACHED_HARD_STAT, false, false, true, AggregationFunction.MAX),
