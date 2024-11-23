@@ -148,6 +148,7 @@ public class Room
 		setBought(true);
 		startZombieVsFencesTask();
 		sp.addMoney(-getPrice());
+		sp.toCosmox().addStatistic(SurvivorGame.DOORS_STAT, 1);
 		
 		for(Door d : getDoors())
 		{

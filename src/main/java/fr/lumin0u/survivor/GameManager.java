@@ -368,6 +368,7 @@ public class GameManager
 			if(!SurvivorCommand.isCheating()) {
 				sp.toCosmox().addMolecules(molecules, "Vague " + wave);
 				sp.toCosmox().setStatistic(difficulty.getBestWaveStatKey(), wave);
+				sp.toCosmox().addStatistic(SurvivorGame.WAVES_STAT, 1);
 			}
 			
 			sp.addMoney(75 + 25 * this.wave);
