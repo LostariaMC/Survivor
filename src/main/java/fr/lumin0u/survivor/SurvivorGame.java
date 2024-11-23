@@ -122,6 +122,9 @@ public class SurvivorGame
 		
 		for(Parameter parameter : parameters)
 			game.addParameter(parameter);
+
+		Parameter maps = new Parameter("Maps", "", 0, 0, 0, new ItemBuilder(Material.PAPER).setDisplayName("§6Cartes").setLore(Arrays.asList(" ", "§7Enlève ici les cartes que tu n'aimes pas", "§7pour pouvoir exploser les joueurs et gagner")).build(), Arrays.asList(0F), false, true);
+		game.addParameter(maps);
 		
 		prefix = game.getPrefix();
 		
