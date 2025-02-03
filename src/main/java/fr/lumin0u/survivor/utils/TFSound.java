@@ -18,8 +18,8 @@ public interface TFSound
 	TFSound PLAYER_FALL = new SimpleSound(Sound.BLOCK_ANVIL_BREAK, 10000.0f, 1f, SoundCategory.PLAYERS);
 	TFSound PLAYER_DEATH = new SimpleSound(Sound.ENTITY_WITHER_HURT, 10000.0f, 0.5f, 0.6f, SoundCategory.PLAYERS);
 	TFSound MELEE_MISS = new SimpleSound(Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 0.7f, SoundCategory.PLAYERS);
-	
-	TFSound GUN_SHOT = new SimpleSound(Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1f, 1.2f, SoundCategory.PLAYERS);
+
+	TFSound GUN_SHOT = new CustomSound("guns.m1911", 1f, 1.2f, SoundCategory.PLAYERS);
 	TFSound SHOTGUN_SHOT = new SimpleSound(Sound.ENTITY_GENERIC_EXPLODE, 1f, 2f, SoundCategory.PLAYERS);
 	TFSound RAILGUN_SHOT = new SimpleSound(Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1f, 2f, SoundCategory.PLAYERS);
 	TFSound FREEZER_SHOT = new SimpleSound(Sound.ENTITY_WITHER_SHOOT, 1f, 1.5f, SoundCategory.PLAYERS);
@@ -234,6 +234,67 @@ public interface TFSound
 		@Override
 		public TFSound withVolume(float volume) {
 			throw new UnsupportedOperationException("j'ai eu la flemme de le coder");
+		}
+	}
+
+	public static class CustomSound implements TFSound {
+		private final String sound;
+		private final float volume;
+		private final float pitchMin;
+		private final float pitchMax;
+		private final SoundCategory category;
+
+		public CustomSound(String sound, float volume, float pitchMin, float pitchMax, SoundCategory category) {
+			this.sound = sound;
+			this.volume = volume;
+			this.pitchMin = pitchMin;
+			this.pitchMax = pitchMax;
+			this.category = category;
+		}
+
+		public CustomSound(String sound, float volume, float pitch, SoundCategory category) {
+			this(sound, volume, pitch, pitch, category);
+		}
+
+		private float getPitch() {
+			return pitchMin == pitchMax ? pitchMin : pitchMin + new Random().nextFloat() * (pitchMax - pitchMin);
+		}
+
+		@Override
+		public void playTo(WrappedPlayer player) {
+			if(isSilence())
+				return;
+			if(player.isOnline()){
+				player.toBukkit().playSound(player.toBukkit().getLocation(), sound, category, volume, getPitch());
+			}
+		}
+
+		@Override
+		public void play(Location location) {
+			if(isSilence())
+				return;
+			location.getWorld().playSound(location, sound, category, volume, getPitch());
+		}
+
+		@Override
+		public void play(Location location, List<WrappedPlayer> listeners) {
+			if(isSilence())
+				return;
+			for(WrappedPlayer wrapped : listeners) {
+				if(wrapped.isOnline()){
+					wrapped.toBukkit().playSound(location, sound, category, volume, getPitch());
+				}
+			}
+		}
+
+		@Override
+		public boolean isSilence() {
+			return sound == null || sound.isEmpty();
+		}
+
+		@Override
+		public TFSound withVolume(float volume) {
+			return new CustomSound(sound, volume, pitchMin, pitchMax, category);
 		}
 	}
 }
